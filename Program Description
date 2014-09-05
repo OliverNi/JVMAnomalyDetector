@@ -1,1 +1,20 @@
--
+Purpose:
+We want to remotely monitor a set of EMA (Ericsson product) processes in order to detect anomalies such as: resource leakage, excessive GC scans.
+There is a multitude of tools that allows humans to introspect JVM stats but we want an tool that automatically monitors a set of processes and gathers stats for these.
+The tool shall also use this gathered stats over time to detect anomalies and in such case report.
+
+Requirements:
+The application shall be able to attach (remotely/locally) to one (ore more) running EMA process(es) and extract JVM stats such as but not limited to: GC stats, min/max/current heap allocation.
+
+The application shall be able to be executed from command line (GUI is optional/secondary)
+
+The application shall log/append the collected data to file for later analysis.
+Anomalies such as accumulating heap size shall be reported (exact method for reporting to be determined)
+
+The application shall connect to the EMA process over the already existing JMX/RMI interface to extract JVM stats. 
+The application must not require any changes to the EMA process, such as installing agents or configuring additional JVM settings.
+
+Technologies:
+Anything that can communicate with a Java process over JMX/RMI. 
+Most likely a JVM based language such as Java or Scala. At least it shall be portable to "any" operating system.
+The application is meant to be standalone, i.e. not executing on any application server.
