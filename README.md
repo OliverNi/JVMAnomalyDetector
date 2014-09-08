@@ -19,5 +19,8 @@ http://docs.oracle.com/javase/8/docs/technotes/guides/jmx/overview/agent.html
 Instrumenting applications with JMX
 http://www.ibm.com/developerworks/java/library/j-jtp09196/index.html?ca=
 
+JMX Best Practises
+http://www.oracle.com/technetwork/java/javase/tech/best-practices-jsp-136021.html#mozTocId805713
+
 JMX Documentation
 http://www.oracle.com/technetwork/java/javase/tech/javamanagement-140525.html
