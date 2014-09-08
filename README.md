@@ -15,3 +15,6 @@ http://docs.oracle.com/javase/tutorial/jmx/remote/jconsole.html
 
 Using JMX Agents
 http://docs.oracle.com/javase/8/docs/technotes/guides/jmx/overview/agent.html
+
+Instrumenting applications with JMX
+http://www.ibm.com/developerworks/java/library/j-jtp09196/index.html?ca=
