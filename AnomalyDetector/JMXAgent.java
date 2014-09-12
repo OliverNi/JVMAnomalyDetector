@@ -61,6 +61,12 @@ public class JMXAgent {
         MemoryPoolMXBean oldGenProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Old Gen"),
                 MemoryPoolMXBean.class);
         MXBeanProxy.add(oldGenProxy);
+        MemoryPoolMXBean survivorProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Survivor Space"),
+                MemoryPoolMXBean.class);
+        MXBeanProxy.add(survivorProxy);
+        MemoryPoolMXBean edenProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Eden Space"),
+                MemoryPoolMXBean.class);
+        MXBeanProxy.add(edenProxy);
     }
 
     /**
@@ -71,7 +77,7 @@ public class JMXAgent {
         for (MemoryPoolMXBean bean : MXBeanProxy){
             System.out.println(bean.getName() + " usage: " + (bean.getUsage().getUsed() / 1024) + " kb");
             System.out.println(bean.getName() + " peak usage: " + bean.getPeakUsage().getUsed() / 1024 + " kb");
-            System.out.println(bean.getName() + " " + bean.getUsageThreshold() / 1024 + " kb");
+           // System.out.println(bean.getName() + " " + bean.getUsageThreshold() / 1024 + " kb");
             System.out.println(bean.getName() + " collection usage, used: " + bean.getCollectionUsage().getUsed() / 1024 + " kb");
         }
     }
