@@ -5,6 +5,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
+import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.MemoryPoolMXBean;
 import java.lang.management.MemoryType;
 import java.lang.management.MemoryUsage;
@@ -32,6 +33,8 @@ public class JMXAgent {
     MBeanServerConnection mbsc;
     AgentListener listener;
     ArrayList<MemoryPoolMXBean> MXBeanProxy = new ArrayList<>();
+    ArrayList<GarbageCollectorMXBean> gcProxy = new ArrayList<>();
+    //GarbageCollectorMXBean gcProxy;
 
     public JMXAgent(String hostName, int port) {
         this.hostName = hostName;
@@ -58,15 +61,26 @@ public class JMXAgent {
     }
 
     private void createProxies() throws MalformedObjectNameException{
+        //Old Gen
         MemoryPoolMXBean oldGenProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Old Gen"),
                 MemoryPoolMXBean.class);
         MXBeanProxy.add(oldGenProxy);
+        //Survivor Space
+        /*
         MemoryPoolMXBean survivorProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Survivor Space"),
                 MemoryPoolMXBean.class);
         MXBeanProxy.add(survivorProxy);
+        */
+        //Eden Space
+        /*
         MemoryPoolMXBean edenProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Eden Space"),
                 MemoryPoolMXBean.class);
         MXBeanProxy.add(edenProxy);
+        */
+        //GC PS MarkSweep
+        gcProxy.add(JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=PS MarkSweep"), GarbageCollectorMXBean.class));
+        //GC PS Scavenge
+        gcProxy.add(JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=PS Scavenge"), GarbageCollectorMXBean.class));
     }
 
     /**
@@ -74,11 +88,22 @@ public class JMXAgent {
      */
     public void gather(){
         System.out.println(hostName + ":" + port);
+        //Memory stats
+        System.out.println("MemoryPool");
         for (MemoryPoolMXBean bean : MXBeanProxy){
             System.out.println(bean.getName() + " usage: " + (bean.getUsage().getUsed() / 1024) + " kb");
             System.out.println(bean.getName() + " peak usage: " + bean.getPeakUsage().getUsed() / 1024 + " kb");
            // System.out.println(bean.getName() + " " + bean.getUsageThreshold() / 1024 + " kb");
+
             System.out.println(bean.getName() + " collection usage, used: " + bean.getCollectionUsage().getUsed() / 1024 + " kb");
+            System.out.println(bean.getName() + " committed: " + bean.getUsage().getCommitted() / 1024 + " kb");
+        }
+
+        //GC stats
+        System.out.println("GarbageCollector");
+        for (GarbageCollectorMXBean bean : gcProxy) {
+            System.out.println(bean.getName() + " GC COUNT: " + bean.getCollectionCount());
+            System.out.println(bean.getName() + " GC TIME: " + bean.getCollectionTime() + " ms");
         }
     }
 
