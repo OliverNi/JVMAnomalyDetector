@@ -1,14 +1,13 @@
 package AnomalyDetector;
 
+import com.sun.management.GarbageCollectionNotificationInfo;
+
 import javax.management.*;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
-import java.lang.management.GarbageCollectorMXBean;
-import java.lang.management.MemoryPoolMXBean;
-import java.lang.management.MemoryType;
-import java.lang.management.MemoryUsage;
+import java.lang.management.*;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
@@ -21,6 +20,11 @@ public class JMXAgent {
      */
     public static class AgentListener implements NotificationListener{
         public void handleNotification(Notification notification, Object handback){
+            //GarbageCollection has occurred.
+            if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)){
+                System.out.println("GARBAGECOLLECTION NOTIFICIATION!");
+
+            }
 
         }
     }
@@ -58,6 +62,22 @@ public class JMXAgent {
                 ":" + port + "/jmxrmi");
         this.jmxc = JMXConnectorFactory.connect(url, null);
         this.mbsc = jmxc.getMBeanServerConnection();
+
+        try{
+            addListeners();
+        } catch (MalformedObjectNameException e) {
+            e.printStackTrace();
+        } catch (InstanceNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void addListeners() throws MalformedObjectNameException, IOException, InstanceNotFoundException {
+        //Add listener to MXBean
+        ObjectName name = new ObjectName("java.lang:type=GarbageCollector,name=PS MarkSweep");
+        mbsc.addNotificationListener(name, listener, null, null);
     }
 
     private void createProxies() throws MalformedObjectNameException{
@@ -79,6 +99,7 @@ public class JMXAgent {
         */
         //GC PS MarkSweep
         gcProxy.add(JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=PS MarkSweep"), GarbageCollectorMXBean.class));
+
         //GC PS Scavenge
         gcProxy.add(JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=PS Scavenge"), GarbageCollectorMXBean.class));
     }
@@ -89,7 +110,7 @@ public class JMXAgent {
     public void gather(){
         System.out.println(hostName + ":" + port);
         //Memory stats
-        System.out.println("MemoryPool");
+        System.out.println("--MemoryPool--");
         for (MemoryPoolMXBean bean : MXBeanProxy){
             System.out.println(bean.getName() + " usage: " + (bean.getUsage().getUsed() / 1024) + " kb");
             System.out.println(bean.getName() + " peak usage: " + bean.getPeakUsage().getUsed() / 1024 + " kb");
@@ -100,10 +121,11 @@ public class JMXAgent {
         }
 
         //GC stats
-        System.out.println("GarbageCollector");
+        System.out.println("--GarbageCollector--");
         for (GarbageCollectorMXBean bean : gcProxy) {
             System.out.println(bean.getName() + " GC COUNT: " + bean.getCollectionCount());
             System.out.println(bean.getName() + " GC TIME: " + bean.getCollectionTime() + " ms");
+
         }
     }
 
