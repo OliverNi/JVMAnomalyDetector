@@ -3,6 +3,7 @@ package AnomalyDetector;
 import com.sun.management.GarbageCollectionNotificationInfo;
 
 import javax.management.*;
+import javax.management.openmbean.CompositeData;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
@@ -19,31 +20,52 @@ public class JMXAgent {
      * Class which handles the notifications
      */
     public static class AgentListener implements NotificationListener{
+        JMXAgent agent;
+
+        public AgentListener(JMXAgent agent){
+            this.agent = agent;
+        }
         public void handleNotification(Notification notification, Object handback){
             //GarbageCollection has occurred.
             if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)){
                 System.out.println("GARBAGECOLLECTION NOTIFICIATION!");
+                gcNotification(notification, handback);
 
             }
-
+        }
+        private void gcNotification(Notification notification, Object handback) {
+            //GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
+            boolean anomaly = agent.analyzer.analyzeAfterGC(agent.previousUsedMem, agent.MXBeanProxy.get(0).getUsage().getUsed());
+            if (anomaly){
+                System.out.println("Anomaly gc test");
+            }
         }
     }
 
+
+
+    //Settings
     private String hostName;
     private int port;
     private double interval;
-    JMXServiceURL url;
-    JMXConnector jmxc;
-    MBeanServerConnection mbsc;
-    AgentListener listener;
-    ArrayList<MemoryPoolMXBean> MXBeanProxy = new ArrayList<>();
-    ArrayList<GarbageCollectorMXBean> gcProxy = new ArrayList<>();
-    //GarbageCollectorMXBean gcProxy;
+    //Resources
+    private JMXServiceURL url;
+    private JMXConnector jmxc;
+    private MBeanServerConnection mbsc;
+    private AgentListener listener;
+    private ArrayList<MemoryPoolMXBean> MXBeanProxy = new ArrayList<>();
+    private ArrayList<GarbageCollectorMXBean> gcProxy = new ArrayList<>();
+    private AnomalyDetector ad;
+    private Analyzer analyzer;
+    //Saved variables
+    private long previousUsedMem;
 
-    public JMXAgent(String hostName, int port) {
+    public JMXAgent(String hostName, int port, AnomalyDetector ad) {
         this.hostName = hostName;
         this.port = port;
-        this.listener = new AgentListener();
+        this.ad = ad;
+        this.listener = new AgentListener(this);
+        this.analyzer = new Analyzer(this);
         try {
             connect();
         } catch (IOException e) {
