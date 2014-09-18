@@ -11,11 +11,9 @@ public class Main {
     public static void main(String args[]) throws IOException {
         AnomalyDetector ad = new AnomalyDetector();
         ad.connect("localhost", 3500);
+        //ad.connect("localhost", 3501);
 
-        while (true){
-            System.in.read();
-            ad.poll();
-        }
+
 
     }
 
