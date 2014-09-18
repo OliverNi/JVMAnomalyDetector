@@ -26,13 +26,4 @@ public class AnomalyDetector {
         agents.add(new JMXAgent(hostName, port, this));
     }
 
-
-    /**
-     * Testing purposes
-     */
-    public void poll(){
-        for (JMXAgent a : agents){
-            a.gather();
-        }
-    }
 }
