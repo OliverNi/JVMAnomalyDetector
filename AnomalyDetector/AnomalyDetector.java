@@ -22,6 +22,7 @@ public class AnomalyDetector {
         agents = new ArrayList<>();
     }
     public void connect(String hostName, int port){
+        log = new Log();
         agents.add(new JMXAgent(hostName, port, this));
     }
 
