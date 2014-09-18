@@ -38,6 +38,11 @@ public class JMXAgent {
             }
         }
     }
+
+    /**
+     * Sends GarbageCollection statistics to log.
+     * @param info Info about the Garbage Collection.
+     */
     private void gcLog(GarbageCollectionNotificationInfo info){
         MemoryUsage oldGenAfter = info.getGcInfo().getMemoryUsageAfterGc().get("PS Old Gen");
         MemoryUsage oldGenBefore = info.getGcInfo().getMemoryUsageBeforeGc().get("PS Old Gen");
@@ -46,10 +51,18 @@ public class JMXAgent {
         log.sendGarbageCollectionLog(oldGenAfter.getUsed(), oldGenBefore.getUsed(), timeStamp, collectionTime, hostName, port);
     }
 
+    /**
+     * Sends memory statistics to log
+     * @param memoryUsed Current memory usage in bytes
+     * @param timeStamp Timestamp
+     */
     private void memoryLog(long memoryUsed, long timeStamp){
         log.sendMemoryLog(memoryUsed, timeStamp, hostName, port);
     }
 
+    /**
+     * Gather statistics about Old Gen which will be sent to log
+     */
     private void gatherMemoryStatistics(){
         //Get memory usage in old gen
         long memoryUsed = MXBeanProxy.get(0).getUsage().getUsed();
