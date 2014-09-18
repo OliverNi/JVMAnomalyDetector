@@ -78,7 +78,7 @@ public class JMXAgent {
      */
     private void gatherMemoryStatistics(){
         //Get memory usage in old gen
-        long memoryUsed = MXBeanProxy.get(0).getUsage().getUsed();
+        long memoryUsed = oldGenProxy.getUsage().getUsed();
         //Get timestamp
         Calendar calendar = Calendar.getInstance();
         java.util.Date date = calendar.getTime();
@@ -99,9 +99,8 @@ public class JMXAgent {
     private JMXConnector jmxc;
     private MBeanServerConnection mbsc;
     private AgentListener listener;
-    //@TODO Remove list and only use old gen?
-    private ArrayList<MemoryPoolMXBean> MXBeanProxy = new ArrayList<>();
-    private ArrayList<GarbageCollectorMXBean> gcProxy = new ArrayList<>();
+    MemoryPoolMXBean oldGenProxy;
+    GarbageCollectorMXBean markSweepProxy;
     private AnomalyDetector ad;
     ILogging log;
     Timer timer;
@@ -162,9 +161,12 @@ public class JMXAgent {
 
     private void createProxies() throws MalformedObjectNameException{
         //Old Gen
-        MemoryPoolMXBean oldGenProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Old Gen"),
+        oldGenProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Old Gen"),
                 MemoryPoolMXBean.class);
-        MXBeanProxy.add(oldGenProxy);
+        //GarbageCollector MarkSweep
+        markSweepProxy = JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=PS MarkSweep"),
+                GarbageCollectorMXBean.class);
+        //MXBeanProxy.add(oldGenProxy);
         //Survivor Space
         /*
         MemoryPoolMXBean survivorProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Survivor Space"),
@@ -178,15 +180,17 @@ public class JMXAgent {
         MXBeanProxy.add(edenProxy);
         */
         //GC PS MarkSweep
-        gcProxy.add(JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=PS MarkSweep"), GarbageCollectorMXBean.class));
+
+        //gcProxy.add(JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=PS MarkSweep"), GarbageCollectorMXBean.class));
 
         //GC PS Scavenge
-        gcProxy.add(JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=PS Scavenge"), GarbageCollectorMXBean.class));
+        //gcProxy.add(JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=PS Scavenge"), GarbageCollectorMXBean.class));
     }
 
     /**
      * For testing purposes
      */
+    /*
     public void gather(){
         System.out.println(hostName + ":" + port);
         //Memory stats
@@ -209,6 +213,7 @@ public class JMXAgent {
 
         }
     }
+    */
 
 
 
