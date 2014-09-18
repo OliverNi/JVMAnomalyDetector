@@ -14,6 +14,9 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by Oliver on 2014-09-12.
@@ -34,8 +37,18 @@ public class JMXAgent {
                 System.out.println("GARBAGECOLLECTION NOTIFICIATION!"); // Test
                 GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
                 agent.gcLog(info);
-
             }
+        }
+    }
+
+    class PollTimer extends TimerTask{
+        JMXAgent agent;
+        PollTimer(JMXAgent agent){
+            this.agent = agent;
+        }
+        public void run(){
+            agent.gatherMemoryStatistics();
+            System.out.println("BOOP");
         }
     }
 
@@ -80,6 +93,7 @@ public class JMXAgent {
     private String hostName;
     private int port;
     private double interval;
+    public static int DEFAULT_INTERVAL_MINUTES = 5;
     //Resources
     private JMXServiceURL url;
     private JMXConnector jmxc;
@@ -90,9 +104,8 @@ public class JMXAgent {
     private ArrayList<GarbageCollectorMXBean> gcProxy = new ArrayList<>();
     private AnomalyDetector ad;
     ILogging log;
+    Timer timer;
 
-    //Saved variables
-    private long previousUsedMem;
 
     public JMXAgent(String hostName, int port, AnomalyDetector ad) {
         this.hostName = hostName;
@@ -100,6 +113,9 @@ public class JMXAgent {
         this.ad = ad;
         log = ad.getLog();
         this.listener = new AgentListener(this);
+        this.interval=DEFAULT_INTERVAL_MINUTES;
+        this.timer = new Timer();
+        scheduleGathering();
         try {
             connect();
         } catch (IOException e) {
@@ -126,10 +142,18 @@ public class JMXAgent {
         } catch (InstanceNotFoundException e) {
             e.printStackTrace();
         }
-
-
     }
 
+    private void scheduleGathering() {
+        timer.scheduleAtFixedRate(new PollTimer(this), 1000, (long)interval * 60 * 1000);
+    }
+
+    /**
+     * Adds listeners to relevant MXBeans
+     * @throws MalformedObjectNameException
+     * @throws IOException
+     * @throws InstanceNotFoundException
+     */
     private void addListeners() throws MalformedObjectNameException, IOException, InstanceNotFoundException {
         //Add listener to MXBean
         ObjectName name = new ObjectName("java.lang:type=GarbageCollector,name=PS MarkSweep");
