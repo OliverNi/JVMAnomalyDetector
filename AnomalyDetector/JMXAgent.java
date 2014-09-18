@@ -1,5 +1,6 @@
 package AnomalyDetector;
 
+import Logs.ILogging;
 import com.sun.management.GarbageCollectionNotificationInfo;
 
 import javax.management.*;
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.lang.management.*;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Map;
 
 /**
  * Created by Oliver on 2014-09-12.
@@ -28,20 +31,36 @@ public class JMXAgent {
         public void handleNotification(Notification notification, Object handback){
             //GarbageCollection has occurred.
             if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)){
-                System.out.println("GARBAGECOLLECTION NOTIFICIATION!");
-                gcNotification(notification, handback);
+                System.out.println("GARBAGECOLLECTION NOTIFICIATION!"); // Test
+                GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
+                agent.gcLog(info);
 
-            }
-        }
-        private void gcNotification(Notification notification, Object handback) {
-            //GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
-            boolean anomaly = agent.analyzer.analyzeAfterGC(agent.previousUsedMem, agent.MXBeanProxy.get(0).getUsage().getUsed());
-            if (anomaly){
-                System.out.println("Anomaly gc test");
             }
         }
     }
+    private void gcLog(GarbageCollectionNotificationInfo info){
+        MemoryUsage oldGenAfter = info.getGcInfo().getMemoryUsageAfterGc().get("PS Old Gen");
+        MemoryUsage oldGenBefore = info.getGcInfo().getMemoryUsageBeforeGc().get("PS Old Gen");
+        long timeStamp = info.getGcInfo().getEndTime();
+        long collectionTime = info.getGcInfo().getDuration();
+        log.sendGarbageCollectionLog(oldGenAfter.getUsed(), oldGenBefore.getUsed(), timeStamp, collectionTime, hostName, port);
+    }
 
+    private void memoryLog(long memoryUsed, long timeStamp){
+        log.sendMemoryLog(memoryUsed, timeStamp, hostName, port);
+    }
+
+    private void gatherMemoryStatistics(){
+        //Get memory usage in old gen
+        long memoryUsed = MXBeanProxy.get(0).getUsage().getUsed();
+        //Get timestamp
+        Calendar calendar = Calendar.getInstance();
+        java.util.Date date = calendar.getTime();
+        long timeStamp = date.getTime();
+        //Handle logging
+        memoryLog(memoryUsed, timeStamp);
+
+    }
 
 
     //Settings
@@ -53,10 +72,12 @@ public class JMXAgent {
     private JMXConnector jmxc;
     private MBeanServerConnection mbsc;
     private AgentListener listener;
+    //@TODO Remove list and only use old gen?
     private ArrayList<MemoryPoolMXBean> MXBeanProxy = new ArrayList<>();
     private ArrayList<GarbageCollectorMXBean> gcProxy = new ArrayList<>();
     private AnomalyDetector ad;
-    private Analyzer analyzer;
+    ILogging log;
+
     //Saved variables
     private long previousUsedMem;
 
@@ -64,8 +85,8 @@ public class JMXAgent {
         this.hostName = hostName;
         this.port = port;
         this.ad = ad;
+        log = ad.getLog();
         this.listener = new AgentListener(this);
-        this.analyzer = new Analyzer(this);
         try {
             connect();
         } catch (IOException e) {
@@ -147,6 +168,7 @@ public class JMXAgent {
         for (GarbageCollectorMXBean bean : gcProxy) {
             System.out.println(bean.getName() + " GC COUNT: " + bean.getCollectionCount());
             System.out.println(bean.getName() + " GC TIME: " + bean.getCollectionTime() + " ms");
+
 
         }
     }
