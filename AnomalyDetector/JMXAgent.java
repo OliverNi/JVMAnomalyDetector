@@ -92,6 +92,15 @@ public class JMXAgent {
     //Settings
     private String hostName;
     private int port;
+
+    public double getInterval() {
+        return interval;
+    }
+
+    public void setInterval(double interval) {
+        this.interval = interval;
+    }
+
     private double interval;
     public static int DEFAULT_INTERVAL_MINUTES = 5;
     //Resources
@@ -104,7 +113,6 @@ public class JMXAgent {
     private AnomalyDetector ad;
     ILogging log;
     Timer timer;
-
 
     public JMXAgent(String hostName, int port, AnomalyDetector ad) {
         this.hostName = hostName;
