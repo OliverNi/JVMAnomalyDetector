@@ -28,6 +28,8 @@ public class AnalyzedDailyGcStats {
     private long minMemoryUsage;
     private long maxMemoryUsage;
     private long avgMemoryUsage;
+    private long startMemoryUsage;
+    private long endMemoryUsage;
     private Trend trend;
     private long startTime;
     private long endTime;
@@ -40,12 +42,15 @@ public class AnalyzedDailyGcStats {
      * @param minMemoryUsage minimum memory used after a GC for this day.
      * @param maxMemoryUsage maximum memory used after a GC for this day.
      * @param avgMemoryUsage average memory used after a GC for this day.
+     * @param startMemoryUsage memory usage after first GC for this day.
+     * @param endMemoryUsage memory usage after last GC for this day.
      * @param startTime start time for this day.
      * @param endTime end time for this day.
      * @param trend Growth trend for this day.
      */
     public AnalyzedDailyGcStats(long avgCollected, long minCollected, long maxCollected,
                                 long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
+                                long startMemoryUsage, long endMemoryUsage,
                                 long startTime, long endTime, Trend trend){
         this.avgCollected = avgCollected;
         this.minCollected = minCollected;
@@ -53,13 +58,15 @@ public class AnalyzedDailyGcStats {
         this.minMemoryUsage = minMemoryUsage;
         this.maxMemoryUsage = maxMemoryUsage;
         this.avgMemoryUsage = avgMemoryUsage;
+        this.startMemoryUsage = startMemoryUsage;
+        this.endMemoryUsage = endMemoryUsage;
         this.startTime = startTime;
         this.endTime = endTime;
         this.trend = trend;
     }
 
     public AnalyzedDailyGcStats(){
-        this(0, 0, 0, 0, 0, 0, 0, 0, Trend.STABLE);
+        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Trend.STABLE);
     }
 
     public long getAvgCollected() {
