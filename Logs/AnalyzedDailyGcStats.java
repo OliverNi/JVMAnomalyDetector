@@ -105,6 +105,14 @@ public class AnalyzedDailyGcStats {
         return endTime;
     }
 
+    public long getStartMemoryUsage() {
+        return startMemoryUsage;
+    }
+
+    public long getEndMemoryUsage() {
+        return endMemoryUsage;
+    }
+
     public void setAvgCollected(long avgCollected) {
         this.avgCollected = avgCollected;
     }
@@ -139,5 +147,13 @@ public class AnalyzedDailyGcStats {
 
     public void setEndTime(long endTime) {
         this.endTime = endTime;
+    }
+
+    public void setStartMemoryUsage(long startMemoryUsage) {
+        this.startMemoryUsage = startMemoryUsage;
+    }
+
+    public void setEndMemoryUsage(long endMemoryUsage) {
+        this.endMemoryUsage = endMemoryUsage;
     }
 }
