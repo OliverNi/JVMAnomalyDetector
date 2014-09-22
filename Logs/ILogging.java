@@ -59,9 +59,11 @@ public interface ILogging {
      * @param startTime Statistics that were gathered before this time will not be included.
      * @param endTime Statistics that were gathered after this time will not be included.
      * @param processes A list of processes to be included named as hostname:port as a String.
-     * @return A list of MemoryStats from the specified processes separated by a key hostname:port as a String.
+     * @return A list of MemoryStats from the specified processes separated by a key HOSTNAME:PORT as a String.
      */
     public Map<String, ArrayList<MemoryStats>> getMemoryStats(long startTime, long endTime,
                                                               ArrayList<String> processes);
+
+    public void sendAnalyzedGCData(String hostName, int port, AnalyzedDailyGcStats analyzedDailyGcStats);
 
 }
