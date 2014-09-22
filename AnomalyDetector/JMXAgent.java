@@ -89,9 +89,13 @@ public class JMXAgent {
     }
 
 
-    //Settings
-    private String hostName;
-    private int port;
+    public String getHostName() {
+        return hostName;
+    }
+
+    public int getPort() {
+        return port;
+    }
 
     public double getInterval() {
         return interval;
@@ -101,8 +105,12 @@ public class JMXAgent {
         this.interval = interval;
     }
 
+    //Settings
+    private String hostName;
+    private int port;
     private double interval;
     public static int DEFAULT_INTERVAL_MINUTES = 5;
+
     //Resources
     private JMXServiceURL url;
     private JMXConnector jmxc;
@@ -151,6 +159,9 @@ public class JMXAgent {
         }
     }
 
+    /**
+     * Schedule how often memory-statistics will be gathered and logged, based on set interval.
+     */
     private void scheduleGathering() {
         timer.scheduleAtFixedRate(new PollTimer(this), 1000, (long)interval * 60 * 1000);
     }
