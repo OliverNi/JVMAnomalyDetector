@@ -41,15 +41,16 @@ public class Analyzer {
             ArrayList<GcStats> gcStats = gcStatsMap.get(connections.get(i));
             String[] hostPort = connections.get(i).split(":");
             int port = Integer.parseInt(hostPort[1]);
-            log.sendAnalyzedGCData(hostPort[0], port, analyzedDailyGcStats(gcStats));
+            log.sendAnalyzedGCData(hostPort[0], port, analyzeGcStats(gcStats));
         }
     }
 
-    private AnalyzedGcStats analyzedDailyGcStats(ArrayList<GcStats> gcStats){
+    private AnalyzedGcStats analyzeGcStats(ArrayList<GcStats> gcStats){
         AnalyzedGcStats analyzed = new AnalyzedGcStats();
         long[] collected = new long[gcStats.size()];
         long[] usedAfter = new long[gcStats.size()];
         long[] timePerformed = new long[gcStats.size()];
+        //Time between two GCs
         long[] timeBetweenGc;
         if (gcStats.size() % 2 == 0){
             timeBetweenGc = new long[gcStats.size() - 1];
@@ -57,11 +58,6 @@ public class Analyzer {
         else{
             timeBetweenGc = new long[gcStats.size()-2];
         }
-
-        //Set time
-        analyzed.setStartTime(gcStats.get(0).getTimeStamp());
-        analyzed.setEndTime(gcStats.get(gcStats.size()-1).getTimeStamp());
-
         //Set gcCount
         analyzed.setGcCount(gcStats.size());
 
@@ -86,8 +82,16 @@ public class Analyzer {
             if (collected[count] > analyzed.getMaxCollected()){
                 analyzed.setMaxCollected(collected[count]);
             }
-            //Time between GCs
+            //Time performed
             timePerformed[count] = g.getTimeStamp();
+            if (timePerformed[count] < analyzed.getStartTime()){
+                analyzed.setStartTime(timePerformed[count]);
+            }
+            if (timePerformed[count] > analyzed.getEndTime()){
+                analyzed.setEndTime(timePerformed[count]);
+            }
+            //Time between GCs
+
             if (count % 2 == 0){
                 timeBetweenGc[count - 1] = timePerformed[count] - timePerformed[count-1];
                 if (timeBetweenGc[count-1] < analyzed.getMinTimeBetweenGc()){
@@ -147,11 +151,14 @@ public class Analyzer {
         analyzed.setAvgCollected(calcAvg(collected));
         analyzed.setAvgMemoryUsage(calcAvg(usedAfter));
 
-
-
         return analyzed;
     }
 
+    private AnalyzedGcStats combineAnalyzedGcStats(ArrayList<AnalyzedGcStats> analyzedStats) {
+        AnalyzedGcStats combined = new AnalyzedGcStats();
+
+        return combined;
+    }
     //@TODO Move class calcAvg
     private long calcAvg(long[] arr){
         long sum = 0;
