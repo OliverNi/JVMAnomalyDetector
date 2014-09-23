@@ -36,6 +36,7 @@ public class AnalyzedDailyGcStats {
     private Trend trend;
     private long startTime;
     private long endTime;
+    private int gcCount;
 
     /**
      * Constructor
@@ -55,7 +56,7 @@ public class AnalyzedDailyGcStats {
                                 long avgCollected, long minCollected, long maxCollected,
                                 long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
                                 long startMemoryUsage, long endMemoryUsage,
-                                long startTime, long endTime, Trend trend){
+                                long startTime, long endTime, int gcCount, Trend trend){
         this.avgTimeBetweenGc = avgTimeBetweenGc;
         this.minTimeBetweenGc = minTimeBetweenGc;
         this.maxTimeBetweenGc = maxTimeBetweenGc;
@@ -69,11 +70,12 @@ public class AnalyzedDailyGcStats {
         this.endMemoryUsage = endMemoryUsage;
         this.startTime = startTime;
         this.endTime = endTime;
+        this.gcCount = gcCount;
         this.trend = trend;
     }
 
     public AnalyzedDailyGcStats(){
-        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Trend.STABLE);
+        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Trend.STABLE);
     }
 
     public long getAvgCollected() {
@@ -132,6 +134,10 @@ public class AnalyzedDailyGcStats {
         return maxTimeBetweenGc;
     }
 
+    public int getGcCount() {
+        return gcCount;
+    }
+
     public void setAvgCollected(long avgCollected) {
         this.avgCollected = avgCollected;
     }
@@ -186,5 +192,9 @@ public class AnalyzedDailyGcStats {
 
     public void setMaxTimeBetweenGc(long maxTimeBetweenGc) {
         this.maxTimeBetweenGc = maxTimeBetweenGc;
+    }
+
+    public void setGcCount(int gcCount) {
+        this.gcCount = gcCount;
     }
 }
