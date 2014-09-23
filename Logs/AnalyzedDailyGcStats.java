@@ -39,7 +39,10 @@ public class AnalyzedDailyGcStats {
     private int gcCount;
 
     /**
-     * Constructor
+     *
+     * @param avgTimeBetweenGc average time between GCs performed this day.
+     * @param minTimeBetweenGc minimum time between two GCs for this day.
+     * @param maxTimeBetweenGc maximum time between two GCs for this day.
      * @param avgCollected average memory collected for each GC for this day.
      * @param minCollected minimum memory collected from one GC for this day.
      * @param maxCollected maximum memory collected from one GC for this day.
@@ -50,7 +53,8 @@ public class AnalyzedDailyGcStats {
      * @param endMemoryUsage memory usage after last GC for this day.
      * @param startTime start time for this day.
      * @param endTime end time for this day.
-     * @param trend Growth trend for this day.
+     * @param gcCount how many GCs where performed this day.
+     * @param trend  Growth trend for this day.
      */
     public AnalyzedDailyGcStats(long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
                                 long avgCollected, long minCollected, long maxCollected,
