@@ -21,7 +21,7 @@ public class Analyzer {
         this.log = ad.getLog();
     }
 
-    public void analyzeGC(){
+    public void analyzeDailyGC(){
         //Set startTime (today 00:01:00)
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MINUTE, 1);
