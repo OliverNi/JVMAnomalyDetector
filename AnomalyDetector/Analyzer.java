@@ -1,6 +1,6 @@
 package AnomalyDetector;
 
-import Logs.AnalyzedDailyGcStats;
+import Logs.AnalyzedGcStats;
 import Logs.GcStats;
 import Logs.ILogging;
 
@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
-import java.util.stream.LongStream;
 
 /**
  * Created by Oliver on 2014-09-18.
@@ -46,8 +45,8 @@ public class Analyzer {
         }
     }
 
-    private AnalyzedDailyGcStats analyzedDailyGcStats(ArrayList<GcStats> gcStats){
-        AnalyzedDailyGcStats analyzed = new AnalyzedDailyGcStats();
+    private AnalyzedGcStats analyzedDailyGcStats(ArrayList<GcStats> gcStats){
+        AnalyzedGcStats analyzed = new AnalyzedGcStats();
         long[] collected = new long[gcStats.size()];
         long[] usedAfter = new long[gcStats.size()];
         long[] timePerformed = new long[gcStats.size()];
@@ -101,13 +100,13 @@ public class Analyzer {
             //Trend first half of the day
             if (count == gcStats.size()/2){
                 if (analyzed.getStartMemoryUsage() + DIFFERENCE_ALLOWED > usedAfter[count]){
-                    analyzed.setTrend(AnalyzedDailyGcStats.Trend.CONTINUOUSLY_DECREASING);
+                    analyzed.setTrend(AnalyzedGcStats.Trend.CONTINUOUSLY_DECREASING);
                 }
                 else if (analyzed.getStartMemoryUsage() + DIFFERENCE_ALLOWED < usedAfter[count]){
-                    analyzed.setTrend(AnalyzedDailyGcStats.Trend.CONTINUOUSLY_GROWING);
+                    analyzed.setTrend(AnalyzedGcStats.Trend.CONTINUOUSLY_GROWING);
                 }
                 else if ((analyzed.getStartMemoryUsage() - usedAfter[count]) <= DIFFERENCE_ALLOWED){
-                    analyzed.setTrend(AnalyzedDailyGcStats.Trend.STABLE);
+                    analyzed.setTrend(AnalyzedGcStats.Trend.STABLE);
                 }
             }
         }
@@ -118,28 +117,28 @@ public class Analyzer {
         //Trend second half of the day
         long midValue = usedAfter[gcStats.size()/2];
         long endValue = analyzed.getEndMemoryUsage();
-        if (analyzed.getTrend() == AnalyzedDailyGcStats.Trend.CONTINUOUSLY_DECREASING){
+        if (analyzed.getTrend() == AnalyzedGcStats.Trend.CONTINUOUSLY_DECREASING){
             if (midValue + DIFFERENCE_ALLOWED < endValue){
-                analyzed.setTrend(AnalyzedDailyGcStats.Trend.CHANGING_FROM_DECREASING_TO_GROWING);
+                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_DECREASING_TO_GROWING);
             }
             else if ((midValue - endValue) <= DIFFERENCE_ALLOWED){
-                analyzed.setTrend(AnalyzedDailyGcStats.Trend.CHANGING_FROM_DECREASING_TO_STABLE);
+                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_DECREASING_TO_STABLE);
             }
         }
-        else if (analyzed.getTrend() == AnalyzedDailyGcStats.Trend.CONTINUOUSLY_GROWING){
+        else if (analyzed.getTrend() == AnalyzedGcStats.Trend.CONTINUOUSLY_GROWING){
             if (midValue + DIFFERENCE_ALLOWED > endValue){
-                analyzed.setTrend(AnalyzedDailyGcStats.Trend.CHANGING_FROM_GROWING_TO_DECREASING);
+                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_GROWING_TO_DECREASING);
             }
             else if ((midValue - endValue) <= DIFFERENCE_ALLOWED) {
-                analyzed.setTrend(AnalyzedDailyGcStats.Trend.CHANGING_FROM_GROWING_TO_STABLE);
+                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_GROWING_TO_STABLE);
             }
         }
-        else if (analyzed.getTrend() == AnalyzedDailyGcStats.Trend.STABLE){
+        else if (analyzed.getTrend() == AnalyzedGcStats.Trend.STABLE){
             if (midValue + DIFFERENCE_ALLOWED > endValue){
-                analyzed.setTrend(AnalyzedDailyGcStats.Trend.CHANGING_FROM_STABLE_TO_DECREASING);
+                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_STABLE_TO_DECREASING);
             }
             if (midValue + DIFFERENCE_ALLOWED < endValue){
-                analyzed.setTrend(AnalyzedDailyGcStats.Trend.CHANGING_FROM_STABLE_TO_GROWING);
+                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_STABLE_TO_GROWING);
             }
         }
 
