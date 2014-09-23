@@ -22,6 +22,9 @@ public class AnalyzedDailyGcStats {
         CHANGING_FROM_GROWING_TO_DECREASING,
         CHANGING_FROM_DECREASING_TO_GROWING
     }
+    private long avgTimeBetweenGc;
+    private long minTimeBetweenGc;
+    private long maxTimeBetweenGc;
     private long avgCollected;
     private long minCollected;
     private long maxCollected;
@@ -48,10 +51,14 @@ public class AnalyzedDailyGcStats {
      * @param endTime end time for this day.
      * @param trend Growth trend for this day.
      */
-    public AnalyzedDailyGcStats(long avgCollected, long minCollected, long maxCollected,
+    public AnalyzedDailyGcStats(long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
+                                long avgCollected, long minCollected, long maxCollected,
                                 long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
                                 long startMemoryUsage, long endMemoryUsage,
                                 long startTime, long endTime, Trend trend){
+        this.avgTimeBetweenGc = avgTimeBetweenGc;
+        this.minTimeBetweenGc = minTimeBetweenGc;
+        this.maxTimeBetweenGc = maxTimeBetweenGc;
         this.avgCollected = avgCollected;
         this.minCollected = minCollected;
         this.maxCollected = maxCollected;
@@ -66,7 +73,7 @@ public class AnalyzedDailyGcStats {
     }
 
     public AnalyzedDailyGcStats(){
-        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Trend.STABLE);
+        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Trend.STABLE);
     }
 
     public long getAvgCollected() {
@@ -113,6 +120,18 @@ public class AnalyzedDailyGcStats {
         return endMemoryUsage;
     }
 
+    public long getAvgTimeBetweenGc() {
+        return avgTimeBetweenGc;
+    }
+
+    public long getMinTimeBetweenGc() {
+        return minTimeBetweenGc;
+    }
+
+    public long getMaxTimeBetweenGc() {
+        return maxTimeBetweenGc;
+    }
+
     public void setAvgCollected(long avgCollected) {
         this.avgCollected = avgCollected;
     }
@@ -155,5 +174,17 @@ public class AnalyzedDailyGcStats {
 
     public void setEndMemoryUsage(long endMemoryUsage) {
         this.endMemoryUsage = endMemoryUsage;
+    }
+
+    public void setAvgTimeBetweenGc(long avgTimeBetweenGc) {
+        this.avgTimeBetweenGc = avgTimeBetweenGc;
+    }
+
+    public void setMinTimeBetweenGc(long minTimeBetweenGc) {
+        this.minTimeBetweenGc = minTimeBetweenGc;
+    }
+
+    public void setMaxTimeBetweenGc(long maxTimeBetweenGc) {
+        this.maxTimeBetweenGc = maxTimeBetweenGc;
     }
 }
