@@ -1,5 +1,7 @@
 package Logs;
 
+import java.util.ArrayList;
+
 /**
  * Created by Oliver on 2014-09-22.
  */
@@ -33,34 +35,34 @@ public class AnalyzedGcStats {
     private long avgMemoryUsage;
     private long startMemoryUsage;
     private long endMemoryUsage;
-    private Trend trend;
+    private ArrayList<Trend> trend;
     private long startTime;
     private long endTime;
     private int gcCount;
 
     /**
      *
-     * @param avgTimeBetweenGc average time between GCs performed this day.
-     * @param minTimeBetweenGc minimum time between two GCs for this day.
-     * @param maxTimeBetweenGc maximum time between two GCs for this day.
-     * @param avgCollected average memory collected for each GC for this day.
-     * @param minCollected minimum memory collected from one GC for this day.
-     * @param maxCollected maximum memory collected from one GC for this day.
-     * @param minMemoryUsage minimum memory used after a GC for this day.
-     * @param maxMemoryUsage maximum memory used after a GC for this day.
-     * @param avgMemoryUsage average memory used after a GC for this day.
-     * @param startMemoryUsage memory usage after first GC for this day.
-     * @param endMemoryUsage memory usage after last GC for this day.
-     * @param startTime start time for this day.
-     * @param endTime end time for this day.
-     * @param gcCount how many GCs where performed this day.
-     * @param trend  Growth trend for this day.
+     * @param avgTimeBetweenGc average time between GCs performed this period.
+     * @param minTimeBetweenGc minimum time between two GCs for this period.
+     * @param maxTimeBetweenGc maximum time between two GCs for this period.
+     * @param avgCollected average memory collected for each GC for this period.
+     * @param minCollected minimum memory collected from one GC for this period.
+     * @param maxCollected maximum memory collected from one GC for this period.
+     * @param minMemoryUsage minimum memory used after a GC for this period.
+     * @param maxMemoryUsage maximum memory used after a GC for this period.
+     * @param avgMemoryUsage average memory used after a GC for this period.
+     * @param startMemoryUsage memory usage after first GC for this period.
+     * @param endMemoryUsage memory usage after last GC for this period.
+     * @param startTime start time for this period.
+     * @param endTime end time for this period.
+     * @param gcCount how many GCs where performed this period.
+     * @param trend  Growth trend for this period.
      */
     public AnalyzedGcStats(long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
                            long avgCollected, long minCollected, long maxCollected,
                            long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
                            long startMemoryUsage, long endMemoryUsage,
-                           long startTime, long endTime, int gcCount, Trend trend){
+                           long startTime, long endTime, int gcCount, ArrayList<Trend> trend){
         this.avgTimeBetweenGc = avgTimeBetweenGc;
         this.minTimeBetweenGc = minTimeBetweenGc;
         this.maxTimeBetweenGc = maxTimeBetweenGc;
@@ -79,7 +81,7 @@ public class AnalyzedGcStats {
     }
 
     public AnalyzedGcStats(){
-        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Trend.STABLE);
+        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, new ArrayList<Trend>());
     }
 
     public long getAvgCollected() {
@@ -106,8 +108,10 @@ public class AnalyzedGcStats {
         return avgMemoryUsage;
     }
 
+
     public Trend getTrend() {
-        return trend;
+        //@TODO implement (calculate based on ArrayList trend)
+        return Trend.STABLE;
     }
 
     public long getStartTime() {
@@ -166,8 +170,9 @@ public class AnalyzedGcStats {
         this.avgMemoryUsage = avgMemoryUsage;
     }
 
+
     public void setTrend(Trend trend) {
-        this.trend = trend;
+        //@TODO implement
     }
 
     public void setStartTime(long startTime) {
@@ -200,5 +205,55 @@ public class AnalyzedGcStats {
 
     public void setGcCount(int gcCount) {
         this.gcCount = gcCount;
+    }
+
+    public void addAnalyzedStatistics(AnalyzedGcStats ags){
+        //Avg time between GCs
+        this.avgTimeBetweenGc = (avgTimeBetweenGc + ags.getAvgTimeBetweenGc()) / 2;
+        //Min/Max time between GCs
+        if (ags.getMinTimeBetweenGc() < this.getMinTimeBetweenGc()){
+            this.setMinTimeBetweenGc(ags.getMinTimeBetweenGc());
+        }
+        if (ags.getMaxTimeBetweenGc() > this.getMaxTimeBetweenGc()){
+            this.setMaxTimeBetweenGc(ags.getMaxTimeBetweenGc());
+        }
+
+        //Avg collected
+        this.avgCollected = (avgCollected + ags.getAvgCollected()) / 2;
+        //Min/Max collected
+        if (ags.getMinCollected() < this.getMinCollected()){
+            this.setMinCollected(ags.getMinCollected());
+        }
+        if (ags.getMaxCollected() > this.getMaxCollected()){
+            this.setMaxCollected(ags.getMaxCollected());
+        }
+
+        //Avg memory usage
+        this.avgMemoryUsage = (avgMemoryUsage + ags.getAvgMemoryUsage()) / 2;
+        //Min/Max memory usage
+        if (ags.getMinMemoryUsage() < this.getMinMemoryUsage()){
+            this.setMinMemoryUsage(ags.getMinMemoryUsage());
+        }
+        if (ags.getMaxMemoryUsage() > this.getMaxMemoryUsage()){
+            this.setMaxMemoryUsage(ags.getMaxMemoryUsage());
+        }
+
+        //Start/End memory usage (Dependent on time of GC)
+        //And start/end time
+        if (ags.getStartTime() < this.getStartTime()){
+            this.setStartMemoryUsage(ags.getStartMemoryUsage());
+            this.setStartTime(ags.getStartTime());
+        }
+        if (ags.getEndTime() > this.getEndTime()){
+            this.setEndMemoryUsage(ags.getEndMemoryUsage());
+            this.setEndTime(ags.getEndTime());
+        }
+
+        //GcCount
+        this.gcCount += ags.gcCount;
+
+        //Trend
+        trend.add(ags.getTrend());
+
     }
 }
