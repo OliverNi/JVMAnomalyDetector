@@ -3,7 +3,7 @@ package Logs;
 /**
  * Created by Oliver on 2014-09-22.
  */
-public class AnalyzedDailyGcStats {
+public class AnalyzedGcStats {
     public enum Trend{
         //Using more memory than before
         CONTINUOUSLY_GROWING,
@@ -56,11 +56,11 @@ public class AnalyzedDailyGcStats {
      * @param gcCount how many GCs where performed this day.
      * @param trend  Growth trend for this day.
      */
-    public AnalyzedDailyGcStats(long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
-                                long avgCollected, long minCollected, long maxCollected,
-                                long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
-                                long startMemoryUsage, long endMemoryUsage,
-                                long startTime, long endTime, int gcCount, Trend trend){
+    public AnalyzedGcStats(long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
+                           long avgCollected, long minCollected, long maxCollected,
+                           long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
+                           long startMemoryUsage, long endMemoryUsage,
+                           long startTime, long endTime, int gcCount, Trend trend){
         this.avgTimeBetweenGc = avgTimeBetweenGc;
         this.minTimeBetweenGc = minTimeBetweenGc;
         this.maxTimeBetweenGc = maxTimeBetweenGc;
@@ -78,7 +78,7 @@ public class AnalyzedDailyGcStats {
         this.trend = trend;
     }
 
-    public AnalyzedDailyGcStats(){
+    public AnalyzedGcStats(){
         this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Trend.STABLE);
     }
 
