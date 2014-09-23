@@ -19,12 +19,16 @@ public class AnomalyDetector {
 
     private Log log;
     private ArrayList<JMXAgent> agents;
+    private ArrayList<String> connections;
     public AnomalyDetector(){
         agents = new ArrayList<>();
+        connections = new ArrayList<>();
     }
     public void connect(String hostName, int port){
         log = new Log();
         agents.add(new JMXAgent(hostName, port, this));
+        //@TODO Fix error check if connection fails.
+        connections.add(hostName + ":" + port);
     }
 
     public boolean disconnect(String hostName, int port){
@@ -43,10 +47,6 @@ public class AnomalyDetector {
      * @return ArrayList<String> HOSTNAME:PORT
      */
     public ArrayList<String> getConnections(){
-        ArrayList<String> connections = new ArrayList<>();
-        for (JMXAgent a : agents){
-            connections.add(new String(a.getHostName() + ":" + a.getPort()));
-        }
         return connections;
     }
 
