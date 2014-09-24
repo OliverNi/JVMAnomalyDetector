@@ -22,6 +22,9 @@ public class GcReport {
         CHANGING_FROM_GROWING_TO_DECREASING,
         CHANGING_FROM_DECREASING_TO_GROWING
     }*/
+    private long avgCollectionTime;
+    private long minCollectionTime;
+    private long maxCollectionTime;
     private long avgTimeBetweenGc;
     private long minTimeBetweenGc;
     private long maxTimeBetweenGc;
@@ -39,7 +42,7 @@ public class GcReport {
     private int gcCount;
 
     /**
-     *
+     * Constructor
      * @param avgTimeBetweenGc average time between GCs performed this period.
      * @param minTimeBetweenGc minimum time between two GCs for this period.
      * @param maxTimeBetweenGc maximum time between two GCs for this period.
@@ -55,11 +58,15 @@ public class GcReport {
      * @param endTime end time for this period.
      * @param gcCount how many GCs where performed this period.
      */
-    public GcReport(long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
+    public GcReport(long avgCollectionTime, long minCollectionTime, long maxCollectionTime,
+                    long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
                     long avgCollected, long minCollected, long maxCollected,
                     long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
                     long startMemoryUsage, long endMemoryUsage,
                     long startTime, long endTime, int gcCount){
+        this.avgCollectionTime = avgCollectionTime;
+        this.minCollectionTime = minCollectionTime;
+        this.maxCollectionTime = maxCollectionTime;
         this.avgTimeBetweenGc = avgTimeBetweenGc;
         this.minTimeBetweenGc = minTimeBetweenGc;
         this.maxTimeBetweenGc = maxTimeBetweenGc;
@@ -77,7 +84,7 @@ public class GcReport {
     }
 
     public GcReport(){
-        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     public long getAvgCollected() {
@@ -142,6 +149,18 @@ public class GcReport {
         return gcCount;
     }
 
+    public long getAvgCollectionTime() {
+        return avgCollectionTime;
+    }
+
+    public long getMinCollectionTime() {
+        return minCollectionTime;
+    }
+
+    public long getMaxCollectionTime() {
+        return maxCollectionTime;
+    }
+
     public void setAvgCollected(long avgCollected) {
         this.avgCollected = avgCollected;
     }
@@ -203,7 +222,19 @@ public class GcReport {
         this.gcCount = gcCount;
     }
 
-    public void addAnalyzedStatistics(GcReport ags){
+    public void setAvgCollectionTime(long avgCollectionTime) {
+        this.avgCollectionTime = avgCollectionTime;
+    }
+
+    public void setMinCollectionTime(long minCollectionTime) {
+        this.minCollectionTime = minCollectionTime;
+    }
+
+    public void setMaxCollectionTime(long maxCollectionTime) {
+        this.maxCollectionTime = maxCollectionTime;
+    }
+
+    public void addGcReport(GcReport ags){
         //Avg time between GCs
         this.avgTimeBetweenGc = (avgTimeBetweenGc + ags.getAvgTimeBetweenGc()) / 2;
         //Min/Max time between GCs
