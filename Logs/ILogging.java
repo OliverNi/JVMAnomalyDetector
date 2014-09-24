@@ -64,6 +64,6 @@ public interface ILogging {
     public Map<String, ArrayList<MemoryStats>> getMemoryStats(long startTime, long endTime,
                                                               ArrayList<String> processes);
 
-    public void sendAnalyzedGCData(String hostName, int port, AnalyzedGcStats analyzedDailyGcStats);
+    public void sendAnalyzedGCData(String hostName, int port, GcReport analyzedDailyGcStats);
 
 }
