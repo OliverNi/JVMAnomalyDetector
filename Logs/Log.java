@@ -45,15 +45,10 @@ public class Log implements  ILogging
             DB = connection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
-            //statement.executeUpdate("create table MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)" );
 
-//            DB.executeUpdate("create table GCLog(gcId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT," +
-//                    " memUsageAfter BIGINT, memUsageBefore BIGINT, GCCollectionTime BIGINT, hostname VARCHAR(25), port INTEGER)");
 
-//            DB.executeUpdate("create table AnalyzedGCData(analyzedId INTEGER PRIMARY KEY AUTOINCREMENT, avgCollected BIGINT, minCollected BIGINT, maxCollected BIGINT, minMemoryUsage BIGINT," +
-//                    "maxMemoryUsage BIGINT, avgMemoryUsage BIGINT, startMemoryUsage BIGINT, endMemoryUsage BIGINT,avgTimeBetweenGc BIGINT, " +
-//                    "minTimeBetweenGc BIGINT, maxTimeBetweenGc BIGINT, starttime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INTEGER, trend VARCHAR(45), gcCount INTEGER, UNIQUE ) ");
 
+            //DB.executeUpdate("DROP TABLE IF EXISTS AnalyzedGCData");
             //   statement.executeUpdate("INSERT INTO MemLog(timestamp, usedMemory, hostname, port) VALUES(13371337, 10241024, '127.0.0.1', 3500)");
 
             //  System.out.println(test.createMemLogEntry(10001000,1337669,"localhost",3800));
@@ -75,7 +70,7 @@ public class Log implements  ILogging
            // ResultSet rs = DB.executeQuery("select * from AnalyzedGCData");
 
 
-            printSpecifiedTable("AnalyzedGCData");
+            printSpecifiedTable("GCReport");
 
         }
         catch(SQLException e)
@@ -95,6 +90,26 @@ public class Log implements  ILogging
 
         }
 
+    }
+
+    public void DBTableCreation() {
+        try {
+            DB.executeUpdate("DROP TABLE MemLog IF EXISTS");
+            DB.executeUpdate("create table MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)");
+
+            DB.executeUpdate("DROP TABLE GCLog IF EXISTS");
+            DB.executeUpdate("create table GCLog(gcId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT," +
+                    " memUsageAfter BIGINT, memUsageBefore BIGINT, GCCollectionTime BIGINT, hostname VARCHAR(25), port INTEGER)");
+
+            DB.executeUpdate("DROP TABLE GCReport IF EXISTS");
+            DB.executeUpdate("CREATE TABLE GCReport(GCReportId INTEGER PRIMARY KEY AUTOINCREMENT, avgCollected BIGINT, minCollected BIGINT, maxCollected BIGINT, minMemoryUsage BIGINT," +
+                    "maxMemoryUsage BIGINT, avgMemoryUsage BIGINT, startMemoryUsage BIGINT, endMemoryUsage BIGINT,avgTimeBetweenGc BIGINT, " +
+                    "minTimeBetweenGc BIGINT, maxTimeBetweenGc BIGINT, avgCollectionTime BIGINT, minCollectionTime BIGINT, maxCollectionTime BIGINT," +
+                    "starttime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INTEGER, trend VARCHAR(45), gcCount INTEGER)");
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     public static void printSpecifiedTable(String input) throws SQLException
@@ -474,12 +489,13 @@ public class Log implements  ILogging
     {
         try
         {
-            String input = "INSERT INTO  AnalyzedGCData(avgCollected, minCollected,maxCollected,minMemoryUsage,maxMemoryUsage," +
-                    "avgMemoryUsage,startMemoryUsage,endMemoryUsage,avgTimeBetweenGc,minTimeBetweenGc,maxTimeBetweenGc,starttime,endtime,hostname,port,trend,gcCount) " +
+            String input = "INSERT INTO  GCReport(avgCollected, minCollected,maxCollected,minMemoryUsage,maxMemoryUsage," +
+                    "avgMemoryUsage,startMemoryUsage,endMemoryUsage,avgTimeBetweenGc,minTimeBetweenGc,maxTimeBetweenGc,avgCollectionTime, minCollectionTime, maxCollectionTime,starttime,endtime,hostname,port,trend,gcCount) " +
                     "VALUES("+ analyzedDailyGcStats.getAvgCollected()+","+analyzedDailyGcStats.getMinCollected()+","+analyzedDailyGcStats.getMaxCollected()+","+analyzedDailyGcStats.getMinMemoryUsage()+","
                     +analyzedDailyGcStats.getMaxMemoryUsage()+","+analyzedDailyGcStats.getAvgMemoryUsage()+","+
                     analyzedDailyGcStats.getStartMemoryUsage()+","+analyzedDailyGcStats.getEndMemoryUsage()+","+analyzedDailyGcStats.getAvgTimeBetweenGc()+","+
-            analyzedDailyGcStats.getMinTimeBetweenGc()+","+analyzedDailyGcStats.getMaxTimeBetweenGc()+","+analyzedDailyGcStats.getStartTime()+","+analyzedDailyGcStats.getEndTime()+",'"+hostName+"',"+port+",'TEMP STABLE TREND VALUE',"
+                    analyzedDailyGcStats.getMinTimeBetweenGc()+","+analyzedDailyGcStats.getMaxTimeBetweenGc()+","+analyzedDailyGcStats.getAvgCollectionTime()+","+
+                    analyzedDailyGcStats.getMinCollectionTime()+","+analyzedDailyGcStats.getMaxCollectionTime()+","+analyzedDailyGcStats.getStartTime()+","+analyzedDailyGcStats.getEndTime()+",'"+hostName+"',"+port+",'TEMP STABLE TREND VALUE',"
                     +analyzedDailyGcStats.getGcCount()+")";
             System.out.println(input);
             DB.executeUpdate(input);
