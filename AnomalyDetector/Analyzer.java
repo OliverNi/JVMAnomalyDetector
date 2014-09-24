@@ -71,7 +71,6 @@ public class Analyzer {
                 analyzed.setEndTime(timePerformed[count]);
             }
             //Time between GCs
-
             if (count % 2 == 0){
                 timeBetweenGc[count - 1] = timePerformed[count] - timePerformed[count-1];
                 if (timeBetweenGc[count-1] < analyzed.getMinTimeBetweenGc()){
@@ -170,7 +169,7 @@ public class Analyzer {
         return combined;
     }
 
-    //@TODO Move class calcAvg
+    //@TODO Move function calcAvg
     private long calcAvg(long[] arr){
         long sum = 0;
         for (int i = 0; i < arr.length; i++){
