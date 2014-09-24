@@ -22,14 +22,28 @@ public class Analyzer {
     }
 
     /**
-     * Analyze
+     * Analyze GcReports by comparing a daily GcReport to the previous day's GcReport
      */
     public void analyzeDailyGC(){
 
     }
 
-    private GcReport analyzeGcStats(ArrayList<GcStats> gcStats){
-        GcReport analyzed = new GcReport();
+    /**
+     * Analyze GcReports by comparing a weekly GcReport to the previous weeks's GcReport
+     */
+    public void analyzeWeeklyGC(){
+
+    }
+
+    /**
+     * Analyze GcReports by comparing a monthly GcReport to the previous month's GcReport
+     */
+    public void analyzeMonthlyGC(){
+
+    }
+
+    private GcReport combineDailyGcStats(ArrayList<GcStats> gcStats){
+        GcReport report = new GcReport();
         long[] collected = new long[gcStats.size()];
         long[] usedAfter = new long[gcStats.size()];
         long[] timePerformed = new long[gcStats.size()];
@@ -42,45 +56,45 @@ public class Analyzer {
             timeBetweenGc = new long[gcStats.size()-2];
         }
         //Set gcCount
-        analyzed.setGcCount(gcStats.size());
+        report.setGcCount(gcStats.size());
 
         //Set start memory usage (First GC of the day)
-        analyzed.setStartMemoryUsage(gcStats.get(0).getMemoryUsedAfter());
+        report.setStartMemoryUsage(gcStats.get(0).getMemoryUsedAfter());
 
         int count = 0;
         for (GcStats g : gcStats){
             //Memory used
             usedAfter[count] = g.getMemoryUsedAfter();
-            if (usedAfter[count] < analyzed.getMinMemoryUsage()){
-                analyzed.setMinMemoryUsage(usedAfter[count]);
+            if (usedAfter[count] < report.getMinMemoryUsage()){
+                report.setMinMemoryUsage(usedAfter[count]);
             }
-            if (usedAfter[count] > analyzed.getMaxMemoryUsage()){
-                analyzed.setMaxMemoryUsage(g.getMemoryUsedAfter());
+            if (usedAfter[count] > report.getMaxMemoryUsage()){
+                report.setMaxMemoryUsage(g.getMemoryUsedAfter());
             }
             //Memory collected
             collected[count] = g.getAmountCollected();
-            if (collected[count] < analyzed.getMinCollected()){
-                analyzed.setMinCollected(collected[count]);
+            if (collected[count] < report.getMinCollected()){
+                report.setMinCollected(collected[count]);
             }
-            if (collected[count] > analyzed.getMaxCollected()){
-                analyzed.setMaxCollected(collected[count]);
+            if (collected[count] > report.getMaxCollected()){
+                report.setMaxCollected(collected[count]);
             }
             //Time performed
             timePerformed[count] = g.getTimeStamp();
-            if (timePerformed[count] < analyzed.getStartTime()){
-                analyzed.setStartTime(timePerformed[count]);
+            if (timePerformed[count] < report.getStartTime()){
+                report.setStartTime(timePerformed[count]);
             }
-            if (timePerformed[count] > analyzed.getEndTime()){
-                analyzed.setEndTime(timePerformed[count]);
+            if (timePerformed[count] > report.getEndTime()){
+                report.setEndTime(timePerformed[count]);
             }
             //Time between GCs
             if (count % 2 == 0){
                 timeBetweenGc[count - 1] = timePerformed[count] - timePerformed[count-1];
-                if (timeBetweenGc[count-1] < analyzed.getMinTimeBetweenGc()){
-                    analyzed.setMinTimeBetweenGc(timeBetweenGc[count-1]);
+                if (timeBetweenGc[count-1] < report.getMinTimeBetweenGc()){
+                    report.setMinTimeBetweenGc(timeBetweenGc[count-1]);
                 }
-                else if (timeBetweenGc[count-1] > analyzed.getMaxTimeBetweenGc()){
-                    analyzed.setMaxTimeBetweenGc(timeBetweenGc[count-1]);
+                else if (timeBetweenGc[count-1] > report.getMaxTimeBetweenGc()){
+                    report.setMaxTimeBetweenGc(timeBetweenGc[count-1]);
                 }
             }
             /* @TODO Fix / remove Trend
@@ -99,7 +113,7 @@ public class Analyzer {
         }
 
         //Set end memory usage (Last GC of the day)
-        analyzed.setEndMemoryUsage(usedAfter[count]);
+        report.setEndMemoryUsage(usedAfter[count]);
 
         /* //@TODO Fix / remove Trend
         //Trend second half of the day
@@ -131,15 +145,15 @@ public class Analyzer {
         }*/
 
         //Calculate Average
-        analyzed.setAvgTimeBetweenGc(calcAvg(timeBetweenGc));
-        analyzed.setAvgCollected(calcAvg(collected));
-        analyzed.setAvgMemoryUsage(calcAvg(usedAfter));
+        report.setAvgTimeBetweenGc(calcAvg(timeBetweenGc));
+        report.setAvgCollected(calcAvg(collected));
+        report.setAvgMemoryUsage(calcAvg(usedAfter));
 
-        return analyzed;
+        return report;
     }
 
 
-    public void combineDailyGcStats(){
+    public void createDailyGcReports(){
         //Set startTime (today 00:01:00)
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.MINUTE, 1);
@@ -159,7 +173,7 @@ public class Analyzer {
             ArrayList<GcStats> gcStats = gcStatsMap.get(connections.get(i));
             String[] hostPort = connections.get(i).split(":");
             int port = Integer.parseInt(hostPort[1]);
-            log.sendAnalyzedGCData(hostPort[0], port, analyzeGcStats(gcStats));
+            log.sendAnalyzedGCData(hostPort[0], port, combineDailyGcStats(gcStats));
         }
     }
     private GcReport combineAnalyzedGcStats(ArrayList<GcReport> analyzedStats) {
