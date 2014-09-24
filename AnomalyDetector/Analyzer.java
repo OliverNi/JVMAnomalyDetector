@@ -22,27 +22,7 @@ public class Analyzer {
     }
 
     public void analyzeDailyGC(){
-        //Set startTime (today 00:01:00)
-        Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.MINUTE, 1);
-        cal.set(Calendar.HOUR, 0);
-        cal.set(Calendar.SECOND, 0);
-        Date todayStartTime = cal.getTime();
-        //Set endTime (today 23:59:59)
-        cal.set(Calendar.HOUR, 23);
-        cal.set(Calendar.MINUTE, 59);
-        cal.set(Calendar.SECOND, 59);
-        Date todayEndTime = cal.getTime();
 
-        Map<String, ArrayList<GcStats>> gcStatsMap = log.getGarbageCollectionStats(todayStartTime.getTime(),
-                todayEndTime.getTime());
-        ArrayList<String> connections = ad.getConnections();
-        for (int i = 0;  i < connections.size(); i++){
-            ArrayList<GcStats> gcStats = gcStatsMap.get(connections.get(i));
-            String[] hostPort = connections.get(i).split(":");
-            int port = Integer.parseInt(hostPort[1]);
-            log.sendAnalyzedGCData(hostPort[0], port, analyzeGcStats(gcStats));
-        }
     }
 
     private AnalyzedGcStats analyzeGcStats(ArrayList<GcStats> gcStats){
@@ -101,6 +81,7 @@ public class Analyzer {
                     analyzed.setMaxTimeBetweenGc(timeBetweenGc[count-1]);
                 }
             }
+            /* @TODO Fix / remove Trend
             //Trend first half of the day
             if (count == gcStats.size()/2){
                 if (analyzed.getStartMemoryUsage() + DIFFERENCE_ALLOWED > usedAfter[count]){
@@ -112,12 +93,13 @@ public class Analyzer {
                 else if ((analyzed.getStartMemoryUsage() - usedAfter[count]) <= DIFFERENCE_ALLOWED){
                     analyzed.setTrend(AnalyzedGcStats.Trend.STABLE);
                 }
-            }
+            } */
         }
 
         //Set end memory usage (Last GC of the day)
         analyzed.setEndMemoryUsage(usedAfter[count]);
 
+        /* //@TODO Fix / remove Trend
         //Trend second half of the day
         long midValue = usedAfter[gcStats.size()/2];
         long endValue = analyzed.getEndMemoryUsage();
@@ -144,7 +126,7 @@ public class Analyzer {
             if (midValue + DIFFERENCE_ALLOWED < endValue){
                 analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_STABLE_TO_GROWING);
             }
-        }
+        }*/
 
         //Calculate Average
         analyzed.setAvgTimeBetweenGc(calcAvg(timeBetweenGc));
@@ -154,11 +136,40 @@ public class Analyzer {
         return analyzed;
     }
 
+
+    public void combineDailyGcStats(){
+        //Set startTime (today 00:01:00)
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.SECOND, 0);
+        Date todayStartTime = cal.getTime();
+        //Set endTime (today 23:59:59)
+        cal.set(Calendar.HOUR, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        Date todayEndTime = cal.getTime();
+
+        Map<String, ArrayList<GcStats>> gcStatsMap = log.getGarbageCollectionStats(todayStartTime.getTime(),
+                todayEndTime.getTime());
+        ArrayList<String> connections = ad.getConnections();
+        for (int i = 0;  i < connections.size(); i++){
+            ArrayList<GcStats> gcStats = gcStatsMap.get(connections.get(i));
+            String[] hostPort = connections.get(i).split(":");
+            int port = Integer.parseInt(hostPort[1]);
+            log.sendAnalyzedGCData(hostPort[0], port, analyzeGcStats(gcStats));
+        }
+    }
     private AnalyzedGcStats combineAnalyzedGcStats(ArrayList<AnalyzedGcStats> analyzedStats) {
         AnalyzedGcStats combined = new AnalyzedGcStats();
 
+        for (AnalyzedGcStats a : analyzedStats){
+            combined.addAnalyzedStatistics(a);
+        }
+
         return combined;
     }
+
     //@TODO Move class calcAvg
     private long calcAvg(long[] arr){
         long sum = 0;
