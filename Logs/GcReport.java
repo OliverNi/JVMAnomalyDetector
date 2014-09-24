@@ -1,11 +1,9 @@
 package Logs;
 
-import java.util.ArrayList;
-
 /**
  * Created by Oliver on 2014-09-22.
  */
-public class AnalyzedGcStats {
+public class GcReport {
    /* public enum Trend{ @TODO Fix / remove Trend
         //Using more memory than before
         CONTINUOUSLY_GROWING,
@@ -57,11 +55,11 @@ public class AnalyzedGcStats {
      * @param endTime end time for this period.
      * @param gcCount how many GCs where performed this period.
      */
-    public AnalyzedGcStats(long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
-                           long avgCollected, long minCollected, long maxCollected,
-                           long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
-                           long startMemoryUsage, long endMemoryUsage,
-                           long startTime, long endTime, int gcCount){
+    public GcReport(long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
+                    long avgCollected, long minCollected, long maxCollected,
+                    long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
+                    long startMemoryUsage, long endMemoryUsage,
+                    long startTime, long endTime, int gcCount){
         this.avgTimeBetweenGc = avgTimeBetweenGc;
         this.minTimeBetweenGc = minTimeBetweenGc;
         this.maxTimeBetweenGc = maxTimeBetweenGc;
@@ -78,7 +76,7 @@ public class AnalyzedGcStats {
         this.gcCount = gcCount;
     }
 
-    public AnalyzedGcStats (){
+    public GcReport(){
         this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
@@ -205,7 +203,7 @@ public class AnalyzedGcStats {
         this.gcCount = gcCount;
     }
 
-    public void addAnalyzedStatistics(AnalyzedGcStats ags){
+    public void addAnalyzedStatistics(GcReport ags){
         //Avg time between GCs
         this.avgTimeBetweenGc = (avgTimeBetweenGc + ags.getAvgTimeBetweenGc()) / 2;
         //Min/Max time between GCs
