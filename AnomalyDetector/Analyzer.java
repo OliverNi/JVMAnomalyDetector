@@ -55,6 +55,7 @@ public class Analyzer {
         else{
             timeBetweenGc = new long[gcStats.size()-2];
         }
+        long[] collectionTime = new long[gcStats.size()];
         //Set gcCount
         report.setGcCount(gcStats.size());
 
@@ -78,6 +79,14 @@ public class Analyzer {
             }
             if (collected[count] > report.getMaxCollected()){
                 report.setMaxCollected(collected[count]);
+            }
+            //Collection Time
+            collectionTime[count] = g.getCollectionTime();
+            if (collectionTime[count] < report.getMinCollectionTime()){
+                report.setMinCollectionTime(collectionTime[count]);
+            }
+            if (collectionTime[count] > report.getMaxCollectionTime()){
+                report.setMaxCollectionTime(collectionTime[count]);
             }
             //Time performed
             timePerformed[count] = g.getTimeStamp();
@@ -180,7 +189,7 @@ public class Analyzer {
         GcReport combined = new GcReport();
 
         for (GcReport a : analyzedStats){
-            combined.addAnalyzedStatistics(a);
+            combined.addGcReport(a);
         }
 
         return combined;
