@@ -1,6 +1,6 @@
 package AnomalyDetector;
 
-import Logs.AnalyzedGcStats;
+import Logs.GcReport;
 import Logs.GcStats;
 import Logs.ILogging;
 
@@ -21,12 +21,15 @@ public class Analyzer {
         this.log = ad.getLog();
     }
 
+    /**
+     * Analyze
+     */
     public void analyzeDailyGC(){
 
     }
 
-    private AnalyzedGcStats analyzeGcStats(ArrayList<GcStats> gcStats){
-        AnalyzedGcStats analyzed = new AnalyzedGcStats();
+    private GcReport analyzeGcStats(ArrayList<GcStats> gcStats){
+        GcReport analyzed = new GcReport();
         long[] collected = new long[gcStats.size()];
         long[] usedAfter = new long[gcStats.size()];
         long[] timePerformed = new long[gcStats.size()];
@@ -84,13 +87,13 @@ public class Analyzer {
             //Trend first half of the day
             if (count == gcStats.size()/2){
                 if (analyzed.getStartMemoryUsage() + DIFFERENCE_ALLOWED > usedAfter[count]){
-                    analyzed.setTrend(AnalyzedGcStats.Trend.CONTINUOUSLY_DECREASING);
+                    analyzed.setTrend(GcReport.Trend.CONTINUOUSLY_DECREASING);
                 }
                 else if (analyzed.getStartMemoryUsage() + DIFFERENCE_ALLOWED < usedAfter[count]){
-                    analyzed.setTrend(AnalyzedGcStats.Trend.CONTINUOUSLY_GROWING);
+                    analyzed.setTrend(GcReport.Trend.CONTINUOUSLY_GROWING);
                 }
                 else if ((analyzed.getStartMemoryUsage() - usedAfter[count]) <= DIFFERENCE_ALLOWED){
-                    analyzed.setTrend(AnalyzedGcStats.Trend.STABLE);
+                    analyzed.setTrend(GcReport.Trend.STABLE);
                 }
             } */
         }
@@ -102,28 +105,28 @@ public class Analyzer {
         //Trend second half of the day
         long midValue = usedAfter[gcStats.size()/2];
         long endValue = analyzed.getEndMemoryUsage();
-        if (analyzed.getTrend() == AnalyzedGcStats.Trend.CONTINUOUSLY_DECREASING){
+        if (analyzed.getTrend() == GcReport.Trend.CONTINUOUSLY_DECREASING){
             if (midValue + DIFFERENCE_ALLOWED < endValue){
-                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_DECREASING_TO_GROWING);
+                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_DECREASING_TO_GROWING);
             }
             else if ((midValue - endValue) <= DIFFERENCE_ALLOWED){
-                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_DECREASING_TO_STABLE);
+                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_DECREASING_TO_STABLE);
             }
         }
-        else if (analyzed.getTrend() == AnalyzedGcStats.Trend.CONTINUOUSLY_GROWING){
+        else if (analyzed.getTrend() == GcReport.Trend.CONTINUOUSLY_GROWING){
             if (midValue + DIFFERENCE_ALLOWED > endValue){
-                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_GROWING_TO_DECREASING);
+                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_GROWING_TO_DECREASING);
             }
             else if ((midValue - endValue) <= DIFFERENCE_ALLOWED) {
-                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_GROWING_TO_STABLE);
+                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_GROWING_TO_STABLE);
             }
         }
-        else if (analyzed.getTrend() == AnalyzedGcStats.Trend.STABLE){
+        else if (analyzed.getTrend() == GcReport.Trend.STABLE){
             if (midValue + DIFFERENCE_ALLOWED > endValue){
-                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_STABLE_TO_DECREASING);
+                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_STABLE_TO_DECREASING);
             }
             if (midValue + DIFFERENCE_ALLOWED < endValue){
-                analyzed.setTrend(AnalyzedGcStats.Trend.CHANGING_FROM_STABLE_TO_GROWING);
+                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_STABLE_TO_GROWING);
             }
         }*/
 
@@ -159,10 +162,10 @@ public class Analyzer {
             log.sendAnalyzedGCData(hostPort[0], port, analyzeGcStats(gcStats));
         }
     }
-    private AnalyzedGcStats combineAnalyzedGcStats(ArrayList<AnalyzedGcStats> analyzedStats) {
-        AnalyzedGcStats combined = new AnalyzedGcStats();
+    private GcReport combineAnalyzedGcStats(ArrayList<GcReport> analyzedStats) {
+        GcReport combined = new GcReport();
 
-        for (AnalyzedGcStats a : analyzedStats){
+        for (GcReport a : analyzedStats){
             combined.addAnalyzedStatistics(a);
         }
 
