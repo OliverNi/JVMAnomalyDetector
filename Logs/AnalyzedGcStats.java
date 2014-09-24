@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by Oliver on 2014-09-22.
  */
 public class AnalyzedGcStats {
-    public enum Trend{
+   /* public enum Trend{ @TODO Fix / remove Trend
         //Using more memory than before
         CONTINUOUSLY_GROWING,
         CHANGING_FROM_GROWING_TO_STABLE,
@@ -23,7 +23,7 @@ public class AnalyzedGcStats {
         //Memory usage practically unchanged / Using more/less memory than before
         CHANGING_FROM_GROWING_TO_DECREASING,
         CHANGING_FROM_DECREASING_TO_GROWING
-    }
+    }*/
     private long avgTimeBetweenGc;
     private long minTimeBetweenGc;
     private long maxTimeBetweenGc;
@@ -35,7 +35,7 @@ public class AnalyzedGcStats {
     private long avgMemoryUsage;
     private long startMemoryUsage;
     private long endMemoryUsage;
-    private ArrayList<Trend> trend;
+   // private ArrayList<Trend> trend;
     private long startTime;
     private long endTime;
     private int gcCount;
@@ -56,13 +56,12 @@ public class AnalyzedGcStats {
      * @param startTime start time for this period.
      * @param endTime end time for this period.
      * @param gcCount how many GCs where performed this period.
-     * @param trend  Growth trend for this period.
      */
     public AnalyzedGcStats(long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
                            long avgCollected, long minCollected, long maxCollected,
                            long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
                            long startMemoryUsage, long endMemoryUsage,
-                           long startTime, long endTime, int gcCount, ArrayList<Trend> trend){
+                           long startTime, long endTime, int gcCount){
         this.avgTimeBetweenGc = avgTimeBetweenGc;
         this.minTimeBetweenGc = minTimeBetweenGc;
         this.maxTimeBetweenGc = maxTimeBetweenGc;
@@ -77,11 +76,10 @@ public class AnalyzedGcStats {
         this.startTime = startTime;
         this.endTime = endTime;
         this.gcCount = gcCount;
-        this.trend = trend;
     }
 
-    public AnalyzedGcStats(){
-        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, new ArrayList<Trend>());
+    public AnalyzedGcStats (){
+        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     public long getAvgCollected() {
@@ -108,11 +106,11 @@ public class AnalyzedGcStats {
         return avgMemoryUsage;
     }
 
-
+/*
     public Trend getTrend() {
-        //@TODO implement (calculate based on ArrayList trend)
+        //@TODO Trend
         return Trend.STABLE;
-    }
+    } */
 
     public long getStartTime() {
         return startTime;
@@ -170,10 +168,10 @@ public class AnalyzedGcStats {
         this.avgMemoryUsage = avgMemoryUsage;
     }
 
-
+/*
     public void setTrend(Trend trend) {
-        //@TODO implement
-    }
+        //@TODO Trend
+    }*/
 
     public void setStartTime(long startTime) {
         this.startTime = startTime;
@@ -251,9 +249,5 @@ public class AnalyzedGcStats {
 
         //GcCount
         this.gcCount += ags.gcCount;
-
-        //Trend
-        trend.add(ags.getTrend());
-
     }
 }
