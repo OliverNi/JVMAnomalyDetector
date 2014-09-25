@@ -8,13 +8,16 @@ package AnomalyDetector;
  * A Process Report will be responsible for keeping track of a process' status and warn if it suspects a memory leak.
  */
 public class ProcessReport {
+    //@TODO Create Listener
     public enum Status{
         LIKELY_MEMORY_LEAK,
         SUSPECTED_MEMORY_LEAK,
         POSSIBLE_MEMORY_LEAK,
+        EXCESSIVE_GC_SCAN,
         OK
     }
-
+    public static final long DEFAULT_TIME_BETWEEN_GC_WARNING = 5000;
+    public static long TIME_BETWEEN_GC_WARNING;
     private String hostName;
     private int port;
     private Status status;
@@ -49,7 +52,7 @@ public class ProcessReport {
     //Interval
 
     public ProcessReport(String hostName, int port){
-
+        TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
     }
 
     public ProcessReport(){
