@@ -13,12 +13,18 @@ import java.util.Map;
  * Created by Oliver on 2014-09-18.
  */
 public class Analyzer {
+    //@TODO Add timer to combine GcReports each day/week/month
     public static final int DIFFERENCE_ALLOWED = 20;
     private AnomalyDetector ad;
     private JMXAgent agent;
     private ILogging log;
     public Analyzer(JMXAgent agent){
         this.log = ad.getLog();
+    }
+
+
+    public void analyzeHourlyGc(){
+
     }
 
     /**
@@ -177,6 +183,7 @@ public class Analyzer {
 
         Map<String, ArrayList<GcStats>> gcStatsMap = log.getGarbageCollectionStats(todayStartTime.getTime(),
                 todayEndTime.getTime());
+
         ArrayList<String> connections = ad.getConnections();
         for (int i = 0;  i < connections.size(); i++){
             ArrayList<GcStats> gcStats = gcStatsMap.get(connections.get(i));
