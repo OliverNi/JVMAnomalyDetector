@@ -36,6 +36,8 @@ public class AnomalyDetector {
         for (JMXAgent a : agents) {
             if (a.getHostName().equals(hostName) && a.getPort() == port) {
                 agents.remove(a);
+                //@TODO replace string-list with something less redundant.
+                connections.remove(hostName + ":" + port);
                 disconnected = true;
             }
         }
