@@ -3,6 +3,10 @@ package AnomalyDetector;
 /**
  * Created by Oliver on 2014-09-25.
  */
+
+/**
+ * A Process Report will be responsible for keeping track of a process' status and warn if it suspects a memory leak.
+ */
 public class ProcessReport {
     public enum Status{
         LIKELY_MEMORY_LEAK,
