@@ -69,8 +69,8 @@ public class Log implements  ILogging
            // DB.executeUpdate("DELETE FROM MemLog WHERE MemId = 4" );
            // ResultSet rs = DB.executeQuery("select * from AnalyzedGCData");
 
-
-            printSpecifiedTable("GCReport");
+            DBTableCreation();
+           // printSpecifiedTable("GCReport");
 
         }
         catch(SQLException e)
@@ -92,20 +92,22 @@ public class Log implements  ILogging
 
     }
 
-    public void DBTableCreation() {
+    public static void DBTableCreation() {
         try {
             DB.executeUpdate("DROP TABLE MemLog IF EXISTS");
             DB.executeUpdate("create table MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)");
 
             DB.executeUpdate("DROP TABLE GCLog IF EXISTS");
             DB.executeUpdate("create table GCLog(gcId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT," +
-                    " memUsageAfter BIGINT, memUsageBefore BIGINT, GCCollectionTime BIGINT, hostname VARCHAR(25), port INTEGER)");
+                    " memUsageAfter BIGINT, memUsageBefore BIGINT, GCCollectionTime BIGINT, hostname VARCHAR(25), port INTEGER," +
+                    " FOREIGN KEY(hostname) REFERENCES GCReport(hostname), FOREIGN KEY(port) REFERENCES GCReport(port)");
 
             DB.executeUpdate("DROP TABLE GCReport IF EXISTS");
             DB.executeUpdate("CREATE TABLE GCReport(GCReportId INTEGER PRIMARY KEY AUTOINCREMENT, avgCollected BIGINT, minCollected BIGINT, maxCollected BIGINT, minMemoryUsage BIGINT," +
                     "maxMemoryUsage BIGINT, avgMemoryUsage BIGINT, startMemoryUsage BIGINT, endMemoryUsage BIGINT,avgTimeBetweenGc BIGINT, " +
                     "minTimeBetweenGc BIGINT, maxTimeBetweenGc BIGINT, avgCollectionTime BIGINT, minCollectionTime BIGINT, maxCollectionTime BIGINT," +
-                    "starttime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INTEGER, trend VARCHAR(45), gcCount INTEGER)");
+                    "starttime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INTEGER, trend VARCHAR(45), gcCount INTEGER, FOREIGN KEY(hostname) REFERENCES GCLog(hostname)," +
+                    "FOREIGN KEY(port) REFERENCES GCLog(port) ");
         }catch (SQLException e)
         {
             e.printStackTrace();
