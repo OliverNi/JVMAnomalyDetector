@@ -9,6 +9,7 @@ package AnomalyDetector;
  */
 public class ProcessReport {
     //@TODO Create Listener
+    //Create AnomalyReport if excessive GC scan
     public enum Status{
         LIKELY_MEMORY_LEAK,
         SUSPECTED_MEMORY_LEAK,
