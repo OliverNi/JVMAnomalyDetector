@@ -13,6 +13,10 @@ import java.util.ArrayList;
  */
 public class AnomalyDetector {
 
+    public boolean ANALYZE_HOURLY_STATISTICS = false;
+    public boolean ANALYZE_DAILY_STATISTICS = true;
+    public boolean ANALYZE_WEEKLY_STATISTICS = true;
+    public boolean ANALYZE_MONTHLY_STATISTICS = true;
     public Log getLog() {
         return log;
     }
