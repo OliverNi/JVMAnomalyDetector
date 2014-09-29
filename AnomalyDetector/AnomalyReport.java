@@ -10,6 +10,12 @@ package AnomalyDetector;
  */
 public class AnomalyReport
 {
+    public enum Anomaly{
+        EXCESSIVE_GC_SCAN,
+        OVER_TIME_INCREASING_MEMORY_USAGE,
+        RAPIDLY_INCREASING_MEMORY_USAGE
+    }
+    private Anomaly type;
     private String hostname;
     private int port;
     private long timePeriod;
