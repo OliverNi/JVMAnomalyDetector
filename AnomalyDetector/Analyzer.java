@@ -56,6 +56,22 @@ public class Analyzer {
         return report;
     }
 
+    private GcReport combineGcReports(ArrayList<GcReport> reportList){
+        GcReport report = new GcReport();
+        for (GcReport g : reportList){
+            report.addGcReport(g);
+        }
+        return report;
+    }
+    private GcReport combineAnalyzedGcStats(ArrayList<GcReport> analyzedStats) {
+        GcReport combined = new GcReport();
+
+        for (GcReport a : analyzedStats){
+            combined.addGcReport(a);
+        }
+
+        return combined;
+    }
 
     public void createDailyGcReports(){
         //Set startTime (today 00:01:00)
@@ -81,15 +97,32 @@ public class Analyzer {
             log.sendAnalyzedGCData(hostPort[0], port, combineDailyGcStats(gcStats));
         }
     }
-    private GcReport combineAnalyzedGcStats(ArrayList<GcReport> analyzedStats) {
-        GcReport combined = new GcReport();
 
-        for (GcReport a : analyzedStats){
-            combined.addGcReport(a);
+    public void createWeeklyGcReports(){
+        //Set startTime (Monday 00:01:00)
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        Date weekStartTime = cal.getTime();
+        //Set endTime (Sunday 23:59:59)
+        cal.set(Calendar.HOUR, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        Date weekEndTime = cal.getTime();
+
+        Map<String, ArrayList<GcReport>> reportsMap = log.getGcReports(weekStartTime.getTime(), weekEndTime.getTime());
+        ArrayList<String> connections = ad.getConnections();
+        for (int i = 0;  i < connections.size(); i++){
+            ArrayList<GcReport> dailyReports = reportsMap.get(connections.get(i));
+            String[] hostPort = connections.get(i).split(":");
+            int port = Integer.parseInt(hostPort[1]);
+            log.sendAnalyzedGCData(hostPort[0], port, combineGcReports(dailyReports));
         }
-
-        return combined;
     }
+
 
     //@TODO Move function calcAvg
     private long calcAvg(long[] arr){
