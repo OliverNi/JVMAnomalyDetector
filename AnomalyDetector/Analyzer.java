@@ -112,57 +112,16 @@ public class Analyzer {
                     report.setMaxTimeBetweenGc(timeBetweenGc[count-1]);
                 }
             }
-            /* @TODO Fix / remove Trend
-            //Trend first half of the day
-            if (count == gcStats.size()/2){
-                if (analyzed.getStartMemoryUsage() + DIFFERENCE_ALLOWED > usedAfter[count]){
-                    analyzed.setTrend(GcReport.Trend.CONTINUOUSLY_DECREASING);
-                }
-                else if (analyzed.getStartMemoryUsage() + DIFFERENCE_ALLOWED < usedAfter[count]){
-                    analyzed.setTrend(GcReport.Trend.CONTINUOUSLY_GROWING);
-                }
-                else if ((analyzed.getStartMemoryUsage() - usedAfter[count]) <= DIFFERENCE_ALLOWED){
-                    analyzed.setTrend(GcReport.Trend.STABLE);
-                }
-            } */
         }
 
         //Set end memory usage (Last GC of the day)
         report.setEndMemoryUsage(usedAfter[count]);
 
-        /* //@TODO Fix / remove Trend
-        //Trend second half of the day
-        long midValue = usedAfter[gcStats.size()/2];
-        long endValue = analyzed.getEndMemoryUsage();
-        if (analyzed.getTrend() == GcReport.Trend.CONTINUOUSLY_DECREASING){
-            if (midValue + DIFFERENCE_ALLOWED < endValue){
-                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_DECREASING_TO_GROWING);
-            }
-            else if ((midValue - endValue) <= DIFFERENCE_ALLOWED){
-                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_DECREASING_TO_STABLE);
-            }
-        }
-        else if (analyzed.getTrend() == GcReport.Trend.CONTINUOUSLY_GROWING){
-            if (midValue + DIFFERENCE_ALLOWED > endValue){
-                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_GROWING_TO_DECREASING);
-            }
-            else if ((midValue - endValue) <= DIFFERENCE_ALLOWED) {
-                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_GROWING_TO_STABLE);
-            }
-        }
-        else if (analyzed.getTrend() == GcReport.Trend.STABLE){
-            if (midValue + DIFFERENCE_ALLOWED > endValue){
-                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_STABLE_TO_DECREASING);
-            }
-            if (midValue + DIFFERENCE_ALLOWED < endValue){
-                analyzed.setTrend(GcReport.Trend.CHANGING_FROM_STABLE_TO_GROWING);
-            }
-        }*/
-
         //Calculate Average
         report.setAvgTimeBetweenGc(calcAvg(timeBetweenGc));
         report.setAvgCollected(calcAvg(collected));
         report.setAvgMemoryUsage(calcAvg(usedAfter));
+        report.setAvgMinMemoryUsage(report.getMinMemoryUsage());
 
         return report;
     }
