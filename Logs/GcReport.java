@@ -22,7 +22,7 @@ public class GcReport {
         CHANGING_FROM_GROWING_TO_DECREASING,
         CHANGING_FROM_DECREASING_TO_GROWING
     }*/
-    private long avgCollectionTime;
+    private long sumCollectionTime;
     private long minCollectionTime;
     private long maxCollectionTime;
     private long avgTimeBetweenGc;
@@ -59,13 +59,13 @@ public class GcReport {
      * @param endTime end time for this period.
      * @param gcCount how many GCs where performed this period.
      */
-    public GcReport(long avgCollectionTime, long minCollectionTime, long maxCollectionTime,
+    public GcReport(long sumCollectionTime, long minCollectionTime, long maxCollectionTime,
                     long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
                     long avgCollected, long minCollected, long maxCollected,
                     long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
                     long startMemoryUsage, long endMemoryUsage,
                     long startTime, long endTime, int gcCount, long avgMinMemoryUsage){
-        this.avgCollectionTime = avgCollectionTime;
+        this.sumCollectionTime = sumCollectionTime;
         this.minCollectionTime = minCollectionTime;
         this.maxCollectionTime = maxCollectionTime;
         this.avgTimeBetweenGc = avgTimeBetweenGc;
@@ -152,7 +152,7 @@ public class GcReport {
     }
 
     public long getAvgCollectionTime() {
-        return avgCollectionTime;
+        return sumCollectionTime/getGcCount();
     }
 
     public long getMinCollectionTime() {
@@ -228,8 +228,8 @@ public class GcReport {
         this.gcCount = gcCount;
     }
 
-    public void setAvgCollectionTime(long avgCollectionTime) {
-        this.avgCollectionTime = avgCollectionTime;
+    public void setSumCollectionTime(long sumCollectionTime) {
+        this.sumCollectionTime = sumCollectionTime;
     }
 
     public void setMinCollectionTime(long minCollectionTime) {
