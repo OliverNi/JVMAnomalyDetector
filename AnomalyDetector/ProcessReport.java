@@ -36,10 +36,10 @@ public class ProcessReport {
     //Usage after last recorded GC
     private long usageAfterLastGc;
 
-    //Difference (percentage) in average memory usage
-    private double dailyAvgMemUsageDif;
-    private double weeklyAvgMemUsageDif;
-    private double monthlyAvgMemUsageDif;
+    //Difference (percentage) su (Used to calc avg)
+    private double dailySumMemUsageDif;
+    private double weeklySumMemUsageDif;
+    private double monthlySumMemUsageDif;
 
     //Difference in minimum memory used after a GC
     private double dailyMinMemUsageDif;
@@ -56,6 +56,11 @@ public class ProcessReport {
     private int weeklyDecreaseCount;
     private int monthlyDecreaseCount;
 
+    //How many reports of the different types
+    private int dailyReportCount;
+    private int weeklyReportCount;
+    private int monthlyReportCount;
+
     //Interval
 
     public ProcessReport(String hostName, int port){
@@ -65,5 +70,9 @@ public class ProcessReport {
 
     public ProcessReport(){
         this("Unknown", 0);
+    }
+
+    public double getDailyAvgMemUsageDif(){
+        return dailySumMemUsageDif / dailyReportCount;
     }
 }
