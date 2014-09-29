@@ -313,7 +313,7 @@ public class GcReport {
     public void addGcStats(GcStats stats) {
         if (gcCount == 0) {
             this.setStartTime(stats.getTimeStamp());
-            this.sumTimeBetweenGc = Integer.MAX_VALUE;
+            this.sumTimeBetweenGc = Long.MAX_VALUE;
         } else {
             //Memory used
             this.sumMemoryUsage += stats.getMemoryUsedAfter();
