@@ -8,11 +8,19 @@ package Logs;
  * An Analyzed GC Report contains
  */
 public class AnalyzedGcReport {
+    public enum Type{
+        HOURLY,
+        DAILY,
+        WEEKLY,
+        MONTHLY,
+        GREATER
+    }
     double avgCollectionTimeDif;
     double avgTimeBetweenGcDif;
     double avgCollectedDif;
     double avgMemoryUsageDif;
     double avgMinMemoryUsageDif;
+    private Type type;
 
     GcReport[] gcReports = new GcReport[2];
 
@@ -37,6 +45,7 @@ public class AnalyzedGcReport {
             gcReports[0] = r2;
             gcReports[1] = r1;
         }
+
         calcAvgCollectedDif();
         calcAvgCollectionTimeDif();
         calcAvgMemoryUsageDif();
@@ -45,6 +54,30 @@ public class AnalyzedGcReport {
         return this;
     }
 
+    private void setType(){
+        type = Type.GREATER;
+
+        //Under 80 min = HOURLY (20 min margin)
+        long hourly = 4800000;
+        //Under 25 hours = DAILY (1 hour margin)
+        long daily = 90000000;
+        //Under one week + 2 hours = WEEKLY (2 hour margin)
+        long weekly = 612000000;
+        //Under One month + 4 hours = MONTHLY (4 hour margin)
+        long monthly = (long)2433600000L;
+        if (gcReports[0].getDuration() <= hourly){
+            type = Type.HOURLY;
+        }
+        else if (gcReports[0].getDuration() <= daily){
+            type = Type.DAILY;
+        }
+        else if (gcReports[0].getDuration() <= weekly){
+            type = Type.WEEKLY;
+        }
+        else if (gcReports[0].getDuration() <= monthly){
+            type = Type.MONTHLY;
+        }
+    }
     /**
      *   calculates the average memory usage difference between two reports in percent
      */
@@ -120,5 +153,17 @@ public class AnalyzedGcReport {
 
     public double getAvgMemoryUsageDif() {
         return avgMemoryUsageDif;
+    }
+
+    public double getAvgMinMemoryUsageDif() {
+        return avgMinMemoryUsageDif;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public GcReport[] getGcReports() {
+        return gcReports;
     }
 }
