@@ -515,16 +515,19 @@ public class Log implements  ILogging
     {
         try
         {
-            String input = "INSERT INTO  GCReport(avgCollected, minCollected,maxCollected,minMemoryUsage,maxMemoryUsage," +
-                    "avgMemoryUsage,startMemoryUsage,endMemoryUsage,avgTimeBetweenGc,minTimeBetweenGc,maxTimeBetweenGc,avgCollectionTime, minCollectionTime, maxCollectionTime,starttime,endtime,hostname,port,trend,gcCount) " +
-                    "VALUES("+ analyzedDailyGcStats.getAvgCollected()+","+analyzedDailyGcStats.getMinCollected()+","+analyzedDailyGcStats.getMaxCollected()+","+analyzedDailyGcStats.getMinMemoryUsage()+","
-                    +analyzedDailyGcStats.getMaxMemoryUsage()+","+analyzedDailyGcStats.getAvgMemoryUsage()+","+
-                    analyzedDailyGcStats.getStartMemoryUsage()+","+analyzedDailyGcStats.getEndMemoryUsage()+","+analyzedDailyGcStats.getAvgTimeBetweenGc()+","+
+            String input = "INSERT INTO  GCReport(sumCollected, minCollected, maxCollected, minMemoryUsage,"+
+                            "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
+                            "minTimeBetweenGc, maxTimeBetweenGc, avgCollectionTime, minCollectionTime, maxCollectionTime,"+
+                            "starttime, endTime,hostname, port, gcCount, sumMinMemoryUsage, reportCount) "+
+                    "VALUES("+ analyzedDailyGcStats.getSumCollected()+","+analyzedDailyGcStats.getMinCollected()+","+analyzedDailyGcStats.getMaxCollected()+","+analyzedDailyGcStats.getMinMemoryUsage()+","
+                    +analyzedDailyGcStats.getMaxMemoryUsage()+","+analyzedDailyGcStats.getSumMemoryUsage()+","+
+                    analyzedDailyGcStats.getStartMemoryUsage()+","+analyzedDailyGcStats.getEndMemoryUsage()+","+analyzedDailyGcStats.getSumTimeBetweenGc()+","+
                     analyzedDailyGcStats.getMinTimeBetweenGc()+","+analyzedDailyGcStats.getMaxTimeBetweenGc()+","+analyzedDailyGcStats.getAvgCollectionTime()+","+
                     analyzedDailyGcStats.getMinCollectionTime()+","+analyzedDailyGcStats.getMaxCollectionTime()+","+analyzedDailyGcStats.getStartTime()+","+analyzedDailyGcStats.getEndTime()+",'"+hostName+"',"+port+","
-                    +analyzedDailyGcStats.getGcCount()+","+analyzedDailyGcStats.getAvgMinMemoryUsage()+")";
+                    +analyzedDailyGcStats.getGcCount()+","+analyzedDailyGcStats.getSumMinMemoryUsage()+","+analyzedDailyGcStats.getReportCount()+")";
             DB.executeUpdate(input);
-        } catch (SQLException e) {
+        } catch (SQLException e)
+        {
             e.printStackTrace();
         }
     }
