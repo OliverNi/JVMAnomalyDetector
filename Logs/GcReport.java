@@ -258,6 +258,9 @@ public class GcReport {
         this.reportCount = reportCount;
     }
 
+    public long getDuration(){
+        return endTime - startTime;
+    }
     public void addGcReport(GcReport ags){
         //Avg time between GCs
         this.sumTimeBetweenGc = (sumTimeBetweenGc + ags.getAvgTimeBetweenGc()) / 2;
