@@ -162,7 +162,7 @@ public class JMXAgent {
         }
     }
 
-    private boolean isConnected(){
+    public boolean isConnected(){
         return connected;
     }
 
