@@ -123,6 +123,31 @@ public class Analyzer {
         }
     }
 
+    public void createMonthlyGcReports(){
+        //Set startTime (First day of the month 00:01:00)
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.DATE, 1);
+        Date monthStartTime = cal.getTime();
+        //Set endTime (Last day of the month 23:59:59)
+        cal.set(Calendar.HOUR, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+        Date monthEndTime = cal.getTime();
+
+        Map<String, ArrayList<GcReport>> reportsMap = log.getGcReports(monthStartTime.getTime(), monthEndTime.getTime());
+        ArrayList<String> connections = ad.getConnections();
+        for (int i = 0;  i < connections.size(); i++){
+            ArrayList<GcReport> dailyReports = reportsMap.get(connections.get(i));
+            String[] hostPort = connections.get(i).split(":");
+            int port = Integer.parseInt(hostPort[1]);
+            log.sendAnalyzedGCData(hostPort[0], port, combineGcReports(dailyReports));
+        }
+    }
+
 
     //@TODO Move function calcAvg
     private long calcAvg(long[] arr){
