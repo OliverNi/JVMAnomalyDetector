@@ -122,6 +122,8 @@ public class JMXAgent {
     ILogging log;
     Timer timer;
 
+    private boolean connected = false;
+
     public JMXAgent(String hostName, int port, AnomalyDetector ad) {
         this.hostName = hostName;
         this.port = port;
@@ -134,6 +136,7 @@ public class JMXAgent {
         try {
             connect();
         } catch (IOException e) {
+            connected = false;
             e.printStackTrace();
         }
 
@@ -149,7 +152,7 @@ public class JMXAgent {
                 ":" + port + "/jmxrmi");
         this.jmxc = JMXConnectorFactory.connect(url, null);
         this.mbsc = jmxc.getMBeanServerConnection();
-
+        connected = true;
         try{
             addListeners();
         } catch (MalformedObjectNameException e) {
@@ -157,6 +160,10 @@ public class JMXAgent {
         } catch (InstanceNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean isConnected(){
+        return connected;
     }
 
     /**
