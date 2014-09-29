@@ -56,4 +56,19 @@ public class AnomalyDetector {
         return connections;
     }
 
+    /**
+     * Clear all data in database
+     */
+    public void clearData(){
+        log.clearData();
+    }
+
+    /**
+     * Clears all data for the specified processes in the database.
+     * @param processes ArrayList of processes in format String HOSTNAME:PORT
+     */
+    public void clearData(ArrayList<String> processes){
+        log.clearData(processes);
+    }
+
 }
