@@ -66,4 +66,16 @@ public interface ILogging {
 
     public void sendAnalyzedGCData(String hostName, int port, GcReport analyzedDailyGcStats);
 
+    /**
+     * Clears data for all processes in the database
+     */
+    public void clearData();
+
+    /**
+     * Clears data for specified processes in the database.
+     * @param processes list of processes HOSTNAME:PORT
+     */
+    public void clearData(ArrayList<String> processes);
+
+
 }
