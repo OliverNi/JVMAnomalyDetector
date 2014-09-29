@@ -426,8 +426,8 @@ public class Log implements  ILogging
 
         try
         {
-            ResultSet rs = DB.executeQuery("SELECT timestamp,usedMemory,hostname,port FROM GCLog " +
-                    "WHERE startTime ="+startTime+" AND endTime ="+endTime);
+            ResultSet rs = DB.executeQuery("SELECT timestamp,usedMemory,hostname,port FROM MemLog " +
+                    "WHERE timestamp >="+startTime+" AND timestamp <="+endTime);
             while(rs.next())
             {
                 fetchHostNamePort = rs.getString("hostname")+":"+rs.getString("port");
