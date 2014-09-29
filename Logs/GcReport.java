@@ -4,93 +4,78 @@ package Logs;
  * Created by Oliver on 2014-09-22.
  */
 public class GcReport {
-   /* public enum Trend{ @TODO Fix / remove Trend
-        //Using more memory than before
-        CONTINUOUSLY_GROWING,
-        CHANGING_FROM_GROWING_TO_STABLE,
-        CHANGING_FROM_STABLE_TO_GROWING,
-
-        //Using less memory than before
-        CONTINUOUSLY_DECREASING,
-        CHANGING_FROM_DECREASING_TO_STABLE,
-        CHANGING_FROM_STABLE_TO_DECREASING,
-
-        //Memory usage practically unchanged
-        STABLE,
-
-        //Memory usage practically unchanged / Using more/less memory than before
-        CHANGING_FROM_GROWING_TO_DECREASING,
-        CHANGING_FROM_DECREASING_TO_GROWING
-    }*/
     private long sumCollectionTime;
     private long minCollectionTime;
     private long maxCollectionTime;
-    private long avgTimeBetweenGc;
+    private long sumTimeBetweenGc;
     private long minTimeBetweenGc;
     private long maxTimeBetweenGc;
-    private long avgCollected;
+    private long sumCollected;
     private long minCollected;
     private long maxCollected;
     private long minMemoryUsage;
     private long maxMemoryUsage;
-    private long avgMemoryUsage;
+    private long sumMemoryUsage;
     private long startMemoryUsage;
     private long endMemoryUsage;
-   // private ArrayList<Trend> trend;
     private long startTime;
     private long endTime;
     private int gcCount;
-    private long avgMinMemoryUsage;
+    private int reportCount;
+    private long sumMinMemoryUsage;
 
     /**
      * Constructor
-     * @param avgTimeBetweenGc average time between GCs performed this period.
+     * @param sumTimeBetweenGc sum of time between GCs performed this period (used to calc avg).
      * @param minTimeBetweenGc minimum time between two GCs for this period.
      * @param maxTimeBetweenGc maximum time between two GCs for this period.
-     * @param avgCollected average memory collected for each GC for this period.
+     * @param sumCollected average memory collected for each GC for this period.
      * @param minCollected minimum memory collected from one GC for this period.
      * @param maxCollected maximum memory collected from one GC for this period.
      * @param minMemoryUsage minimum memory used after a GC for this period.
      * @param maxMemoryUsage maximum memory used after a GC for this period.
-     * @param avgMemoryUsage average memory used after a GC for this period.
+     * @param sumMemoryUsage average memory used after a GC for this period.
      * @param startMemoryUsage memory usage after first GC for this period.
      * @param endMemoryUsage memory usage after last GC for this period.
      * @param startTime start time for this period.
      * @param endTime end time for this period.
      * @param gcCount how many GCs where performed this period.
+     * @param reportCount how man reports this report is based on.
+     * @param sumMinMemoryUsage the sum of every minMemoryUsage in every report (used to calc avg).
      */
     public GcReport(long sumCollectionTime, long minCollectionTime, long maxCollectionTime,
-                    long avgTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
-                    long avgCollected, long minCollected, long maxCollected,
-                    long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
+                    long sumTimeBetweenGc, long minTimeBetweenGc, long maxTimeBetweenGc,
+                    long sumCollected, long minCollected, long maxCollected,
+                    long minMemoryUsage, long maxMemoryUsage, long sumMemoryUsage,
                     long startMemoryUsage, long endMemoryUsage,
-                    long startTime, long endTime, int gcCount, long avgMinMemoryUsage){
+                    long startTime, long endTime, int gcCount, int reportCount, long sumMinMemoryUsage){
         this.sumCollectionTime = sumCollectionTime;
         this.minCollectionTime = minCollectionTime;
         this.maxCollectionTime = maxCollectionTime;
-        this.avgTimeBetweenGc = avgTimeBetweenGc;
+        this.sumTimeBetweenGc = sumTimeBetweenGc;
         this.minTimeBetweenGc = minTimeBetweenGc;
         this.maxTimeBetweenGc = maxTimeBetweenGc;
-        this.avgCollected = avgCollected;
+        this.sumCollected = sumCollected;
         this.minCollected = minCollected;
         this.maxCollected = maxCollected;
         this.minMemoryUsage = minMemoryUsage;
         this.maxMemoryUsage = maxMemoryUsage;
-        this.avgMemoryUsage = avgMemoryUsage;
+        this.sumMemoryUsage = sumMemoryUsage;
         this.startMemoryUsage = startMemoryUsage;
         this.endMemoryUsage = endMemoryUsage;
         this.startTime = startTime;
         this.endTime = endTime;
         this.gcCount = gcCount;
-        this.avgMinMemoryUsage = avgMinMemoryUsage;
+        this.reportCount = reportCount;
+        this.sumMinMemoryUsage = sumMinMemoryUsage;
     }
 
     public GcReport(){
-        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     public long getAvgCollected() {
-        return avgCollected;
+        return sumCollected / gcCount;
     }
 
     public long getMinCollected() {
@@ -110,14 +95,8 @@ public class GcReport {
     }
 
     public long getAvgMemoryUsage() {
-        return avgMemoryUsage;
+        return sumMemoryUsage;
     }
-
-/*
-    public Trend getTrend() {
-        //@TODO Trend
-        return Trend.STABLE;
-    } */
 
     public long getStartTime() {
         return startTime;
@@ -136,7 +115,7 @@ public class GcReport {
     }
 
     public long getAvgTimeBetweenGc() {
-        return avgTimeBetweenGc;
+        return sumTimeBetweenGc;
     }
 
     public long getMinTimeBetweenGc() {
@@ -152,7 +131,7 @@ public class GcReport {
     }
 
     public long getAvgCollectionTime() {
-        return sumCollectionTime/getGcCount();
+        return sumCollectionTime / gcCount;
     }
 
     public long getMinCollectionTime() {
@@ -164,11 +143,35 @@ public class GcReport {
     }
 
     public long getAvgMinMemoryUsage() {
-        return avgMinMemoryUsage;
+        return sumMinMemoryUsage / gcCount;
+    }
+
+    public long getSumCollectionTime() {
+        return sumCollectionTime;
+    }
+
+    public long getSumTimeBetweenGc() {
+        return sumTimeBetweenGc;
+    }
+
+    public long getSumCollected() {
+        return sumCollected;
+    }
+
+    public long getSumMemoryUsage() {
+        return sumMemoryUsage;
+    }
+
+    public int getReportCount() {
+        return reportCount;
+    }
+
+    public long getSumMinMemoryUsage() {
+        return sumMinMemoryUsage;
     }
 
     public void setAvgCollected(long avgCollected) {
-        this.avgCollected = avgCollected;
+        this.sumCollected = avgCollected;
     }
 
     public void setMinCollected(long minCollected) {
@@ -188,13 +191,8 @@ public class GcReport {
     }
 
     public void setAvgMemoryUsage(long avgMemoryUsage) {
-        this.avgMemoryUsage = avgMemoryUsage;
+        this.sumMemoryUsage = avgMemoryUsage;
     }
-
-/*
-    public void setTrend(Trend trend) {
-        //@TODO Trend
-    }*/
 
     public void setStartTime(long startTime) {
         this.startTime = startTime;
@@ -213,7 +211,7 @@ public class GcReport {
     }
 
     public void setAvgTimeBetweenGc(long avgTimeBetweenGc) {
-        this.avgTimeBetweenGc = avgTimeBetweenGc;
+        this.sumTimeBetweenGc = avgTimeBetweenGc;
     }
 
     public void setMinTimeBetweenGc(long minTimeBetweenGc) {
@@ -240,13 +238,29 @@ public class GcReport {
         this.maxCollectionTime = maxCollectionTime;
     }
 
-    public void setAvgMinMemoryUsage(long avgMinMemoryUsage) {
-        this.avgMinMemoryUsage = avgMinMemoryUsage;
+    public void setSumMinMemoryUsage(long sumMinMemoryUsage) {
+        this.sumMinMemoryUsage = sumMinMemoryUsage;
+    }
+
+    public void setSumTimeBetweenGc(long sumTimeBetweenGc) {
+        this.sumTimeBetweenGc = sumTimeBetweenGc;
+    }
+
+    public void setSumCollected(long sumCollected) {
+        this.sumCollected = sumCollected;
+    }
+
+    public void setSumMemoryUsage(long sumMemoryUsage) {
+        this.sumMemoryUsage = sumMemoryUsage;
+    }
+
+    public void setReportCount(int reportCount) {
+        this.reportCount = reportCount;
     }
 
     public void addGcReport(GcReport ags){
         //Avg time between GCs
-        this.avgTimeBetweenGc = (avgTimeBetweenGc + ags.getAvgTimeBetweenGc()) / 2;
+        this.sumTimeBetweenGc = (sumTimeBetweenGc + ags.getAvgTimeBetweenGc()) / 2;
         //Min/Max time between GCs
         if (ags.getMinTimeBetweenGc() < this.getMinTimeBetweenGc()){
             this.setMinTimeBetweenGc(ags.getMinTimeBetweenGc());
@@ -256,7 +270,7 @@ public class GcReport {
         }
 
         //Avg collected
-        this.avgCollected = (avgCollected + ags.getAvgCollected()) / 2;
+        this.sumCollected = (sumCollected + ags.getAvgCollected()) / 2;
         //Min/Max collected
         if (ags.getMinCollected() < this.getMinCollected()){
             this.setMinCollected(ags.getMinCollected());
@@ -266,7 +280,7 @@ public class GcReport {
         }
 
         //Avg memory usage
-        this.avgMemoryUsage = (avgMemoryUsage + ags.getAvgMemoryUsage()) / 2;
+        this.sumMemoryUsage = (sumMemoryUsage + ags.getAvgMemoryUsage()) / 2;
         //Min/Max memory usage
         if (ags.getMinMemoryUsage() < this.getMinMemoryUsage()){
             this.setMinMemoryUsage(ags.getMinMemoryUsage());
@@ -290,6 +304,58 @@ public class GcReport {
         this.gcCount += ags.gcCount;
 
         //Average minMemoryUsage
-        this.avgMinMemoryUsage = (avgMinMemoryUsage + ags.avgMinMemoryUsage) / 2;
+        this.sumMinMemoryUsage = (sumMinMemoryUsage + ags.sumMinMemoryUsage) / 2;
     }
+
+    public void addGcStats(GcStats stats) {
+        if (gcCount == 0) {
+            this.setStartTime(stats.getTimeStamp());
+            this.sumTimeBetweenGc = Integer.MAX_VALUE;
+        } else {
+            //Memory used
+            this.sumMemoryUsage += stats.getMemoryUsedAfter();
+            if (stats.getMemoryUsedAfter() < this.getMinMemoryUsage()) {
+                this.setMinMemoryUsage(stats.getMemoryUsedAfter());
+            } else if (stats.getMemoryUsedAfter() > this.getMaxMemoryUsage()) {
+                this.setMaxMemoryUsage(stats.getMemoryUsedAfter());
+            }
+            //Memory collected
+            this.sumCollected += stats.getAmountCollected();
+            if (stats.getAmountCollected() < this.getMinCollected()) {
+                this.setMinCollected(stats.getAmountCollected());
+            } else if (stats.getAmountCollected() > this.getMaxCollected()) {
+                this.setMaxCollected(stats.getAmountCollected());
+            }
+            //Collection Time
+            this.sumCollectionTime += stats.getCollectionTime();
+            if (stats.getCollectionTime() < this.getMinCollectionTime()) {
+                this.setMinCollectionTime(stats.getCollectionTime());
+            } else if (stats.getCollectionTime() > this.getMaxCollectionTime()) {
+                this.setMaxCollectionTime(stats.getCollectionTime());
+            }
+            //Time performed
+            if (stats.getTimeStamp() < this.getStartTime()) {
+                this.setStartTime(stats.getTimeStamp());
+            } else if (stats.getTimeStamp() > this.getEndTime()) {
+                this.setEndTime(stats.getTimeStamp());
+            }
+            //Time between GCs
+            if (gcCount % 2 == 0) {
+                long time = stats.getTimeStamp() - this.getEndTime();
+                sumTimeBetweenGc = time;
+                if (time < this.getMinTimeBetweenGc()) {
+                    this.setMinTimeBetweenGc(time);
+                } else if (time > this.getMaxTimeBetweenGc()) {
+                    this.setMaxTimeBetweenGc(time);
+                }
+            }
+        }
+        this.sumMemoryUsage += stats.getMemoryUsedAfter();
+        this.sumCollected += stats.getAmountCollected();
+        this.sumCollectionTime += stats.getCollectionTime();
+        this.setEndMemoryUsage(stats.getMemoryUsedAfter());
+        this.gcCount++;
+
+    }
+
 }
