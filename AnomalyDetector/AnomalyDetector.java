@@ -12,7 +12,6 @@ import java.util.ArrayList;
  * Created by Oliver on 2014-09-10.
  */
 public class AnomalyDetector {
-
     public boolean ANALYZE_HOURLY_STATISTICS = false;
     public boolean ANALYZE_DAILY_STATISTICS = true;
     public boolean ANALYZE_WEEKLY_STATISTICS = true;
@@ -27,6 +26,7 @@ public class AnomalyDetector {
     public AnomalyDetector(){
         agents = new ArrayList<>();
         connections = new ArrayList<>();
+        log = new Log();
     }
 
     /**
@@ -34,11 +34,19 @@ public class AnomalyDetector {
      * @param hostName hostname
      * @param port port
      */
-    public void connect(String hostName, int port){
-        log = new Log();
+    public boolean connect(String hostName, int port){
+        boolean success = false;
         agents.add(new JMXAgent(hostName, port, this));
-        //@TODO Fix error check if connection fails.
-        connections.add(hostName + ":" + port);
+        if (agents.get(agents.size()-1).isConnected()){
+            connections.add(hostName + ":" + port);
+            success = true;
+        }
+        else{
+            agents.remove(agents.size()-1);
+            success = false;
+        }
+
+        return success;
     }
 
     /**
@@ -47,12 +55,19 @@ public class AnomalyDetector {
      * @param port port
      * @param interval interval in milliseconds decides how often memory statistics are gathered.
      */
-    public void connect(String hostName, int port, int interval){
-        log = new Log();
+    public boolean connect(String hostName, int port, int interval){
+        boolean success = false;
         agents.add(new JMXAgent(hostName, port, this));
-        //@TODO Fix error check if connection fails.
-        agents.get(agents.size()-1).setInterval(interval);
-        connections.add(hostName + ":" + port);
+        if (agents.get(agents.size() -1).isConnected()){
+            agents.get(agents.size()-1).setInterval(interval);
+            connections.add(hostName + ":" + port);
+            success = true;
+        }
+        else {
+            agents.remove(agents.size() - 1);
+            success = false;
+        }
+        return success;
     }
 
     public boolean disconnect(String hostName, int port){
