@@ -306,6 +306,7 @@ public class GcReport {
         //GcCount
         this.gcCount += ags.gcCount;
 
+        reportCount++;
         //Average minMemoryUsage
         this.sumMinMemoryUsage = (sumMinMemoryUsage + ags.sumMinMemoryUsage) / 2;
     }
