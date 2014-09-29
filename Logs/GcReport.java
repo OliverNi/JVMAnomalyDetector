@@ -40,6 +40,7 @@ public class GcReport {
     private long startTime;
     private long endTime;
     private int gcCount;
+    private long avgMinMemoryUsage;
 
     /**
      * Constructor
@@ -63,7 +64,7 @@ public class GcReport {
                     long avgCollected, long minCollected, long maxCollected,
                     long minMemoryUsage, long maxMemoryUsage, long avgMemoryUsage,
                     long startMemoryUsage, long endMemoryUsage,
-                    long startTime, long endTime, int gcCount){
+                    long startTime, long endTime, int gcCount, long avgMinMemoryUsage){
         this.avgCollectionTime = avgCollectionTime;
         this.minCollectionTime = minCollectionTime;
         this.maxCollectionTime = maxCollectionTime;
@@ -81,10 +82,11 @@ public class GcReport {
         this.startTime = startTime;
         this.endTime = endTime;
         this.gcCount = gcCount;
+        this.avgMinMemoryUsage = avgMinMemoryUsage;
     }
 
     public GcReport(){
-        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+        this(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
     }
 
     public long getAvgCollected() {
@@ -161,6 +163,10 @@ public class GcReport {
         return maxCollectionTime;
     }
 
+    public long getAvgMinMemoryUsage() {
+        return avgMinMemoryUsage;
+    }
+
     public void setAvgCollected(long avgCollected) {
         this.avgCollected = avgCollected;
     }
@@ -234,6 +240,10 @@ public class GcReport {
         this.maxCollectionTime = maxCollectionTime;
     }
 
+    public void setAvgMinMemoryUsage(long avgMinMemoryUsage) {
+        this.avgMinMemoryUsage = avgMinMemoryUsage;
+    }
+
     public void addGcReport(GcReport ags){
         //Avg time between GCs
         this.avgTimeBetweenGc = (avgTimeBetweenGc + ags.getAvgTimeBetweenGc()) / 2;
@@ -278,5 +288,8 @@ public class GcReport {
 
         //GcCount
         this.gcCount += ags.gcCount;
+
+        //Average minMemoryUsage
+        this.avgMinMemoryUsage = (avgMinMemoryUsage + ags.avgMinMemoryUsage) / 2;
     }
 }
