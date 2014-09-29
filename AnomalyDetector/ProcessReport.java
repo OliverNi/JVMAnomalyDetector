@@ -20,7 +20,7 @@ public class ProcessReport {
     // default value in milliseconds (20min) corresponding to a warning
     public static final long DEFAULT_TIME_BETWEEN_GC_WARNING = 1200000;
     //default value of a percentage increase corresponding to a warning
-    public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 0.1;
+    public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
     public static long TIME_BETWEEN_GC_WARNING;
     public static double PERCENTAGE_INC_IN_MEM_USE_WARNING;
 
@@ -36,7 +36,7 @@ public class ProcessReport {
     //Usage after last recorded GC
     private long usageAfterLastGc;
 
-    //Difference (percentage) su (Used to calc avg)
+    //Difference (percentage) sum (Used to calc avg)
     private double dailySumMemUsageDif;
     private double weeklySumMemUsageDif;
     private double monthlySumMemUsageDif;
@@ -74,5 +74,13 @@ public class ProcessReport {
 
     public double getDailyAvgMemUsageDif(){
         return dailySumMemUsageDif / dailyReportCount;
+    }
+
+    public double getWeeklyAvgMemUsageDif(){
+        return weeklySumMemUsageDif / weeklyReportCount;
+    }
+
+    public double getMonthlyAvgMemUsageDif(){
+        return monthlySumMemUsageDif / monthlyReportCount;
     }
 }

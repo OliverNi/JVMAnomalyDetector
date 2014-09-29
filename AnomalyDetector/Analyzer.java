@@ -1,5 +1,6 @@
 package AnomalyDetector;
 
+import Logs.AnalyzedGcReport;
 import Logs.GcReport;
 import Logs.GcStats;
 import Logs.ILogging;
@@ -31,7 +32,6 @@ public class Analyzer {
      * Analyze GcReports by comparing a daily GcReport to the previous day's GcReport
      */
     public void analyzeDailyGC(){
-
     }
 
     /**
@@ -62,15 +62,6 @@ public class Analyzer {
             report.addGcReport(g);
         }
         return report;
-    }
-    private GcReport combineAnalyzedGcStats(ArrayList<GcReport> analyzedStats) {
-        GcReport combined = new GcReport();
-
-        for (GcReport a : analyzedStats){
-            combined.addGcReport(a);
-        }
-
-        return combined;
     }
 
     public void createDailyGcReports(){
