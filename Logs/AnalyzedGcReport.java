@@ -30,6 +30,7 @@ public class AnalyzedGcReport {
         this.avgCollectedDif = 0;
         this.avgMemoryUsageDif = 0;
         this.avgMinMemoryUsageDif = 0;
+        this.type = Type.GREATER;
     }
 
     /**
