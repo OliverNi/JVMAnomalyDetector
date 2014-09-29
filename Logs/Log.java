@@ -372,14 +372,14 @@ public class Log implements  ILogging
         {
             try
             {
-                while(processesCounter <= processes.size())
+                while(processesCounter < processes.size())
                 {
                     getPortHostname = processes.get(processesCounter);
                     processesCounter++;
                     String[] theSplit = getPortHostname.split("\\:");
 
                     ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,hostname,port FROM GCLog " +
-                            "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+ " AND port = " + theSplit[1] + " AND hostname = " + theSplit[0]+" ORDER BY startTime");
+                            "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+ " AND port = " + theSplit[1] + " AND hostname = " + theSplit[0]+" ORDER BY timestamp");
                     while(rs.next())
                     {
                         long timestamp = Long.parseLong(rs.getString("timestamp"));
@@ -427,7 +427,7 @@ public class Log implements  ILogging
         try
         {
             ResultSet rs = DB.executeQuery("SELECT timestamp,usedMemory,hostname,port FROM MemLog " +
-                    "WHERE timestamp >="+startTime+" AND timestamp <="+endTime);
+                    "WHERE timestamp >="+startTime+" AND timestamp <="+endTime+" ORDER BY timestamp");
             while(rs.next())
             {
                 fetchHostNamePort = rs.getString("hostname")+":"+rs.getString("port");
@@ -469,14 +469,14 @@ public class Log implements  ILogging
         {
             try
             {
-                while(processesCounter <= processes.size())
+                while(processesCounter < processes.size())
                 {
                     String getPortHostname = processes.get(processesCounter);
                     processesCounter++;
                     String theSplit[] = getPortHostname.split("\\:");
 
                     ResultSet rs = DB.executeQuery("SELECT timestamp,usedMemory,hostname,port FROM MemLog " +
-                            "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+" AND hostname = "+theSplit[0]+" AND port = "+theSplit[1]);
+                            "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+" AND hostname = "+theSplit[0]+" AND port = "+theSplit[1]+" ORDER BY timestamp");
                     while(rs.next())
                     {
                         fetchHostNamePort = rs.getString("hostname")+":"+rs.getString("port");
@@ -535,44 +535,89 @@ public class Log implements  ILogging
     @Override
     public Map<String, ArrayList<GcReport>> getGcReports(long startTime, long endTime)
     {
-        ArrayList<GcReport> temp = new ArrayList<GcReport>();
-        GcReport theGcReport;
-        HashMap<String, ArrayList<MemoryStats>> instanceOfGCLog = new HashMap<>();
+        ArrayList<GcReport> GCReports = new ArrayList<GcReport>();
+        GcReport theGcReport = new GcReport();
+        HashMap<String, ArrayList<GcReport>> instanceOfGCLog = new HashMap<>();
         try
         {
             String input = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
                     "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
                     "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
-                   "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount FROM GCReport WHERE startTime >= "+startTime+" AND endTime <= "+endTime;
+                   "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, port FROM GCReport WHERE startTime >= "+startTime+" AND endTime <= "+endTime+ " ORDER BY startTime";
             ResultSet rs = DB.executeQuery(input);
             while(rs.next())
             {
                 long sumCollected = Long.parseLong(rs.getString("sumCollected"));
+                theGcReport.setSumCollected(sumCollected);
+
                 long maxCollected = Long.parseLong(rs.getString("maxCollected"));
+                theGcReport.setMaxCollected(maxCollected);
+
                 long minCollected = Long.parseLong(rs.getString("minCollected"));
+                theGcReport.setMinCollected(minCollected);
+
                 long minMemoryUsage = Long.parseLong(rs.getString("minMemoryUsage"));
+                theGcReport.setMinMemoryUsage(minMemoryUsage);
+
                 long maxMemoryUsage = Long.parseLong(rs.getString("maxMemoryUsage"));
+                theGcReport.setMaxMemoryUsage(maxMemoryUsage);
+
                 long sumMemoryUsage = Long.parseLong(rs.getString("sumMemoryUsage"));
+                theGcReport.setSumMemoryUsage(sumMemoryUsage);
+
                 long startMemoryUsage = Long.parseLong(rs.getString("startMemoryUsage"));
+                theGcReport.setStartMemoryUsage(startMemoryUsage);
+
                 long endMemoryUsage = Long.parseLong(rs.getString("endMemoryUsage"));
+                theGcReport.setEndMemoryUsage(endMemoryUsage);
+
                 long sumTimeBetweenGC = Long.parseLong(rs.getString("sumTimeBetweenGc"));
+                theGcReport.setSumTimeBetweenGc(sumTimeBetweenGC);
+
                 long minTimeBetweenGc = Long.parseLong(rs.getString("minTimeBetweenGc"));
+                theGcReport.setMinTimeBetweenGc(minTimeBetweenGc);
+
                 long maxTimeBetweenGc = Long.parseLong(rs.getString("maxTimeBetweenGc"));
+                theGcReport.setMaxTimeBetweenGc(maxTimeBetweenGc);
 
                 long sumCollectionTime = Long.parseLong(rs.getString("sumCollectionTime"));
+                theGcReport.setSumCollectionTime(sumCollectionTime);
+
                 long minCollectionTime = Long.parseLong(rs.getString("minCollectionTime"));
+                theGcReport.setMinCollectionTime(minCollectionTime);
+
                 long maxCollectionTime = Long.parseLong(rs.getString("maxCollectionTime"));
+                theGcReport.setMaxCollectionTime(maxCollectionTime);
+
                 long fetchedstartTime = Long.parseLong(rs.getString("startTime"));
+                theGcReport.setStartTime(fetchedstartTime);
+
                 long fetchedendTime = Long.parseLong(rs.getString("endTime"));
+                theGcReport.setEndTime(fetchedendTime);
+
                 long sumMinMemoryUsage = Long.parseLong(rs.getString("sumMinMemoryUsage"));
-                long reportCount = Long.parseLong(rs.getString("reportCount"));
-                long gcCount = Long.parseLong(rs.getString("gcCount"));
+                theGcReport.setSumMinMemoryUsage(sumMinMemoryUsage);
+
+                int reportCount = Integer.parseInt(rs.getString("reportCount"));
+                theGcReport.setReportCount(reportCount);
+
+                int gcCount = Integer.parseInt(rs.getString("gcCount"));
+                theGcReport.setGcCount(gcCount);
+
+                String fetchHostnamePort = rs.getString("hostname")+":"+rs.getString("port");
+
+                GCReports.add(theGcReport);
+                instanceOfGCLog.put(fetchHostnamePort, GCReports);
             }
         } catch (SQLException e)
         {
             e.printStackTrace();
         }
-        Map<String, ArrayList<MemoryStats>> fetch = instanceOfGCLog;
+        catch (NumberFormatException nfe)
+        {
+            System.out.println("NumberFormatException: " + nfe.getMessage());
+        }
+        Map<String, ArrayList<GcReport>> fetch = instanceOfGCLog;
 
         return null;
     }
@@ -602,7 +647,7 @@ public class Log implements  ILogging
         String input = "";
         try
         {
-            while(processesCounter <= processes.size())
+            while(processesCounter < processes.size())
             {
                 getPortHostname = processes.get(processesCounter);
                 processesCounter++;
