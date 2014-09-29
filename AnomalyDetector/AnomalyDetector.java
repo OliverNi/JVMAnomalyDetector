@@ -28,10 +28,30 @@ public class AnomalyDetector {
         agents = new ArrayList<>();
         connections = new ArrayList<>();
     }
+
+    /**
+     * Connects to process, use default interval.
+     * @param hostName hostname
+     * @param port port
+     */
     public void connect(String hostName, int port){
         log = new Log();
         agents.add(new JMXAgent(hostName, port, this));
         //@TODO Fix error check if connection fails.
+        connections.add(hostName + ":" + port);
+    }
+
+    /**
+     * Connects to process and set interval for memory statistics for that process.
+     * @param hostName hostname
+     * @param port port
+     * @param interval interval in milliseconds decides how often memory statistics are gathered.
+     */
+    public void connect(String hostName, int port, int interval){
+        log = new Log();
+        agents.add(new JMXAgent(hostName, port, this));
+        //@TODO Fix error check if connection fails.
+        agents.get(agents.size()-1).setInterval(interval);
         connections.add(hostName + ":" + port);
     }
 
