@@ -1,7 +1,5 @@
 package Logs;
 
-import AnomalyDetector.AnomalyReport;
-
 /**
  * Created by Oliver on 2014-09-25.
  */
@@ -14,6 +12,8 @@ public class AnalyzedGcReport {
     double avgTimeBetweenGcDif;
     double avgCollectedDif;
     double avgMemoryUsageDif;
+    double avgMinMemoryUsageDif;
+
     GcReport[] gcReports = new GcReport[2];
 
     public AnalyzedGcReport(){
@@ -21,8 +21,13 @@ public class AnalyzedGcReport {
         this.avgTimeBetweenGcDif = 0;
         this.avgCollectedDif = 0;
         this.avgMemoryUsageDif = 0;
+        this.avgMinMemoryUsageDif = 0;
     }
 
+    /**
+     * Determines which of the two incoming reports is the starting one, and puts it first in an array
+     * it then performs comparisons between the reports to get the percentage increase value on different variables
+     */
     public AnalyzedGcReport analyze(GcReport r1, GcReport r2){
         if (r1.getStartTime() < r2.getStartTime()) {
             gcReports[0] = r1;
@@ -36,22 +41,42 @@ public class AnalyzedGcReport {
         calcAvgCollectionTimeDif();
         calcAvgMemoryUsageDif();
         calcAvgTimeBetweenGcDif();
-
+        calcAvgMinMemUsageDif();
         return this;
     }
 
+    /**
+     *   calculates the average memory usage difference between two reports in percent
+     */
+    private void calcAvgMinMemUsageDif()
+    {
+        this.avgMinMemoryUsageDif = (gcReports[0].getAvgMinMemoryUsage() / gcReports[1].getAvgMinMemoryUsage());
+    }
+
+    /**
+     * calculates the average collection time difference between two reports in percent
+     */
     private void calcAvgCollectionTimeDif(){
         this.avgCollectionTimeDif = (gcReports[0].getAvgCollectionTime() / gcReports[1].getAvgCollectionTime());
     }
 
+    /**
+     * calculates the average collected amount of executed Garbage collections between two reports in percent
+     */
     private void calcAvgCollectedDif(){
         this.avgCollectedDif = (gcReports[0].getAvgCollected() / gcReports[1].getAvgCollected());
     }
 
+    /**
+     * calculates the average memory usage difference between two reports in percent
+     */
     private void calcAvgMemoryUsageDif(){
         this.avgMemoryUsageDif = (gcReports[0].getAvgMemoryUsage() / gcReports[1].getAvgMemoryUsage());
     }
 
+    /**
+     * calculates the average time between executed garbage collection difference between two reports
+     */
     private void calcAvgTimeBetweenGcDif(){
         this.avgTimeBetweenGcDif = (gcReports[0].getAvgTimeBetweenGc() / gcReports[1].getAvgTimeBetweenGc());
     }
