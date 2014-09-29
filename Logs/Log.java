@@ -374,7 +374,7 @@ public class Log implements  ILogging
             {
                 while(processesCounter <= processes.size())
                 {
-                    getPortHostname = processes.get(processesCounter).toString();
+                    getPortHostname = processes.get(processesCounter);
                     processesCounter++;
                     String[] theSplit = getPortHostname.split("\\:");
 
@@ -475,8 +475,8 @@ public class Log implements  ILogging
                     processesCounter++;
                     String theSplit[] = getPortHostname.split("\\:");
 
-                    ResultSet rs = DB.executeQuery("SELECT timestamp,usedMemory,hostname,port FROM GCLog " +
-                            "WHERE startTime ="+startTime+" AND endTime ="+endTime+" AND hostname = "+theSplit[0]+" AND port = "+theSplit[1]);
+                    ResultSet rs = DB.executeQuery("SELECT timestamp,usedMemory,hostname,port FROM MemLog " +
+                            "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+" AND hostname = "+theSplit[0]+" AND port = "+theSplit[1]);
                     while(rs.next())
                     {
                         fetchHostNamePort = rs.getString("hostname")+":"+rs.getString("port");
