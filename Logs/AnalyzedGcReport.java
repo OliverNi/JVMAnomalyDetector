@@ -13,13 +13,15 @@ public class AnalyzedGcReport {
         DAILY,
         WEEKLY,
         MONTHLY,
-        GREATER
+        UNKNOWN
     }
     double avgCollectionTimeDif;
     double avgTimeBetweenGcDif;
     double avgCollectedDif;
     double avgMemoryUsageDif;
     double avgMinMemoryUsageDif;
+    private long minMemoryUsage;
+    private long maxMemoryUsage;
     private Type type;
 
     GcReport[] gcReports = new GcReport[2];
@@ -30,7 +32,7 @@ public class AnalyzedGcReport {
         this.avgCollectedDif = 0;
         this.avgMemoryUsageDif = 0;
         this.avgMinMemoryUsageDif = 0;
-        this.type = Type.GREATER;
+        this.type = Type.UNKNOWN;
     }
 
     /**
@@ -53,11 +55,13 @@ public class AnalyzedGcReport {
         calcAvgTimeBetweenGcDif();
         calcAvgMinMemUsageDif();
         setType();
+        setMinMemoryUsage();
+        setMaxMemoryUsage();
         return this;
     }
 
     private void setType(){
-        type = Type.GREATER;
+        type = Type.UNKNOWN;
 
         //Under 80 min = HOURLY (20 min margin)
         long hourly = 4800000;
@@ -79,6 +83,20 @@ public class AnalyzedGcReport {
         else if (gcReports[0].getDuration() <= monthly){
             type = Type.MONTHLY;
         }
+    }
+
+    private void setMinMemoryUsage(){
+        if (gcReports[0].getMinMemoryUsage() < gcReports[1].getMinMemoryUsage())
+            minMemoryUsage = gcReports[0].getMinMemoryUsage();
+        else
+            minMemoryUsage = gcReports[1].getMinMemoryUsage();
+    }
+
+    private void setMaxMemoryUsage(){
+        if (gcReports[0].getMaxMemoryUsage() < gcReports[1].getMaxMemoryUsage())
+            minMemoryUsage = gcReports[0].getMaxMemoryUsage();
+        else
+            minMemoryUsage = gcReports[1].getMaxMemoryUsage();
     }
     /**
      *   calculates the average memory usage difference between two reports in percent
