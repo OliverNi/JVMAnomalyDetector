@@ -49,6 +49,7 @@ public class Analyzer {
         }
     }
 
+    public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
     public static final int DIFFERENCE_ALLOWED = 20;
     private AnomalyDetector ad;
     private JMXAgent agent;
@@ -77,6 +78,7 @@ public class Analyzer {
         //Hourly task
         cal.set(Calendar.HOUR, cal.get(Calendar.HOUR) + 1);
         firstTime = cal.getTime();
+
         hourlyTimer.schedule(new HourlyTask(this), firstTime.getTime(), hour);
         //Daily task
         cal.set(Calendar.HOUR, 23);
@@ -101,9 +103,63 @@ public class Analyzer {
         //@TODO Fix different amount of days in different months.
         monthlyTimer.schedule(new MonthlyTask(this), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
     }
-    public void analyzeHourlyGc(){
+    public void analyzeHourlyGc()
+    {
+
+            Calendar cal = Calendar.getInstance();
+
+            long day = 3600000L * 24;
+            long hour = day/24;
+            Date hourlyEndTime = cal.getTime();
+            long hourlyStartTime = cal.getTime().getTime()- hour;
+            //en dag
 
 
+            //tar datumet 00:01:00 och sluttiden 23:59:00 och fetchar alla rapporter mellan dessa datum.
+
+            Map<String, ArrayList<GcStats>> thisHourlyReportsMap = log.getGarbageCollectionStats(hourlyStartTime, hourlyEndTime.getTime());
+            //tar starttiden 00:01:00 minus en dag och sluttiden 23:59:00 minus en dag för att få fram yesterdays rapport
+
+//            Map<String, ArrayList<GcReport>> lastHourlyReportsMap = log.getGcReports(hourlyStartTime - hour,
+//                    hourlyEndTime.getTime() - hour);
+
+
+
+            //fetchar alla current processes med ip:port
+            ArrayList<String> connections = ad.getConnections();
+            //för varje process så skapas en ny AnalyzedGcReport
+            for (int i = 0;  i < connections.size(); i++)
+            {
+                //Skapar en arraylist av todayReports av typ GcReport och lägger in alla rapporter per process
+                ArrayList<GcStats> todayReports = thisHourlyReportsMap.get(connections.get(i));
+
+
+                //Skapar en arraylist av yesterdayReports av typ GcReport och lägger in alla rapporter för varje process
+              //  ArrayList<GcReport> yesterdayReports = lastHourlyReportsMap.get(connections.get(i));
+                long minimumMemValue = 0L;
+                long originalMinimumMemValue = 0L;
+                for(int j=0; j<todayReports.size(); j++)
+                {
+                    if(j == 0)
+                    {
+                        originalMinimumMemValue = todayReports.get(j).getMemoryUsedAfter();
+                        minimumMemValue = todayReports.get(j).getMemoryUsedAfter();
+                    }
+                    minimumMemValue = todayReports.get(j).getMemoryUsedAfter();
+                    if(originalMinimumMemValue/minimumMemValue >= DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING)
+                    {
+
+                    }
+
+                }
+
+                //tar fram ip per process
+                String[] hostPort = connections.get(i).split(":");
+                //tar fram port per process
+                int port = Integer.parseInt(hostPort[1]);
+
+               // reports.get(i).analyze(yesterdayReports.get(0), todayReports.get(0));
+            }
     }
 
     /**

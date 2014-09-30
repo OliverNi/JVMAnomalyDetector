@@ -1,5 +1,7 @@
 package Logs;
 
+import AnomalyDetector.ProcessReport;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -297,7 +299,7 @@ public class Log implements  ILogging
         }
     }
 
-    //basic input values  works, BUT duplicate rows are possible
+    //basic input values  works,
     @Override
     public void sendMemoryLog(long memoryUsed, long timestamp, String hostname, int port)
     {
@@ -320,7 +322,6 @@ public class Log implements  ILogging
         String fetchHostNamePort = "";
         HashMap<String, ArrayList<GcStats>> instanceOfGCStats = new HashMap<>();
 
-        //for each row fetch, must determine the order of rows which are fetched from DB
         try
         {
             ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,GCCollectionTime, hostname,port FROM GCLog WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+" ORDER BY timestamp");
@@ -620,6 +621,21 @@ public class Log implements  ILogging
         Map<String, ArrayList<GcReport>> fetch = instanceOfGCLog;
 
         return null;
+    }
+
+    @Override
+    public Map<String, ArrayList<ProcessReport>> getAllProcessReports() {
+        return null;
+    }
+
+    @Override
+    public Map<String, ArrayList<ProcessReport>> getProcessReports(ArrayList<String> processes) {
+        return null;
+    }
+
+    @Override
+    public long firstGcValue(String process) {
+        return 0;
     }
 
     @Override
