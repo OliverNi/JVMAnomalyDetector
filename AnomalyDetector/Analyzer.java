@@ -32,6 +32,32 @@ public class Analyzer {
      * Analyze GcReports by comparing a daily GcReport to the previous day's GcReport
      */
     public void analyzeDailyGC(){
+        //Set startTime (today 00:01:00)
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.SECOND, 0);
+        Date todayStartTime = cal.getTime();
+        //Set endTime (today 23:59:59)
+        cal.set(Calendar.HOUR, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        Date todayEndTime = cal.getTime();
+        ArrayList<AnalyzedGcReport> reports = new ArrayList<>();
+        long day = 3600000L;
+        Map<String, ArrayList<GcReport>> todayReportsMap = log.getGcReports(todayStartTime.getTime(), todayEndTime.getTime());
+        Map<String, ArrayList<GcReport>> yesterdayReportsMap = log.getGcReports(todayStartTime.getTime() - day,
+                todayEndTime.getTime() - day);
+
+        ArrayList<String> connections = ad.getConnections();
+        for (int i = 0;  i < connections.size(); i++) {
+            reports.add(new AnalyzedGcReport());
+            ArrayList<GcReport> todayReports = todayReportsMap.get(connections.get(i));
+            ArrayList<GcReport> yesterdayReports = yesterdayReportsMap.get(connections.get(i));
+            String[] hostPort = connections.get(i).split(":");
+            int port = Integer.parseInt(hostPort[1]);
+            reports.get(i).analyze(yesterdayReports.get(0), todayReports.get(0));
+        }
     }
 
     /**
@@ -139,6 +165,9 @@ public class Analyzer {
         }
     }
 
+    private void forwardToProcessReport(ArrayList<AnalyzedGcReport> a){
+        //@TODO IMPLEMENT
+    }
 
     //@TODO Move function calcAvg
     private long calcAvg(long[] arr){
