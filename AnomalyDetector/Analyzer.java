@@ -135,6 +135,7 @@ public class Analyzer {
             String[] hostPort = connections.get(i).split(":");
             int port = Integer.parseInt(hostPort[1]);
             reports.get(i).analyze(yesterdayReports.get(0), todayReports.get(0));
+            forwardToProcessReport(hostPort[0], port, reports.get(i));
         }
     }
 
@@ -243,7 +244,7 @@ public class Analyzer {
         }
     }
 
-    private void forwardToProcessReport(ArrayList<AnalyzedGcReport> a){
+    private void forwardToProcessReport(String hostName, int port, AnalyzedGcReport report){
         //@TODO IMPLEMENT
     }
 
