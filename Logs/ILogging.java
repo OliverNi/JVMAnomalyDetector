@@ -78,7 +78,7 @@ public interface ILogging {
 
     public Map<String, ArrayList<ProcessReport>> getAllProcessReports();
 
-    public Map<String, ArrayList<ProcessReport>> getProccesReports(ArrayList<String> processes);
+    public Map<String, ArrayList<ProcessReport>> getProcessReports(ArrayList<String> processes);
 
     /**
      * Retrieves usageAfterFirstGc from the specified process
