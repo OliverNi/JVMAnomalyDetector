@@ -5,16 +5,50 @@ import Logs.GcReport;
 import Logs.GcStats;
 import Logs.ILogging;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Oliver on 2014-09-18.
  */
 public class Analyzer {
     //@TODO Add timer to combine GcReports each day/week/month
+    class HourlyTask extends TimerTask {
+        Analyzer a;
+        HourlyTask(Analyzer a){
+            this.a = a;
+        }
+        public void run(){
+            analyzeHourlyGc();
+        }
+    }
+    class DailyTask extends TimerTask {
+        Analyzer a;
+        DailyTask(Analyzer a){
+            this.a = a;
+        }
+        public void run(){
+            analyzeDailyGC();
+        }
+    }
+    class WeeklyTask extends TimerTask {
+        Analyzer a;
+        WeeklyTask(Analyzer a){
+            this.a = a;
+        }
+        public void run(){
+            analyzeWeeklyGC();
+        }
+    }
+    class MonthlyTask extends TimerTask {
+        Analyzer a;
+        MonthlyTask(Analyzer a){
+            this.a = a;
+        }
+        public void run(){
+            analyzeMonthlyGC();
+        }
+    }
+
     public static final int DIFFERENCE_ALLOWED = 20;
     private AnomalyDetector ad;
     private JMXAgent agent;
@@ -22,9 +56,53 @@ public class Analyzer {
     public Analyzer(JMXAgent agent){
         this.log = ad.getLog();
     }
+    Timer hourlyTimer;
+    Timer dailyTimer;
+    Timer weeklyTimer;
+    Timer monthlyTimer;
 
+    public Analyzer(){
+        //AnalyzeTimer timer = new AnalyzeTimer(this);
+        setTimers();
 
+    }
+
+    private void setTimers(){
+        long hour = 3600000L;
+        long day = hour * 24;
+        long week = day * 7;
+        long month = day * 30;
+        Date firstTime;
+        Calendar cal = Calendar.getInstance();
+        //Hourly task
+        cal.set(Calendar.HOUR, cal.get(Calendar.HOUR) + 1);
+        firstTime = cal.getTime();
+        hourlyTimer.schedule(new HourlyTask(this), firstTime.getTime(), hour);
+        //Daily task
+        cal.set(Calendar.HOUR, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 0);
+        firstTime = cal.getTime();
+        dailyTimer.schedule(new DailyTask(this), firstTime.getTime(), day);
+        //Weekly task
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        cal.set(Calendar.HOUR, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 0);
+        firstTime = cal.getTime();
+        weeklyTimer.schedule(new WeeklyTask(this), firstTime.getTime(), week);
+        //Monthly task
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        cal.set(Calendar.HOUR, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 0);
+        firstTime = cal.getTime();
+        //@TODO Fix different amount of days in different months.
+        monthlyTimer.schedule(new MonthlyTask(this), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+    }
     public void analyzeHourlyGc(){
+
 
     }
 
@@ -44,7 +122,7 @@ public class Analyzer {
         cal.set(Calendar.SECOND, 59);
         Date todayEndTime = cal.getTime();
         ArrayList<AnalyzedGcReport> reports = new ArrayList<>();
-        long day = 3600000L;
+        long day = 3600000L * 24;
         Map<String, ArrayList<GcReport>> todayReportsMap = log.getGcReports(todayStartTime.getTime(), todayEndTime.getTime());
         Map<String, ArrayList<GcReport>> yesterdayReportsMap = log.getGcReports(todayStartTime.getTime() - day,
                 todayEndTime.getTime() - day);
