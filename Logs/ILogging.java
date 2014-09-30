@@ -1,5 +1,7 @@
 package Logs;
 
+import AnomalyDetector.ProcessReport;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -73,6 +75,18 @@ public interface ILogging {
      * @return A list of GcReports separated by a key HOSTNAME:PORT as a String.
      */
     public Map<String, ArrayList<GcReport>> getGcReports(long startTime, long endTime);
+
+    public Map<String, ArrayList<ProcessReport>> getAllProcessReports();
+
+    public Map<String, ArrayList<ProcessReport>> getProccesReports(ArrayList<String> processes);
+
+    /**
+     * Retrieves usageAfterFirstGc from the specified process
+     * @param process HOSTNAME:PORT as String
+     * @return usageAfterFirstGc for the specified process
+     */
+    public long firstGcValue(String process);
+
     /**
      * Clears data for all processes in the database
      */
