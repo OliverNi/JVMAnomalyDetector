@@ -52,6 +52,7 @@ public class AnalyzedGcReport {
         calcAvgMemoryUsageDif();
         calcAvgTimeBetweenGcDif();
         calcAvgMinMemUsageDif();
+        setType();
         return this;
     }
 
