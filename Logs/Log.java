@@ -511,7 +511,7 @@ public class Log implements  ILogging
 
     //input values works, however an update is needed for the trend column, what value to implement when project member is finished with his new concept
     @Override
-    public void sendAnalyzedGCData(String hostName, int port, GcReport analyzedDailyGcStats)
+    public void sendGcReport(String hostName, int port, GcReport analyzedDailyGcStats)
     {
         try
         {

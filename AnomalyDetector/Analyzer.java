@@ -85,7 +85,7 @@ public class Analyzer {
             ArrayList<GcStats> gcStats = gcStatsMap.get(connections.get(i));
             String[] hostPort = connections.get(i).split(":");
             int port = Integer.parseInt(hostPort[1]);
-            log.sendAnalyzedGCData(hostPort[0], port, combineDailyGcStats(gcStats));
+            log.sendGcReport(hostPort[0], port, combineDailyGcStats(gcStats));
         }
     }
 
@@ -110,7 +110,7 @@ public class Analyzer {
             ArrayList<GcReport> dailyReports = reportsMap.get(connections.get(i));
             String[] hostPort = connections.get(i).split(":");
             int port = Integer.parseInt(hostPort[1]);
-            log.sendAnalyzedGCData(hostPort[0], port, combineGcReports(dailyReports));
+            log.sendGcReport(hostPort[0], port, combineGcReports(dailyReports));
         }
     }
 
@@ -135,7 +135,7 @@ public class Analyzer {
             ArrayList<GcReport> dailyReports = reportsMap.get(connections.get(i));
             String[] hostPort = connections.get(i).split(":");
             int port = Integer.parseInt(hostPort[1]);
-            log.sendAnalyzedGCData(hostPort[0], port, combineGcReports(dailyReports));
+            log.sendGcReport(hostPort[0], port, combineGcReports(dailyReports));
         }
     }
 

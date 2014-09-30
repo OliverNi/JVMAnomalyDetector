@@ -64,8 +64,7 @@ public interface ILogging {
     public Map<String, ArrayList<MemoryStats>> getMemoryStats(long startTime, long endTime,
                                                               ArrayList<String> processes);
 
-    //@TODO CHANGE NAME
-    public void sendAnalyzedGCData(String hostName, int port, GcReport analyzedDailyGcStats);
+    public void sendGcReport(String hostName, int port, GcReport analyzedDailyGcStats);
 
     /**
      * Get all GcReports from database within the specified timeframe.
