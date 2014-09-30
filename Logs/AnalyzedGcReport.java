@@ -22,6 +22,7 @@ public class AnalyzedGcReport {
     double avgMinMemoryUsageDif;
     private long minMemoryUsage;
     private long maxMemoryUsage;
+    private long endMemoryUsage;
     private Type type;
 
     GcReport[] gcReports = new GcReport[2];
@@ -32,6 +33,8 @@ public class AnalyzedGcReport {
         this.avgCollectedDif = 0;
         this.avgMemoryUsageDif = 0;
         this.avgMinMemoryUsageDif = 0;
+        this.minMemoryUsage = 0;
+        this.maxMemoryUsage = 0;
         this.type = Type.UNKNOWN;
     }
 
@@ -57,6 +60,7 @@ public class AnalyzedGcReport {
         setType();
         setMinMemoryUsage();
         setMaxMemoryUsage();
+        setEndMemoryUsage();
         return this;
     }
 
@@ -97,6 +101,10 @@ public class AnalyzedGcReport {
             minMemoryUsage = gcReports[0].getMaxMemoryUsage();
         else
             minMemoryUsage = gcReports[1].getMaxMemoryUsage();
+    }
+
+    private void setEndMemoryUsage(){
+        endMemoryUsage = gcReports[1].getEndMemoryUsage();
     }
     /**
      *   calculates the average memory usage difference between two reports in percent
