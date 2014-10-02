@@ -61,9 +61,22 @@ public class ProcessReport {
     private int weeklyReportCount;
     private int monthlyReportCount;
 
+
+
     //Interval
 
-    public ProcessReport(String hostName, int port){
+    public void setHostName(String hostName)
+    {
+        this.hostName = hostName;
+    }
+    public void setPort(int Port)
+    {
+        this.port = Port;
+    }
+
+    public ProcessReport(String hostName, int port)
+    {
+        this.status = Status.SUSPECTED_MEMORY_LEAK;
         TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
         PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
     }
