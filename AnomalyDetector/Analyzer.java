@@ -54,6 +54,7 @@ public class Analyzer {
     private AnomalyDetector ad;
     private JMXAgent agent;
     private ILogging log;
+    private ArrayList<ProcessReport> processReports;
     public Analyzer(JMXAgent agent){
         this.log = ad.getLog();
     }
@@ -65,6 +66,7 @@ public class Analyzer {
     public Analyzer(){
         //AnalyzeTimer timer = new AnalyzeTimer(this);
         setTimers();
+        processReports = new ArrayList<>();
 
     }
 
@@ -105,60 +107,55 @@ public class Analyzer {
     }
     public void analyzeHourlyGc()
     {
-
             Calendar cal = Calendar.getInstance();
 
             long day = 3600000L * 24;
             long hour = day/24;
             Date hourlyEndTime = cal.getTime();
             long hourlyStartTime = cal.getTime().getTime()- hour;
-            //en dag
 
-
-            //tar datumet 00:01:00 och sluttiden 23:59:00 och fetchar alla rapporter mellan dessa datum.
-
+            //inputs current time and the time an hour ago and fetches all available logs for all current processes.
             Map<String, ArrayList<GcStats>> thisHourlyReportsMap = log.getGarbageCollectionStats(hourlyStartTime, hourlyEndTime.getTime());
-            //tar starttiden 00:01:00 minus en dag och sluttiden 23:59:00 minus en dag för att få fram yesterdays rapport
-
-//            Map<String, ArrayList<GcReport>> lastHourlyReportsMap = log.getGcReports(hourlyStartTime - hour,
-//                    hourlyEndTime.getTime() - hour);
-
-
 
             //fetchar alla current processes med ip:port
             ArrayList<String> connections = ad.getConnections();
             //för varje process så skapas en ny AnalyzedGcReport
             for (int i = 0;  i < connections.size(); i++)
             {
-                //Skapar en arraylist av todayReports av typ GcReport och lägger in alla rapporter per process
+                //Creates an arraylist of GcStats and fetches all GCstats entries for the current process through the set starttime and endtime above
                 ArrayList<GcStats> todayReports = thisHourlyReportsMap.get(connections.get(i));
 
-
-                //Skapar en arraylist av yesterdayReports av typ GcReport och lägger in alla rapporter för varje process
-              //  ArrayList<GcReport> yesterdayReports = lastHourlyReportsMap.get(connections.get(i));
                 long minimumMemValue = 0L;
-                long originalMinimumMemValue = 0L;
-                for(int j=0; j<todayReports.size(); j++)
-                {
-                    if(j == 0)
-                    {
-                        originalMinimumMemValue = todayReports.get(j).getMemoryUsedAfter();
-                        minimumMemValue = todayReports.get(j).getMemoryUsedAfter();
-                    }
-                    minimumMemValue = todayReports.get(j).getMemoryUsedAfter();
-                    if(originalMinimumMemValue/minimumMemValue >= DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING)
-                    {
-
-                    }
-
-                }
-
-                //tar fram ip per process
+                long originalMinimumMemValue = log.firstGcValue(connections.get(i));
+                ProcessReport tempReport = new ProcessReport();
+                boolean passedLastGCexec = false;
+                //fetches ip for the current process
                 String[] hostPort = connections.get(i).split(":");
-                //tar fram port per process
+                //fetches port for the current process
                 int port = Integer.parseInt(hostPort[1]);
 
-               // reports.get(i).analyze(yesterdayReports.get(0), todayReports.get(0));
+                for(int j=0; j<todayReports.size(); j++)
+                {
+                    minimumMemValue = todayReports.get(j).getMemoryUsedAfter();
+
+                    //checks for a breach of tolerance level (above or exactly 10% over the oldest minimumMemValue taken from the current process.
+                    if(minimumMemValue >= originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING )
+                    {
+                        tempReport.setHostName(hostPort[0]);
+                        tempReport.setPort(port);
+
+                    }
+                    //checks if the heap memory allocation goes down within tolerance level after the breach and before the end of the one hour interval
+                    if( j == todayReports.size() && minimumMemValue < originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING)
+                    {
+                        passedLastGCexec = true;
+                    }
+                    //if we are on the last lap and the minimumGCMemUsage hasn't gone down, then it's time to create a process report
+                    if(!passedLastGCexec && j == todayReports.size()-1)
+                    {
+                        processReports.add(tempReport);
+                    }
+                }
             }
     }
 
