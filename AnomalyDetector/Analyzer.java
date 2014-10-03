@@ -146,7 +146,7 @@ public class Analyzer {
 
                     }
                     //checks if the heap memory allocation goes down within tolerance level after the breach and before the end of the one hour interval
-                    if( j == todayReports.size() && minimumMemValue < originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING)
+                    if( j == todayReports.size()-1 && minimumMemValue < originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING)
                     {
                         passedLastGCexec = true;
                     }
