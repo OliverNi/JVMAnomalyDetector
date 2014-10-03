@@ -99,9 +99,11 @@ public class Log implements  ILogging
             DB.executeUpdate("DROP TABLE IF EXISTS Memlog");
             DB.executeUpdate("DROP TABLE IF EXISTS GCLog");
             DB.executeUpdate("DROP TABLE IF EXISTS GCReport");
+            DB.executeUpdate("DROP TABLE IF EXISTS ProcessReport");
 
             DB.executeUpdate("CREATE TABLE MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)");
 
+            DB.executeUpdate("CREATE TABLE ProcessReport(prId INTEGER PRIMARY KEY AUTOINCREMENT, startTime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INT, status VARCHAR(25) )");
 
             DB.executeUpdate("CREATE TABLE GCLog(gcId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT," +
                     " memUsageAfter BIGINT, memUsageBefore BIGINT, GCCollectionTime BIGINT, hostname VARCHAR(25), port INTEGER," +
@@ -638,7 +640,18 @@ public class Log implements  ILogging
     }
 
     @Override
-    public void sendProcessReport(long startTime, long endTime, int port, String hostname, String status) {
+    public void sendProcessReport(long startTime, long endTime, int port, String hostname, String status)
+    {
+        try
+        {
+            DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, port, hostname, status" +
+                    "VALUES("+startTime+","+endTime+","+port+","+hostname+","+status+")");
+
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
 
     }
 
