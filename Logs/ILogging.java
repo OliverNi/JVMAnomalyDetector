@@ -81,6 +81,15 @@ public interface ILogging {
     public Map<String, ArrayList<ProcessReport>> getProcessReports(ArrayList<String> processes);
 
     /**
+     *
+      * @param timestamp current timestamp when the ProcessReport was created.
+     * @param port the current port of the process
+     * @param hostname the hostname or ip address of the process
+     * @param status Current memory leak status (LIKELY_MEMORY_LEAK,SUSPECTED_MEMORY_LEAK,POSSIBLE_MEMORY_LEAK, EXCESSIVE_GC_SCAN )
+     */
+    public void sendProcessReport(long startTime, long endTime, int port, String hostname, String status);
+
+    /**
      * Retrieves usageAfterFirstGc from the specified process
      * @param process HOSTNAME:PORT as String
      * @return usageAfterFirstGc for the specified process
