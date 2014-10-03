@@ -72,7 +72,7 @@ public class Log implements  ILogging
            // ResultSet rs = DB.executeQuery("select * from AnalyzedGCData");
 
          //   DBTableCreation();
-            printSpecifiedTable("MemLog");
+            //printSpecifiedTable("MemLog");
 
         }
         catch(SQLException e)
@@ -624,18 +624,45 @@ public class Log implements  ILogging
     }
 
     @Override
-    public Map<String, ArrayList<ProcessReport>> getAllProcessReports() {
+    public Map<String, ArrayList<ProcessReport>> getAllProcessReports()
+    {
+
         return null;
     }
 
     @Override
-    public Map<String, ArrayList<ProcessReport>> getProcessReports(ArrayList<String> processes) {
+    public Map<String, ArrayList<ProcessReport>> getProcessReports(ArrayList<String> processes)
+    {
+
         return null;
     }
 
     @Override
-    public long firstGcValue(String process) {
-        return 0;
+    public void sendProcessReport(long startTime, long endTime, int port, String hostname, String status) {
+
+    }
+
+    @Override
+    public long firstGcValue(String process)
+    {
+        long GcMinMemValue = 0L;
+        try
+        {
+            String input = "SELECT minMemoryUsage FROM GCReport WHERE GCReportId = 1";
+            ResultSet rs = DB.executeQuery(input);
+
+            GcMinMemValue = Long.parseLong(rs.getString("sumMinMemoryUsage"));
+        }catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+        catch (NumberFormatException nfe)
+        {
+            System.out.println("NumberFormatException: " + nfe.getMessage());
+        }
+
+
+        return GcMinMemValue;
     }
 
     @Override
