@@ -662,14 +662,53 @@ public class Log implements  ILogging
             System.out.println("NumberFormatException: " + nfe.getMessage());
         }
         Map<String,ArrayList<ProcessReport>> AllProcessReports = AddProcessReports;
-        return null;
+        return AllProcessReports;
     }
 
     @Override
     public Map<String, ArrayList<ProcessReport>> getProcessReports(ArrayList<String> processes)
     {
+        HashMap<String, ArrayList<ProcessReport>> AddProcessReports  = new HashMap<>();
+        ProcessReport oneReport = new ProcessReport();
+        ArrayList<ProcessReport> allProccessReports = new ArrayList<>();
+        int processesCounter = 0;
+        try
+        {
+            while(processesCounter < processes.size())
+            {
+                String[] hostnamePort = processes.get(processesCounter).split("\\:");
+                ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport WHERE "+hostnamePort[0] +" = hostname AND"+hostnamePort[1]+" = port" +"ORDER BY startTime");
 
-        return null;
+                while(rs.next())
+                {
+                    Long startTime = Long.parseLong(rs.getString("startTime"));
+                    oneReport.setStartTime(startTime);
+                    Long endTime =  Long.parseLong(rs.getString("endTime"));
+                    oneReport.setEndTime(endTime);
+                    int port = Integer.parseInt(rs.getString("port"));
+                    oneReport.setPort(port);
+                    String hostname = rs.getString("hostname");
+                    String theHostnamePort = hostname+":"+port;
+                    oneReport.setHostName(hostname);
+                    String status = rs.getString("status");
+                    oneReport.setStatus(status);
+                    allProccessReports.add(oneReport);
+
+                    AddProcessReports.put(theHostnamePort, allProccessReports);
+                }
+                processesCounter++;
+            }
+
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        catch (NumberFormatException nfe)
+        {
+            System.out.println("NumberFormatException: " + nfe.getMessage());
+        }
+        Map<String,ArrayList<ProcessReport>> AllProcessReports = AddProcessReports;
+        return AllProcessReports;
     }
 
     @Override
@@ -679,13 +718,10 @@ public class Log implements  ILogging
         {
             DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, port, hostname, status" +
                     "VALUES("+startTime+","+endTime+","+port+","+hostname+","+status+")");
-
         }catch (SQLException e)
         {
             e.printStackTrace();
         }
-
-
     }
 
     @Override
