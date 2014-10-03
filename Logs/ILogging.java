@@ -82,7 +82,8 @@ public interface ILogging {
 
     /**
      *
-      * @param timestamp current timestamp when the ProcessReport was created.
+     * @param startTime from the starting hour of the processReport
+     * @param endTime from the ending hour of the ProcessReport
      * @param port the current port of the process
      * @param hostname the hostname or ip address of the process
      * @param status Current memory leak status (LIKELY_MEMORY_LEAK,SUSPECTED_MEMORY_LEAK,POSSIBLE_MEMORY_LEAK, EXCESSIVE_GC_SCAN )
