@@ -54,7 +54,6 @@ public class Analyzer {
     private AnomalyDetector ad;
     private JMXAgent agent;
     private ILogging log;
-    private ArrayList<ProcessReport> processReports;
     public Analyzer(JMXAgent agent){
         this.log = ad.getLog();
     }
@@ -66,8 +65,6 @@ public class Analyzer {
     public Analyzer(){
         //AnalyzeTimer timer = new AnalyzeTimer(this);
         setTimers();
-        processReports = new ArrayList<>();
-
     }
 
     private void setTimers(){
@@ -105,6 +102,8 @@ public class Analyzer {
         //@TODO Fix different amount of days in different months.
         monthlyTimer.schedule(new MonthlyTask(this), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
     }
+
+    //@TODO implement eventual excessive GC scan detection
     public void analyzeHourlyGc()
     {
             Calendar cal = Calendar.getInstance();
@@ -153,7 +152,7 @@ public class Analyzer {
                     //if we are on the last lap and the minimumGCMemUsage hasn't gone down, then it's time to create a process report
                     if(!passedLastGCexec && j == todayReports.size()-1)
                     {
-                        processReports.add(tempReport);
+                        log.sendProcessReport(hourlyStartTime, hourlyEndTime.getTime(),port,hostPort[0],"SUSPECTED_MEMORY_LEAK,");
                     }
                 }
             }
