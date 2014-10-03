@@ -7,10 +7,12 @@ package AnomalyDetector;
 /**
  * A Process Report will be responsible for keeping track of a process' status and warn if it suspects a memory leak.
  */
-public class ProcessReport {
+public class ProcessReport
+{
     //@TODO Create Listener
     //Create AnomalyReport if excessive GC scan
-    public enum Status{
+    public enum Status
+    {
         LIKELY_MEMORY_LEAK,
         SUSPECTED_MEMORY_LEAK,
         POSSIBLE_MEMORY_LEAK,
@@ -24,7 +26,13 @@ public class ProcessReport {
     public static long TIME_BETWEEN_GC_WARNING;
     public static double PERCENTAGE_INC_IN_MEM_USE_WARNING;
 
+
+
+    //@TODO implement uptimeInDays in DB table ProcessReports?
     private int uptimeInDays;
+
+    private long startTime;
+    private long endTime;
     private String hostName;
     private int port;
     private Status status;
@@ -69,9 +77,49 @@ public class ProcessReport {
     {
         this.hostName = hostName;
     }
+
     public void setPort(int Port)
     {
         this.port = Port;
+    }
+
+    public void setEndTime(long endTime)
+    {
+        this.endTime = endTime;
+    }
+
+    public void setStartTime(long startTime)
+    {
+        this.startTime = startTime;
+    }
+
+    public void setStatus(String status)
+    {
+        if(status.equals("POSSIBLE_MEMORY_LEAK"))
+        {
+            this.status = Status.POSSIBLE_MEMORY_LEAK;
+        }
+        else if(status.equals("EXCESSIVE_GC_SCAN"))
+        {
+            this.status = Status.EXCESSIVE_GC_SCAN;
+        }
+        else if(status.equals("LIKELY_MEMORY_LEAK"))
+        {
+            this.status = Status.LIKELY_MEMORY_LEAK;
+        }
+        else if(status.equals("SUSPECTED_MEMORY_LEAK"))
+        {
+            this.status = Status.SUSPECTED_MEMORY_LEAK;
+        }
+        else if(status.equals("OK"))
+        {
+          this.status = Status.OK;
+        }
+        else
+        {
+            this.status = Status.OK;
+        }
+
     }
 
     public ProcessReport(String hostName, int port)
