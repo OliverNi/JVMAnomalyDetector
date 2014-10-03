@@ -2,6 +2,7 @@ package Logs;
 
 import AnomalyDetector.ProcessReport;
 
+import java.lang.reflect.Array;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -628,7 +629,39 @@ public class Log implements  ILogging
     @Override
     public Map<String, ArrayList<ProcessReport>> getAllProcessReports()
     {
+        HashMap<String, ArrayList<ProcessReport>> AddProcessReports  = new HashMap<>();
+        ProcessReport oneReport = new ProcessReport();
+        ArrayList<ProcessReport> allProccessReports = new ArrayList<>();
+        try
+        {
+            ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport ORDER BY startTime");
 
+            while(rs.next())
+            {
+                Long startTime = Long.parseLong(rs.getString("startTime"));
+                oneReport.setStartTime(startTime);
+                Long endTime =  Long.parseLong(rs.getString("endTime"));
+                oneReport.setEndTime(endTime);
+                int port = Integer.parseInt(rs.getString("port"));
+                oneReport.setPort(port);
+                String hostname = rs.getString("hostname");
+                String hostnamePort = hostname+":"+port;
+                oneReport.setHostName(hostname);
+                String status = rs.getString("status");
+                oneReport.setStatus(status);
+                allProccessReports.add(oneReport);
+
+                AddProcessReports.put(hostnamePort, allProccessReports);
+            }
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        catch (NumberFormatException nfe)
+        {
+            System.out.println("NumberFormatException: " + nfe.getMessage());
+        }
+        Map<String,ArrayList<ProcessReport>> AllProcessReports = AddProcessReports;
         return null;
     }
 
