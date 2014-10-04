@@ -9,7 +9,6 @@ package AnomalyDetector;
  */
 public class ProcessReport
 {
-    //@TODO Create Listener
     //Create AnomalyReport if excessive GC scan
     public enum Status
     {
@@ -36,7 +35,6 @@ public class ProcessReport
     private String hostName;
     private int port;
     private Status status;
-
     //GC
     //Usage after first recorded GC
     private long usageAfterFirstGc;
