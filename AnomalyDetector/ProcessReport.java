@@ -69,7 +69,18 @@ public class ProcessReport
 
 
 
-    //Interval
+    //MemStats
+
+    public ProcessReport(String hostName, int port)
+    {
+        this.status = Status.SUSPECTED_MEMORY_LEAK;
+        TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
+        PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
+    }
+
+    public ProcessReport(){
+        this("Unknown", 0);
+    }
 
     public void setHostName(String hostName)
     {
@@ -122,17 +133,6 @@ public class ProcessReport
             this.status = Status.OK;
         }
 
-    }
-
-    public ProcessReport(String hostName, int port)
-    {
-        this.status = Status.SUSPECTED_MEMORY_LEAK;
-        TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
-        PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
-    }
-
-    public ProcessReport(){
-        this("Unknown", 0);
     }
 
     public double getDailyAvgMemUsageDif(){
