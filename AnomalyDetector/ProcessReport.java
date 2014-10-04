@@ -91,6 +91,10 @@ public class ProcessReport
         this.startTime = startTime;
     }
 
+    public void setStatus(Status status){
+        this.status = status;
+    }
+
     public void setStatus(String status)
     {
         if(status.equals("POSSIBLE_MEMORY_LEAK"))
