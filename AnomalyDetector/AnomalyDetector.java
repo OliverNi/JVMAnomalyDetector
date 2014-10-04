@@ -12,6 +12,7 @@ import java.util.ArrayList;
  * Created by Oliver on 2014-09-10.
  */
 public class AnomalyDetector {
+    //@TODO Implement / remove
     public boolean ANALYZE_HOURLY_STATISTICS = false;
     public boolean ANALYZE_DAILY_STATISTICS = true;
     public boolean ANALYZE_WEEKLY_STATISTICS = true;
