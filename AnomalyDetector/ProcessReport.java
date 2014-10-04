@@ -4,6 +4,8 @@ package AnomalyDetector;
  * Created by Oliver on 2014-09-25.
  */
 
+import Logs.AnalyzedGcReport;
+
 /**
  * A Process Report will be responsible for keeping track of a process' status and warn if it suspects a memory leak.
  */
@@ -73,7 +75,7 @@ public class ProcessReport
 
     public ProcessReport(String hostName, int port)
     {
-        this.status = Status.SUSPECTED_MEMORY_LEAK;
+        this.status = Status.OK;
         TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
         PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
     }
@@ -145,6 +147,10 @@ public class ProcessReport
 
     public double getMonthlyAvgMemUsageDif(){
         return monthlySumMemUsageDif / monthlyReportCount;
+    }
+
+    public void addReport(AnalyzedGcReport report){
+
     }
 
     private void createAnomalyReport(){
