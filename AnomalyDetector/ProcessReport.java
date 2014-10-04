@@ -142,4 +142,8 @@ public class ProcessReport
     public double getMonthlyAvgMemUsageDif(){
         return monthlySumMemUsageDif / monthlyReportCount;
     }
+
+    private void createAnomalyReport(){
+        //@TODO Implement
+    }
 }
