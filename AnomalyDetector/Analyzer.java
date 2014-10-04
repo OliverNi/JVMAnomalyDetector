@@ -94,6 +94,7 @@ public class Analyzer {
         monthlyTimer.schedule(new MonthlyTask(), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
     }
 
+     //@TODO implement creation of a processReport for each executed garbage collection
     //@TODO implement eventual excessive GC scan detection
     public void analyzeHourlyGc()
     {
