@@ -13,57 +13,48 @@ import java.util.*;
 public class Analyzer {
     //@TODO Add timer to combine GcReports each day/week/month
     class HourlyTask extends TimerTask {
-        Analyzer a;
-        HourlyTask(Analyzer a){
-            this.a = a;
+        HourlyTask(){
         }
         public void run(){
             analyzeHourlyGc();
         }
     }
     class DailyTask extends TimerTask {
-        Analyzer a;
-        DailyTask(Analyzer a){
-            this.a = a;
+        DailyTask(){
         }
         public void run(){
+            createDailyGcReports();
             analyzeDailyGC();
         }
     }
     class WeeklyTask extends TimerTask {
-        Analyzer a;
-        WeeklyTask(Analyzer a){
-            this.a = a;
+        WeeklyTask(){
         }
         public void run(){
+            createWeeklyGcReports();
             analyzeWeeklyGC();
         }
     }
     class MonthlyTask extends TimerTask {
-        Analyzer a;
-        MonthlyTask(Analyzer a){
-            this.a = a;
+        MonthlyTask(){
         }
         public void run(){
+            createMonthlyGcReports();
             analyzeMonthlyGC();
         }
     }
 
     public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
-    public static final int DIFFERENCE_ALLOWED = 20;
     private AnomalyDetector ad;
-    private JMXAgent agent;
     private ILogging log;
-    public Analyzer(JMXAgent agent){
-        this.log = ad.getLog();
-    }
     Timer hourlyTimer;
     Timer dailyTimer;
     Timer weeklyTimer;
     Timer monthlyTimer;
 
-    public Analyzer(){
-        //AnalyzeTimer timer = new AnalyzeTimer(this);
+    public Analyzer(AnomalyDetector ad){
+        this.ad = ad;
+        this.log = ad.getLog();
         setTimers();
     }
 
@@ -78,20 +69,20 @@ public class Analyzer {
         cal.set(Calendar.HOUR, cal.get(Calendar.HOUR) + 1);
         firstTime = cal.getTime();
 
-        hourlyTimer.schedule(new HourlyTask(this), firstTime.getTime(), hour);
+        hourlyTimer.schedule(new HourlyTask(), firstTime.getTime(), hour);
         //Daily task
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 0);
         firstTime = cal.getTime();
-        dailyTimer.schedule(new DailyTask(this), firstTime.getTime(), day);
+        dailyTimer.schedule(new DailyTask(), firstTime.getTime(), day);
         //Weekly task
         cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 0);
         firstTime = cal.getTime();
-        weeklyTimer.schedule(new WeeklyTask(this), firstTime.getTime(), week);
+        weeklyTimer.schedule(new WeeklyTask(), firstTime.getTime(), week);
         //Monthly task
         cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
@@ -100,7 +91,7 @@ public class Analyzer {
         cal.set(Calendar.SECOND, 0);
         firstTime = cal.getTime();
         //@TODO Fix different amount of days in different months.
-        monthlyTimer.schedule(new MonthlyTask(this), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+        monthlyTimer.schedule(new MonthlyTask(), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
     }
 
     //@TODO implement eventual excessive GC scan detection
