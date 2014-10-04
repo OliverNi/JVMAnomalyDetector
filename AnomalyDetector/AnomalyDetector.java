@@ -24,8 +24,10 @@ public class AnomalyDetector {
     private Log log;
     private ArrayList<JMXAgent> agents;
     private ArrayList<String> connections;
+    private Analyzer analyzer;
     public AnomalyDetector(){
         agents = new ArrayList<>();
+        analyzer = new Analyzer(this);
         connections = new ArrayList<>();
         log = new Log();
     }
