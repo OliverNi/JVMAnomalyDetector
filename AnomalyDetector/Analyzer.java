@@ -186,14 +186,70 @@ public class Analyzer {
      * Analyze GcReports by comparing a weekly GcReport to the previous weeks's GcReport
      */
     public void analyzeWeeklyGC(){
+        //Set startTime (Monday 00:01:00)
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        Date weekStartTime = cal.getTime();
+        //Set endTime (Sunday 23:59:59)
+        cal.set(Calendar.HOUR, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        Date weekEndTime = cal.getTime();
+        ArrayList<AnalyzedGcReport> reports = new ArrayList<>();
+        long week = 3600000L * 24 * 7;
+        Map<String, ArrayList<GcReport>> todayReportsMap = log.getGcReports(weekStartTime.getTime(), weekEndTime.getTime());
+        Map<String, ArrayList<GcReport>> yesterdayReportsMap = log.getGcReports(weekStartTime.getTime() - week,
+                weekEndTime.getTime() - week);
 
+        ArrayList<String> connections = ad.getConnections();
+        for (int i = 0;  i < connections.size(); i++) {
+            reports.add(new AnalyzedGcReport());
+            ArrayList<GcReport> todayReports = todayReportsMap.get(connections.get(i));
+            ArrayList<GcReport> yesterdayReports = yesterdayReportsMap.get(connections.get(i));
+            String[] hostPort = connections.get(i).split(":");
+            int port = Integer.parseInt(hostPort[1]);
+            reports.get(i).analyze(yesterdayReports.get(0), todayReports.get(0));
+            forwardToProcessReport(hostPort[0], port, reports.get(i));
+        }
     }
 
     /**
      * Analyze GcReports by comparing a monthly GcReport to the previous month's GcReport
      */
     public void analyzeMonthlyGC(){
+        //Set startTime (First day of the month 00:01:00)
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.MINUTE, 1);
+        cal.set(Calendar.HOUR, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.DATE, 1);
+        Date monthStartTime = cal.getTime();
+        //Set endTime (Last day of the month 23:59:59)
+        cal.set(Calendar.HOUR, 23);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+        Date monthEndTime = cal.getTime();
+        ArrayList<AnalyzedGcReport> reports = new ArrayList<>();
+        long month = 3600000L * 24 * 7 * 30;
+        Map<String, ArrayList<GcReport>> todayReportsMap = log.getGcReports(monthStartTime.getTime(), monthEndTime.getTime());
+        Map<String, ArrayList<GcReport>> yesterdayReportsMap = log.getGcReports(monthStartTime.getTime() - month,
+                monthEndTime.getTime() - month);
 
+        ArrayList<String> connections = ad.getConnections();
+        for (int i = 0;  i < connections.size(); i++) {
+            reports.add(new AnalyzedGcReport());
+            ArrayList<GcReport> todayReports = todayReportsMap.get(connections.get(i));
+            ArrayList<GcReport> yesterdayReports = yesterdayReportsMap.get(connections.get(i));
+            String[] hostPort = connections.get(i).split(":");
+            int port = Integer.parseInt(hostPort[1]);
+            reports.get(i).analyze(yesterdayReports.get(0), todayReports.get(0));
+            forwardToProcessReport(hostPort[0], port, reports.get(i));
+        }
     }
 
     private GcReport combineDailyGcStats(ArrayList<GcStats> gcStats){
