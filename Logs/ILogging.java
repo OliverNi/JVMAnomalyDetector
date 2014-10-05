@@ -81,6 +81,14 @@ public interface ILogging {
     public Map<String, ArrayList<ProcessReport>> getProcessReports(ArrayList<String> processes);
 
     /**
+     * Retrieves one ProcessReport
+     * @param hostName
+     * @param port
+     * @return
+     */
+    public ProcessReport getProcessReport(String hostName, int port);
+
+    /**
      *
      * @param startTime from the starting hour of the processReport
      * @param endTime from the ending hour of the ProcessReport
