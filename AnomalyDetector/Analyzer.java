@@ -345,7 +345,8 @@ public class Analyzer {
     }
 
     private void forwardToProcessReport(String hostName, int port, AnalyzedGcReport report){
-        //@TODO IMPLEMENT
+        ProcessReport pr = log.getProcessReport(hostName, port);
+        pr.addReport(report);
     }
 
     //@TODO Move function calcAvg
