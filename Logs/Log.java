@@ -420,6 +420,7 @@ public class Log implements  ILogging
         return fetch;
     }
 
+    //@TODO is it really the right table it fetches data from? or is it supposed to be fetching data from a new table called MemReport ?
     @Override
     public Map<String, ArrayList<MemoryStats>> getMemoryStats(long startTime, long endTime)
     {
@@ -709,6 +710,12 @@ public class Log implements  ILogging
         }
         Map<String,ArrayList<ProcessReport>> AllProcessReports = AddProcessReports;
         return AllProcessReports;
+    }
+
+    //@TODO implement this
+    @Override
+    public ProcessReport getProcessReport(String hostName, int port) {
+        return null;
     }
 
     @Override
