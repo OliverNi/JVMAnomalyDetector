@@ -167,8 +167,24 @@ public class ProcessReport
                 dailyReportCount++;
                 break;
             case WEEKLY:
+                if (report.getAvgMemoryUsageDif() < weeklyMinMemUsageDif)
+                    weeklyMinMemUsageDif = report.getAvgMinMemoryUsageDif();
+                if (report.getAvgMemoryUsageDif() > 1)
+                    weeklyIncreaseCount++;
+                else if (report.getAvgMemoryUsageDif() < 1)
+                    weeklyDecreaseCount++;
+                weeklySumMemUsageDif += report.getAvgMemoryUsageDif();
+                weeklyReportCount++;
                 break;
             case MONTHLY:
+                if (report.getAvgMemoryUsageDif() < monthlyMinMemUsageDif)
+                    monthlyMinMemUsageDif = report.getAvgMinMemoryUsageDif();
+                if (report.getAvgMemoryUsageDif() > 1)
+                    monthlyIncreaseCount++;
+                else if (report.getAvgMemoryUsageDif() < 1)
+                    monthlyDecreaseCount++;
+                monthlySumMemUsageDif += report.getAvgMemoryUsageDif();
+                monthlyReportCount++;
                 break;
         }
     }
