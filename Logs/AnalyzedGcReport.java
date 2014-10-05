@@ -5,7 +5,7 @@ package Logs;
  */
 
 /**
- * An Analyzed GC Report contains
+ * An Analyzed GC Report contains statistics from compared daily/weekly/monthly GcReports.
  */
 public class AnalyzedGcReport {
     public enum Type{
