@@ -79,8 +79,10 @@ public class AnomalyDetector {
         for (JMXAgent a : agents) {
             if (a.getHostName().equals(hostName) && a.getPort() == port) {
                 agents.remove(a);
-                //@TODO replace string-list with something less redundant.
-                connections.remove(hostName + ":" + port);
+                for (ProcessConnection p : connections){
+                    if (p.getPort() == port && p.getHostName().equals(hostName))
+                        connections.remove(p);
+                }
                 disconnected = true;
             }
         }
@@ -126,7 +128,7 @@ public class AnomalyDetector {
      */
     public double getInterval(String hostName, int port){
         for (ProcessConnection p : connections){
-            if (p.getPort() == port && p.getHostName() == hostName)
+            if (p.getPort() == port && p.getHostName().equals(hostName))
                 return p.getInterval();
         }
         return -1;
