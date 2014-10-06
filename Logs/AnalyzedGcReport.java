@@ -73,7 +73,7 @@ public class AnalyzedGcReport {
         long daily = 90000000;
         //Under one week + 2 hours = WEEKLY (2 hour margin)
         long weekly = 612000000;
-        //Under One month + 4 hours = MONTHLY (4 hour margin)
+        //Under One month + 4 hours = MONTHLY (4 hour margin) //@TODO FIX 4 days margin 28-31 +1
         long monthly = (long)2433600000L;
         if (gcReports[0].getDuration() <= hourly){
             type = Type.HOURLY;
@@ -111,35 +111,35 @@ public class AnalyzedGcReport {
      */
     private void calcAvgMinMemUsageDif()
     {
-        this.avgMinMemoryUsageDif = (gcReports[0].getAvgMinMemoryUsage() / gcReports[1].getAvgMinMemoryUsage());
+        this.avgMinMemoryUsageDif = (gcReports[1].getAvgMinMemoryUsage() / gcReports[0].getAvgMinMemoryUsage());
     }
 
     /**
      * calculates the average collection time difference between two reports in percent
      */
     private void calcAvgCollectionTimeDif(){
-        this.avgCollectionTimeDif = (gcReports[0].getAvgCollectionTime() / gcReports[1].getAvgCollectionTime());
+        this.avgCollectionTimeDif = (gcReports[1].getAvgCollectionTime() / gcReports[0].getAvgCollectionTime());
     }
 
     /**
      * calculates the average collected amount of executed Garbage collections between two reports in percent
      */
     private void calcAvgCollectedDif(){
-        this.avgCollectedDif = (gcReports[0].getAvgCollected() / gcReports[1].getAvgCollected());
+        this.avgCollectedDif = (gcReports[1].getAvgCollected() / gcReports[0].getAvgCollected());
     }
 
     /**
      * calculates the average memory usage difference between two reports in percent
      */
     private void calcAvgMemoryUsageDif(){
-        this.avgMemoryUsageDif = (gcReports[0].getAvgMemoryUsage() / gcReports[1].getAvgMemoryUsage());
+        this.avgMemoryUsageDif = (gcReports[1].getAvgMemoryUsage() / gcReports[0].getAvgMemoryUsage());
     }
 
     /**
      * calculates the average time between executed garbage collection difference between two reports
      */
     private void calcAvgTimeBetweenGcDif(){
-        this.avgTimeBetweenGcDif = (gcReports[0].getAvgTimeBetweenGc() / gcReports[1].getAvgTimeBetweenGc());
+        this.avgTimeBetweenGcDif = (gcReports[1].getAvgTimeBetweenGc() / gcReports[0].getAvgTimeBetweenGc());
     }
 
     public GcReport getReport(int index){
