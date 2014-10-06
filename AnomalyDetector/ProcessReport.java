@@ -29,15 +29,17 @@ public class ProcessReport
 
 
 
-    //@TODO implement uptimeInDays in DB table ProcessReports?
+    //@TODO possible scrap for the uptime variable
     private int uptimeInDays;
 
+    //@TODO implement in addReport
     private long startTime;
     private long endTime;
     private String hostName;
     private int port;
     private Status status;
     //GC
+    //@TODO implement these in processReport table, and bring them along
     //Usage after first recorded GC
     private long usageAfterFirstGc;
 
@@ -70,6 +72,8 @@ public class ProcessReport
     private int dailyReportCount;
     private int weeklyReportCount;
     private int monthlyReportCount;
+
+
 
 
 
