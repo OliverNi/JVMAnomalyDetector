@@ -116,5 +116,6 @@ public interface ILogging {
      */
     public void clearData(ArrayList<String> processes);
 
+    //@TODO implement gcStats count to go back n steps to find when increase started (slow increase)
 
 }
