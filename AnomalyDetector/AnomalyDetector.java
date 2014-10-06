@@ -17,13 +17,14 @@ public class AnomalyDetector {
     public boolean ANALYZE_DAILY_STATISTICS = true;
     public boolean ANALYZE_WEEKLY_STATISTICS = true;
     public boolean ANALYZE_MONTHLY_STATISTICS = true;
+
     public Log getLog() {
         return log;
     }
 
     private Log log;
     private ArrayList<JMXAgent> agents;
-    private ArrayList<String> connections;
+    private ArrayList<ProcessConnection> connections;
     private Analyzer analyzer;
     public AnomalyDetector(){
         agents = new ArrayList<>();
@@ -41,7 +42,7 @@ public class AnomalyDetector {
         boolean success = false;
         agents.add(new JMXAgent(hostName, port, this));
         if (agents.get(agents.size()-1).isConnected()){
-            connections.add(hostName + ":" + port);
+            connections.add(new ProcessConnection(hostName, port));
             success = true;
         }
         else{
@@ -63,7 +64,7 @@ public class AnomalyDetector {
         agents.add(new JMXAgent(hostName, port, this));
         if (agents.get(agents.size() -1).isConnected()){
             agents.get(agents.size()-1).setInterval(interval);
-            connections.add(hostName + ":" + port);
+            connections.add(new ProcessConnection(hostName, port, interval));
             success = true;
         }
         else {
@@ -91,7 +92,11 @@ public class AnomalyDetector {
      * @return ArrayList<String> HOSTNAME:PORT
      */
     public ArrayList<String> getConnections(){
-        return connections;
+        ArrayList<String> connStrings = new ArrayList<>();
+        for (ProcessConnection p : connections){
+            connStrings.add(p.getHostName() + p.getPort());
+        }
+        return connStrings;
     }
 
     /**
@@ -109,4 +114,7 @@ public class AnomalyDetector {
         log.clearData(processes);
     }
 
+    public double getInterval(String hostName, String port){
+        return 0;
+    }
 }
