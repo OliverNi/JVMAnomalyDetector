@@ -114,7 +114,17 @@ public class AnomalyDetector {
         log.clearData(processes);
     }
 
-    public double getInterval(String hostName, String port){
-        return 0;
+    /**
+     * Returns interval of connection with specified hostName and port
+     * @param hostName hostname
+     * @param port port
+     * @return IF EXISTS: interval of specified connection ELSE: -1
+     */
+    public double getInterval(String hostName, int port){
+        for (ProcessConnection p : connections){
+            if (p.getPort() == port && p.getHostName() == hostName)
+                return p.getInterval();
+        }
+        return -1;
     }
 }
