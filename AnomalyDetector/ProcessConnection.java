@@ -1,9 +1,12 @@
 package AnomalyDetector;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 /**
  * Created by Oliver on 2014-10-06.
  */
 public class ProcessConnection {
+    public static double DEFAULT_INTERVAL = 1000;
     private String hostName;
     private int port;
     private double interval;
@@ -12,6 +15,10 @@ public class ProcessConnection {
         this.hostName = hostName;
         this.port = port;
         this.interval = interval;
+    }
+
+    public ProcessConnection(String hostName, int port){
+        this(hostName, port, DEFAULT_INTERVAL);
     }
 
     public void setHostName(String hostName) {
