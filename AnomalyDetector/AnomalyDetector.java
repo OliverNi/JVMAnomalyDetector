@@ -99,6 +99,10 @@ public class AnomalyDetector {
         return connStrings;
     }
 
+    public ArrayList<ProcessConnection> getProcessConnections(){
+        return connections;
+    }
+
     /**
      * Clear all data in database
      */
