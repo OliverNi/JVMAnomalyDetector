@@ -49,6 +49,16 @@ public interface ILogging {
                                                                      ArrayList<String> processes);
 
     /**
+     *
+     * @param startTime Statistics for GarbageCollections which were done before this time will not be included.
+     * @param endTime Statistics for GarbageCollections which were done after this time will not be included.
+     * @param hostname the hostname/ip address for the process
+     * @param port the current port number for the process
+     * @return
+     */
+    public ArrayList<GcStats> getGarbageCollectionStats(long startTime, long endTime,
+                                                                     String hostname, int port);
+    /**
      * Get Memory-statistics from all processes which were gathered between a specified timeframe.
      * @param startTime Statistics that were gathered before this time will not be included.
      * @param endTime Statistics that were gathered after this time will not be included.
