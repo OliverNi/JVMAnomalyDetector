@@ -26,24 +26,26 @@ public class Log implements  ILogging
     private String ip;
     private int port;
     private static Statement DB;
+    private Connection DBConnection;
 
     public static final void main(String[] args) throws ClassNotFoundException
     {
-
         Log test = new Log();
-
     }
 
-    private static void DBTableCreation() {
-        try {
-            DB.executeUpdate("DROP TABLE IF EXISTS Memlog");
+    private static void DBTableCreation()
+    {
+        try
+        {
+            DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
             DB.executeUpdate("DROP TABLE IF EXISTS GCLog");
             DB.executeUpdate("DROP TABLE IF EXISTS GCReport");
             DB.executeUpdate("DROP TABLE IF EXISTS ProcessReport");
 
             DB.executeUpdate("CREATE TABLE MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)");
 
-            DB.executeUpdate("CREATE TABLE ProcessReport(prId INTEGER PRIMARY KEY AUTOINCREMENT, startTime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INT, status VARCHAR(25) )");
+            DB.executeUpdate("CREATE TABLE ProcessReport(prId INTEGER PRIMARY KEY AUTOINCREMENT, startTime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INT, status VARCHAR(25)," +
+                    "consec_mem_inc_count INTEGER, usageAfterFirstGc BIGINT, usageAfterLastGc BIGINT )");
 
             DB.executeUpdate("CREATE TABLE GCLog(gcId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT," +
                     " memUsageAfter BIGINT, memUsageBefore BIGINT, GCCollectionTime BIGINT, hostname VARCHAR(25), port INTEGER," +
@@ -109,6 +111,17 @@ public class Log implements  ILogging
                     System.out.println("hostname = " + rs.getString("hostname"));
                     System.out.println("port = " + rs.getString("port"));
                 }
+                else if(input.equals("ProcessReport"))
+                {
+                    System.out.println("startTime = " + rs.getString("startTime"));
+                    System.out.println("endTime = " + rs.getString("endTime"));
+                    System.out.println("hostname = " + rs.getString("hostname"));
+                    System.out.println("port = " + rs.getString("port"));
+                    System.out.println("status = " + rs.getString("status"));
+                    System.out.println("consec_mem_inc_count = " + rs.getString("consec_mem_inc_count"));
+                    System.out.println("usageAfterFirstGc = " + rs.getString("usageAfterFirstGc"));
+                    System.out.println("usageAfterLastGc = " + rs.getString("usageAfterLastGc"));
+                }
 
             }
         }
@@ -163,6 +176,8 @@ public class Log implements  ILogging
 
     public Log()
     {
+        DBConnection = null;
+        DB = null;
         GCTime = 0;
         GCTimeStamp = 0;
         GCmemoryUsageAfter = 0;
@@ -178,7 +193,6 @@ public class Log implements  ILogging
         {
             e.printStackTrace();
         }
-
     }
 
     public void initDatabaseConnection() throws ClassNotFoundException
@@ -188,7 +202,7 @@ public class Log implements  ILogging
         Class.forName("org.sqlite.JDBC");
 
 
-        Connection connection = null;
+
         try
         {
             //possibly secure the tables with a UNIQUE constraint to prevent duplicate rows.
@@ -196,8 +210,8 @@ public class Log implements  ILogging
 
 
 //            // create a database connection
-            connection = DriverManager.getConnection("jdbc:sqlite:test.db");
-            DB = connection.createStatement();
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test.db");
+            DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
 
@@ -226,6 +240,7 @@ public class Log implements  ILogging
 
             //   DBTableCreation();
             //printSpecifiedTable("MemLog");
+            DB.close();
 
         }
         catch(SQLException e)
@@ -236,8 +251,8 @@ public class Log implements  ILogging
         }
         finally {
             try {
-                if (connection != null)
-                    connection.close();
+                if (DBConnection != null)
+                    DBConnection.close();
             } catch (SQLException e) {
                 // connection close failed.
                 System.err.println(e);
@@ -307,8 +322,10 @@ public class Log implements  ILogging
     {
         try
         {
+            DB = DBConnection.createStatement();
             DB.executeUpdate("INSERT INTO  GCLog(timestamp, memUsageAfter, memUsageBefore, GCCollectionTime, hostname, port)" +
                     " VALUES("+timestamp +","+memoryUsedAfter+","+memoryUsedBefore+","+collectionTime+",'"+hostname+"',"+port+")");
+            DB.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -321,7 +338,9 @@ public class Log implements  ILogging
     {
         try
         {
+            DB = DBConnection.createStatement();
             DB.executeUpdate("INSERT INTO  MemLog(timestamp,usedMemory,hostname,port) VALUES("+timestamp +","+memoryUsed+","+"'"+hostname+"'"+","+port+")");
+            DB.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -340,6 +359,7 @@ public class Log implements  ILogging
 
         try
         {
+            DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,GCCollectionTime, hostname,port FROM GCLog WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+" ORDER BY timestamp");
 
             while(rs.next())
@@ -360,7 +380,9 @@ public class Log implements  ILogging
 
                 getGCStats.add(GCstatistics);
                 instanceOfGCStats.put(fetchHostNamePort, getGCStats);
+
             }
+            DB.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -389,6 +411,7 @@ public class Log implements  ILogging
         {
             try
             {
+                DB = DBConnection.createStatement();
                 while(processesCounter < processes.size())
                 {
                     getPortHostname = processes.get(processesCounter);
@@ -415,6 +438,7 @@ public class Log implements  ILogging
                         instanceOfGCStats.put(getPortHostname, getGCStats);
                     }
                 }
+                DB.close();
             } catch (SQLException e)
             {
                 e.printStackTrace();
@@ -436,6 +460,9 @@ public class Log implements  ILogging
     @Override
     public ArrayList<GcStats> getGarbageCollectionStats(long startTime, long endTime, String hostname, int port)
     {
+//        DB = DBConnection.createStatement();
+//        DB.close();
+
         return null;
     }
 
@@ -450,6 +477,7 @@ public class Log implements  ILogging
 
         try
         {
+            DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery("SELECT timestamp,usedMemory,hostname,port FROM MemLog " +
                     "WHERE timestamp >="+startTime+" AND timestamp <="+endTime+" ORDER BY timestamp");
             while(rs.next())
@@ -465,6 +493,7 @@ public class Log implements  ILogging
                 getMemStats.add(memstats);
                 instanceOfMemStats.put(fetchHostNamePort,getMemStats);
             }
+            DB.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -493,6 +522,7 @@ public class Log implements  ILogging
         {
             try
             {
+                DB = DBConnection.createStatement();
                 while(processesCounter < processes.size())
                 {
                     String getPortHostname = processes.get(processesCounter);
@@ -516,6 +546,7 @@ public class Log implements  ILogging
                         instanceOfMemStats.put(fetchHostNamePort,getMemStats);
                     }
                 }
+                DB.close();
             } catch (SQLException e)
             {
                 e.printStackTrace();
@@ -539,6 +570,7 @@ public class Log implements  ILogging
     {
         try
         {
+            DB = DBConnection.createStatement();
             String input = "INSERT INTO  GCReport(sumCollected, minCollected, maxCollected, minMemoryUsage,"+
                             "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
                             "minTimeBetweenGc, maxTimeBetweenGc, avgCollectionTime, minCollectionTime, maxCollectionTime,"+
@@ -550,6 +582,7 @@ public class Log implements  ILogging
                     analyzedDailyGcStats.getMinCollectionTime()+","+analyzedDailyGcStats.getMaxCollectionTime()+","+analyzedDailyGcStats.getStartTime()+","+analyzedDailyGcStats.getEndTime()+",'"+hostName+"',"+port+","
                     +analyzedDailyGcStats.getGcCount()+","+analyzedDailyGcStats.getSumMinMemoryUsage()+","+analyzedDailyGcStats.getReportCount()+")";
             DB.executeUpdate(input);
+            DB.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -564,6 +597,7 @@ public class Log implements  ILogging
         HashMap<String, ArrayList<GcReport>> instanceOfGCLog = new HashMap<>();
         try
         {
+            DB = DBConnection.createStatement();
             String input = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
                     "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
                     "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
@@ -633,6 +667,7 @@ public class Log implements  ILogging
                 GCReports.add(theGcReport);
                 instanceOfGCLog.put(fetchHostnamePort, GCReports);
             }
+            DB.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -654,6 +689,7 @@ public class Log implements  ILogging
         ArrayList<ProcessReport> allProccessReports = new ArrayList<>();
         try
         {
+            DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport ORDER BY startTime");
 
             while(rs.next())
@@ -673,6 +709,7 @@ public class Log implements  ILogging
 
                 AddProcessReports.put(hostnamePort, allProccessReports);
             }
+            DB.close();
         }catch (SQLException e)
         {
             e.printStackTrace();
@@ -694,6 +731,7 @@ public class Log implements  ILogging
         int processesCounter = 0;
         try
         {
+            DB = DBConnection.createStatement();
             while(processesCounter < processes.size())
             {
                 String[] hostnamePort = processes.get(processesCounter).split("\\:");
@@ -718,6 +756,7 @@ public class Log implements  ILogging
                 }
                 processesCounter++;
             }
+            DB.close();
 
         }catch (SQLException e)
         {
@@ -733,14 +772,19 @@ public class Log implements  ILogging
 
     //@TODO implement this
     @Override
-    public ProcessReport getProcessReport(String hostName, int port) {
+    public ProcessReport getProcessReport(String hostName, int port)
+    {
+//        DB = DBConnection.createStatement();
+//        DB.close()
         return null;
     }
 
     //@TODO implement this
     @Override
-    public void sendProcessReport(long startTime, long endTime, int port, String hostname, ProcessReport createdProcessReport) {
-
+    public void sendProcessReport(long startTime, long endTime, int port, String hostname, ProcessReport createdProcessReport)
+    {
+//        DB = DBConnection.createStatement();
+//        DB.close();
     }
 
 //    @Override
@@ -762,10 +806,12 @@ public class Log implements  ILogging
         long GcMinMemValue = 0L;
         try
         {
+            DB = DBConnection.createStatement();
             String input = "SELECT minMemoryUsage FROM GCReport WHERE GCReportId = 1";
             ResultSet rs = DB.executeQuery(input);
 
             GcMinMemValue = Long.parseLong(rs.getString("sumMinMemoryUsage"));
+            DB.close();
         }catch(SQLException e)
         {
             e.printStackTrace();
@@ -784,6 +830,7 @@ public class Log implements  ILogging
     {
         try
         {
+            DB = DBConnection.createStatement();
             String input = "";
             input = "DELETE FROM GCReport";
             DB.executeUpdate(input);
@@ -791,6 +838,7 @@ public class Log implements  ILogging
             DB.executeUpdate(input);
             input = "DELETE FROM MemLog";
             DB.executeUpdate(input);
+            DB.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -804,6 +852,7 @@ public class Log implements  ILogging
         String input = "";
         try
         {
+            DB = DBConnection.createStatement();
             while(processesCounter < processes.size())
             {
                 getPortHostname = processes.get(processesCounter);
@@ -817,6 +866,7 @@ public class Log implements  ILogging
                 DB.executeUpdate(input);
                 processesCounter++;
             }
+            DB.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
