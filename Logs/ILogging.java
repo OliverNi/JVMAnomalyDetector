@@ -104,9 +104,9 @@ public interface ILogging {
      * @param endTime from the ending hour of the ProcessReport
      * @param port the current port of the process
      * @param hostname the hostname or ip address of the process
-     * @param status Current memory leak status (LIKELY_MEMORY_LEAK,SUSPECTED_MEMORY_LEAK,POSSIBLE_MEMORY_LEAK, EXCESSIVE_GC_SCAN )
+     * @param createdProcessReport the created processReport
      */
-    public void sendProcessReport(long startTime, long endTime, int port, String hostname, String status);
+    public void sendProcessReport(long startTime, long endTime, int port, String hostname, ProcessReport createdProcessReport);
 
     /**
      * Retrieves usageAfterFirstGc from the specified process
