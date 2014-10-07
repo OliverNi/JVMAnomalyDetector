@@ -91,7 +91,7 @@ public class AnomalyDetector {
     public ArrayList<String> getConnections(){
         ArrayList<String> connStrings = new ArrayList<>();
         for (ProcessConnection p : connections){
-            connStrings.add(p.getHostName() + p.getPort());
+            connStrings.add(p.getHostName() + p.getPort() + p.getInterval());
         }
         return connStrings;
     }
@@ -141,23 +141,39 @@ public class AnomalyDetector {
             String hostNPort[] = args[count].split(":");
             String hostName = hostNPort[0];
             char lastChar = hostNPort[1].charAt(hostNPort[1].length()-1);
-
+            count++;
             if (lastChar == ','){
                 //Create ProcessConnection with default interval
                 int port = Integer.parseInt(hostNPort[1].substring(0, hostNPort[1].length()-1));
                 pConnections.add(new ProcessConnection(hostName, port));
             }
-            else{
+            else if (count < args.length){
                 //Create ProcessConnection with specified interval.
-                count++;
                 int port = Integer.parseInt(hostNPort[1]);
-                int interval = Integer.parseInt(args[count]);
+                int interval = 0;
+                if (args[count].charAt(args[count].length()-1) == ','){
+                    interval = Integer.parseInt(args[count].substring(0, args[count].length()-1));
+                }
+                else
+                    interval = Integer.parseInt(args[count]);
                 pConnections.add(new ProcessConnection(hostName, port, interval));
+                count++;
             }
+            else{
+                int port = Integer.parseInt(hostNPort[1]);
+                pConnections.add(new ProcessConnection(hostName, port));
+            }
+
         }
         AnomalyDetector ad = new AnomalyDetector();
         for (ProcessConnection p : pConnections){
             ad.connect(p.getHostName(), p.getPort(), p.getInterval());
+        }
+
+        ArrayList<String> sConnections = ad.getConnections();
+
+        for (String s : sConnections){
+            System.out.println(s);
         }
     }
 
