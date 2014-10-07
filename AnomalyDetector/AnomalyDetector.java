@@ -68,7 +68,7 @@ public class AnomalyDetector {
         }
         return success;
     }
-
+    //@TODO Disconnect if process shuts down?
     public boolean disconnect(String hostName, int port){
         boolean disconnected = false;
         for (JMXAgent a : agents) {
