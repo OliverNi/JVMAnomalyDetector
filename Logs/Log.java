@@ -32,8 +32,6 @@ public class Log implements  ILogging
 
         Log test = new Log();
 
-
-
     }
 
     private static void DBTableCreation() {
