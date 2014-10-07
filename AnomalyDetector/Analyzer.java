@@ -45,6 +45,7 @@ public class Analyzer {
     }
 
     public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
+    public static final double DEFAULT_CONSECUTIVE_MEM_INC = 5;
     private AnomalyDetector ad;
     private ILogging log;
     Timer hourlyTimer;
@@ -94,58 +95,130 @@ public class Analyzer {
         monthlyTimer.schedule(new MonthlyTask(), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
     }
 
-     //@TODO implement creation of a processReport for each executed garbage collection
-    //@TODO implement eventual excessive GC scan detection
+     //@TODO implement overwrite of ProcessReport for process per every interval
     public void analyzeHourlyGc()
     {
             Calendar cal = Calendar.getInstance();
 
+            //fetches all current processes in the format of ip:port
+            ArrayList<String> connections = ad.getConnections();
+
+
+            int amountOfConnections = 0;
+            amountOfConnections = ad.getConnections().size();
+            Double[] intervalInMinutes = new Double[amountOfConnections];
+            Long[] intervalInMs = new Long[intervalInMinutes.length];
+
+            //fetches each interval in minutes from each monitored process
+            for(int i=0; i<amountOfConnections; i++)
+            {
+                try
+                {
+                    String[] hostPortName = connections.get(i).split("\\:");
+                    int parsePort = Integer.parseInt(hostPortName[1]);
+                    intervalInMinutes[i] = ad.getInterval(hostPortName[0], parsePort );
+                }catch (NumberFormatException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
+            //converts interval value in minutes to milliseconds
+            for(int i=0; i<intervalInMinutes.length; i++)
+            {
+                try
+                {
+                    String fetchValue = Double.toString((intervalInMinutes[i]*60)*1000);
+                    intervalInMs[i] = Long.parseLong(fetchValue);
+                }catch (NumberFormatException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+
             long day = 3600000L * 24;
             long hour = day/24;
-            Date hourlyEndTime = cal.getTime();
-            long hourlyStartTime = cal.getTime().getTime()- hour;
 
-            //inputs current time and the time an hour ago and fetches all available logs for all current processes.
-            Map<String, ArrayList<GcStats>> thisHourlyReportsMap = log.getGarbageCollectionStats(hourlyStartTime, hourlyEndTime.getTime());
+             //fetches the current time and sets it to the endTime
+             Date intervalEndTime = cal.getTime();
 
-            //fetchar alla current processes med ip:port
-            ArrayList<String> connections = ad.getConnections();
-            //för varje process så skapas en ny AnalyzedGcReport
+             long intervalStartTime = 0L;
+
+            //fetches from database per input host/port parameters dynamic startTime and a current time as endtTime
+            //and  puts it into a hasmap with corresponding ip:port key
+            HashMap<String, ArrayList<GcStats>> intervalReportsMap = new HashMap<>();
+            for(int i=0; i<connections.size(); i++)
+            {
+                intervalStartTime = cal.getTime().getTime()- intervalInMs[i];
+                if(connections.get(i).contains(":"))
+                {
+                    String[] hostPortName = connections.get(i).split("\\:");
+                    int port = Integer.parseInt(hostPortName[1]);
+                    intervalReportsMap.put(connections.get(i),log.getGarbageCollectionStats(intervalStartTime, intervalEndTime.getTime(),hostPortName[0], port )  );
+                }
+            }
+            //inputs all fetched GCCollectionStats (from GCReport table DB) with a startTime and endTime depending on each process's set interval time and assigns them to a Map.
+            Map<String, ArrayList<GcStats>> thisIntervalReportsMap = intervalReportsMap;
+
+
+            //for each process, a new GCstats is created
             for (int i = 0;  i < connections.size(); i++)
             {
                 //Creates an arraylist of GcStats and fetches all GCstats entries for the current process through the set starttime and endtime above
-                ArrayList<GcStats> todayReports = thisHourlyReportsMap.get(connections.get(i));
+                ArrayList<GcStats> todayReports = thisIntervalReportsMap.get(connections.get(i));
 
                 long minimumMemValue = 0L;
                 long originalMinimumMemValue = log.firstGcValue(connections.get(i));
                 ProcessReport tempReport = new ProcessReport();
-                boolean passedLastGCexec = false;
-                //fetches ip for the current process
-                String[] hostPort = connections.get(i).split(":");
-                //fetches port for the current process
-                int port = Integer.parseInt(hostPort[1]);
 
-                for(int j=0; j<todayReports.size(); j++)
+                try
                 {
-                    minimumMemValue = todayReports.get(j).getMemoryUsedAfter();
+                    int memConsecutiveIncCounter = 0;
+                    //fetches ip for the current process
+                    String[] hostPort = connections.get(i).split(":");
+                    //fetches port for the current process
+                    int port = Integer.parseInt(hostPort[1]);
 
-                    //checks for a breach of tolerance level (above or exactly 10% over the oldest minimumMemValue taken from the current process.
-                    if(minimumMemValue >= originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING )
-                    {
-                        tempReport.setHostName(hostPort[0]);
-                        tempReport.setPort(port);
+                    tempReport.setHostName(hostPort[0]);
+                    tempReport.setPort(port);
 
-                    }
-                    //checks if the heap memory allocation goes down within tolerance level after the breach and before the end of the one hour interval
-                    if( j == todayReports.size()-1 && minimumMemValue < originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING)
+                    for(int j=0; j<todayReports.size(); j++)
                     {
-                        passedLastGCexec = true;
+                        //compares minimumMemValue from last iteration with a new one on the current iteration, if the newer value keeps rising, there will be a consecutive count
+                        if(minimumMemValue < todayReports.get(j).getMemoryUsedAfter() && minimumMemValue != 0)
+                        {
+                            memConsecutiveIncCounter++;
+                        }
+                        //if the next value is lower, then the counter is reset.
+                        else if (minimumMemValue >= todayReports.get(j).getMemoryUsedAfter() && minimumMemValue != 0)
+                        {
+                            memConsecutiveIncCounter = 0;
+                        }
+                        minimumMemValue = todayReports.get(j).getMemoryUsedAfter();
+
+                        //if we are on the last lap and the minimumGCMemUsage is above or equal the 10% threshhold of firstGCMemMinValue of this process
+                        // then it's time to create a process report with a "SUSPECTED_MEMORY_LEAK" warning
+                        if(j == todayReports.size()-1 && minimumMemValue >= (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
+                        {
+                            log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],"SUSPECTED_MEMORY_LEAK,");
+                        }
+                        else if (j == todayReports.size()-1 && minimumMemValue < (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
+                        {
+                            //if there has been 5 or more consecutive minMemoryIncreases in a row, then a processreport is created with a "LIKELY_MEMORY_LEAK"
+                            if(memConsecutiveIncCounter >= DEFAULT_CONSECUTIVE_MEM_INC)
+                            {
+                                log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],"LIKELY_MEMORY_LEAK,");
+                            }
+                            //if minimumMemValue is below the threshold of firstGCMemMinValue*10%, then the processReport gets the status "OK"
+                            else
+                            {
+                                log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],"OK,");
+                            }
+                        }
                     }
-                    //if we are on the last lap and the minimumGCMemUsage hasn't gone down, then it's time to create a process report
-                    if(!passedLastGCexec && j == todayReports.size()-1)
-                    {
-                        log.sendProcessReport(hourlyStartTime, hourlyEndTime.getTime(),port,hostPort[0],"SUSPECTED_MEMORY_LEAK,");
-                    }
+                }catch (NumberFormatException e)
+                {
+                    e.printStackTrace();
                 }
             }
     }
