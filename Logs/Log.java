@@ -55,18 +55,15 @@ public class Log implements  ILogging
     public static final void main(String[] args) throws ClassNotFoundException
     {
         Log test = new Log();
-        //test.DBTableCreation();
+        test.DBTableCreation();
     }
 
     public void DBTableCreation()
     {
         try
         {
-           // DBConnection = DriverManager.getConnection("jdbc:sqlite:test.db");
             DB = DBConnection.createStatement();
-           // DB = DBConnection.createStatement();
             DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
-            //DB.executeUpdate("SELECT count(*) > 0 FROM sqlite_master where tbl_name = MemLog and type=table");
             DB.executeUpdate("DROP TABLE IF EXISTS GCLog");
             DB.executeUpdate("DROP TABLE IF EXISTS GCReport");
             DB.executeUpdate("DROP TABLE IF EXISTS ProcessReport");
@@ -209,10 +206,8 @@ public class Log implements  ILogging
     public void initDatabaseConnection() throws ClassNotFoundException
     {
 
-        //        // load the sqlite-JDBC driver using the current class loader
+        // load the sqlite-JDBC driver using the current class loader
         Class.forName("org.sqlite.JDBC");
-
-
 
         try
         {
@@ -471,10 +466,34 @@ public class Log implements  ILogging
     @Override
     public ArrayList<GcStats> getGarbageCollectionStats(long startTime, long endTime, String hostname, int port)
     {
-//        DB = DBConnection.createStatement();
-//        DB.close();
+        GcStats GCstatsFetch = new GcStats();
+        ArrayList<GcStats> GCStatistics = new ArrayList<>();
+        try
+        {
+            DB = DBConnection.createStatement();
+            ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,hostname,port FROM GCLog " +
+                    "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+ " AND port = " + port + " AND hostname = " + hostname+" ORDER BY timestamp");
+            while(rs.next())
+            {
+                long timestamp = Long.parseLong(rs.getString("timestamp"));
+                GCstatsFetch.setTimeStamp(timestamp);
 
-        return null;
+                long memUsageAfter = Long.parseLong(rs.getString("memUsageAfter"));
+                GCstatsFetch.setMemoryUsedAfter(memUsageAfter);
+
+                long memUsageBefore = Long.parseLong(rs.getString("memUsageBefore"));
+                GCstatsFetch.setMemoryUsedBefore(memUsageBefore);
+
+                long GCCollectionTime = Long.parseLong(rs.getString("GCCollectionTime"));
+                GCstatsFetch.setCollectionTime(GCCollectionTime);
+                GCStatistics.add(GCstatsFetch);
+            }
+            DB.close();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return GCStatistics;
     }
 
     //@TODO is it really the right table it fetches data from? or is it supposed to be fetching data from a new table called MemReport ?
