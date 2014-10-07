@@ -173,6 +173,8 @@ public class Analyzer {
                 ProcessReport tempReport = new ProcessReport();
                 tempReport.setUsageAfterFirstGc(originalMinimumMemValue);
 
+                long IntervalStartTimeOnSuspectedMemLeak = 0L;
+
                 try
                 {
                     int memConsecutiveIncCounter = 0;
@@ -187,34 +189,71 @@ public class Analyzer {
                     for(int j=0; j<todayReports.size(); j++)
                     {
                         //compares minimumMemValue from last iteration with a new one on the current iteration, if the newer value keeps rising, there will be a consecutive count
+                        //as well as an intervalStartTime which will be set on the timeframe of the increase.
                         if(minimumMemValue < todayReports.get(j).getMemoryUsedAfter() && minimumMemValue != 0)
                         {
+                            if(IntervalStartTimeOnSuspectedMemLeak == 0)
+                            {
+                                IntervalStartTimeOnSuspectedMemLeak = cal.getTimeInMillis();
+                            }
                             memConsecutiveIncCounter++;
                         }
-                        //if the next value is lower, then the counter is reset.
+                        //if the next value is lower, then the counter is reset together with intervalStartTime.
                         else if (minimumMemValue >= todayReports.get(j).getMemoryUsedAfter() && minimumMemValue != 0)
                         {
                             memConsecutiveIncCounter = 0;
+                            IntervalStartTimeOnSuspectedMemLeak = 0;
                         }
                         minimumMemValue = todayReports.get(j).getMemoryUsedAfter();
+
+                        //if the value equals or is above 10% threshhold of firstGCMinMemValue then the intervalStartTime is set to this timeframe,
+                        // that is if the intervalStartTime has not already been set on another timeframe of a start of a slow increase for example.
+                        if(minimumMemValue >= (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
+                        {
+                            if(IntervalStartTimeOnSuspectedMemLeak == 0)
+                            {
+                                IntervalStartTimeOnSuspectedMemLeak = cal.getTimeInMillis();
+                            }
+                        }
 
                         //if we are on the last lap and the minimumGCMemUsage is above or equal the 10% threshhold of firstGCMemMinValue of this process
                         // then it's time to create a process report with a "SUSPECTED_MEMORY_LEAK" warning
                         if(j == todayReports.size()-1 && minimumMemValue >= (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
                         {
-                            log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0], tempReport);
+                            tempReport.setUsageAfterLastGc(minimumMemValue);
+                            tempReport.setStatus("SUSPECTED_MEMORY_LEAK");
+                            if (IntervalStartTimeOnSuspectedMemLeak != 0)
+                            {
+                                log.sendProcessReport(IntervalStartTimeOnSuspectedMemLeak, intervalEndTime.getTime(),port,hostPort[0], tempReport);
+                            }
+                            else
+                            {
+                                log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0], tempReport);
+                            }
+
                         }
+                        // if the last gcMinMemvalue is below the 10% threshold of the firstGcMinMemValue
                         else if (j == todayReports.size()-1 && minimumMemValue < (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
                         {
                             tempReport.setUsageAfterLastGc(minimumMemValue);
                             //if there has been 5 or more consecutive minMemoryIncreases in a row, then a processreport is created with a "LIKELY_MEMORY_LEAK"
                             if(memConsecutiveIncCounter >= DEFAULT_CONSECUTIVE_MEM_INC)
                             {
-                                log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],tempReport);
+                                tempReport.setStatus("LIKELY_MEMORY_LEAK");
+                                if(IntervalStartTimeOnSuspectedMemLeak != 0)
+                                {
+                                    log.sendProcessReport(IntervalStartTimeOnSuspectedMemLeak, intervalEndTime.getTime(),port,hostPort[0],tempReport);
+                                }
+                                else
+                                {
+                                    log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],tempReport);
+                                }
+
                             }
                             //if minimumMemValue is below the threshold of firstGCMemMinValue*10%, then the processReport gets the status "OK"
                             else
                             {
+                                tempReport.setStatus("OK");
                                 log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],tempReport);
                             }
                         }
