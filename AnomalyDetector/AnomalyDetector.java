@@ -132,4 +132,34 @@ public class AnomalyDetector {
     public AnomalyListener getListener(){
         return listener;
     }
+
+    public static void main(String args[]){
+        //java AnomalyDetector hostname:port, hostname:port 20, hostname:port
+        ArrayList<ProcessConnection> pConnections = new ArrayList<>();
+        int count = 0;
+        while(count < args.length){
+            String hostNPort[] = args[count].split(":");
+            String hostName = hostNPort[0];
+            char lastChar = hostNPort[1].charAt(hostNPort[1].length()-1);
+
+            if (lastChar == ','){
+                //Create ProcessConnection with default interval
+                int port = Integer.parseInt(hostNPort[1].substring(0, hostNPort[1].length()-1));
+                pConnections.add(new ProcessConnection(hostName, port));
+            }
+            else{
+                //Create ProcessConnection with specified interval.
+                count++;
+                int port = Integer.parseInt(hostNPort[1]);
+                int interval = Integer.parseInt(args[count]);
+                pConnections.add(new ProcessConnection(hostName, port, interval));
+            }
+        }
+        AnomalyDetector ad = new AnomalyDetector();
+        for (ProcessConnection p : pConnections){
+            ad.connect(p.getHostName(), p.getPort(), p.getInterval());
+        }
+    }
+
+
 }
