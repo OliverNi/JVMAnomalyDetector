@@ -106,7 +106,7 @@ public class Analyzer {
 
             int amountOfConnections = 0;
             amountOfConnections = ad.getConnections().size();
-            Double[] intervalInMinutes = new Double[amountOfConnections];
+            int[] intervalInMinutes = new int[amountOfConnections];
             Long[] intervalInMs = new Long[intervalInMinutes.length];
 
             //fetches each interval in minutes from each monitored process
