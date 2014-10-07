@@ -39,18 +39,7 @@ public class AnomalyDetector {
      * @param port port
      */
     public boolean connect(String hostName, int port){
-        boolean success = false;
-        agents.add(new JMXAgent(hostName, port, this));
-        if (agents.get(agents.size()-1).isConnected()){
-            connections.add(new ProcessConnection(hostName, port));
-            success = true;
-        }
-        else{
-            agents.remove(agents.size()-1);
-            success = false;
-        }
-
-        return success;
+       return connect(hostName, port, ProcessConnection.DEFAULT_INTERVAL);
     }
 
     /**
