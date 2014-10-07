@@ -1,5 +1,6 @@
 package AnomalyDetector;
 
+import Listeners.AnomalyListener;
 import Logs.Log;
 
 import java.lang.reflect.Array;
@@ -26,7 +27,12 @@ public class AnomalyDetector {
     private ArrayList<JMXAgent> agents;
     private ArrayList<ProcessConnection> connections;
     private Analyzer analyzer;
+    private AnomalyListener listener;
     public AnomalyDetector(){
+        this(null);
+    }
+
+    public AnomalyDetector(AnomalyListener listener){
         agents = new ArrayList<>();
         analyzer = new Analyzer(this);
         connections = new ArrayList<>();
@@ -115,11 +121,15 @@ public class AnomalyDetector {
      * @param port port
      * @return IF EXISTS: interval of specified connection ELSE: -1
      */
-    public double getInterval(String hostName, int port){
+    public int getInterval(String hostName, int port){
         for (ProcessConnection p : connections){
             if (p.getPort() == port && p.getHostName().equals(hostName))
                 return p.getInterval();
         }
         return -1;
+    }
+
+    public AnomalyListener getListener(){
+        return listener;
     }
 }
