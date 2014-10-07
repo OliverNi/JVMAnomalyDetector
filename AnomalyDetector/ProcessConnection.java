@@ -9,7 +9,7 @@ public class ProcessConnection {
     public static int DEFAULT_INTERVAL = 20;
     private String hostName;
     private int port;
-    private double interval;
+    private int interval;
 
     /**
      * Information about a connection to a process
@@ -35,7 +35,7 @@ public class ProcessConnection {
         this.port = port;
     }
 
-    public void setInterval(double interval) {
+    public void setInterval(int interval) {
         this.interval = interval;
     }
 
@@ -47,7 +47,7 @@ public class ProcessConnection {
         return port;
     }
 
-    public double getInterval() {
+    public int getInterval() {
         return interval;
     }
 }
