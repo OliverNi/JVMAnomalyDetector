@@ -124,6 +124,10 @@ public class JMXAgent {
 
     private boolean connected = false;
 
+    public JMXAgent(ProcessConnection c, AnomalyDetector ad){
+        this(c.getHostName(), c.getPort(), ad);
+    }
+
     public JMXAgent(String hostName, int port, AnomalyDetector ad) {
         this.hostName = hostName;
         this.port = port;
