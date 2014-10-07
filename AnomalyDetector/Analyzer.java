@@ -95,7 +95,7 @@ public class Analyzer {
         monthlyTimer.schedule(new MonthlyTask(), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
     }
 
-     //@TODO implement overwrite of ProcessReport for process per every interval
+     //@TODO rename method to analyzeIntervalGc() for example
     public void analyzeHourlyGc()
     {
             Calendar cal = Calendar.getInstance();
@@ -202,7 +202,7 @@ public class Analyzer {
                         // then it's time to create a process report with a "SUSPECTED_MEMORY_LEAK" warning
                         if(j == todayReports.size()-1 && minimumMemValue >= (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
                         {
-                            log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],"SUSPECTED_MEMORY_LEAK,");
+                            log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0], tempReport);
                         }
                         else if (j == todayReports.size()-1 && minimumMemValue < (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
                         {
@@ -210,12 +210,12 @@ public class Analyzer {
                             //if there has been 5 or more consecutive minMemoryIncreases in a row, then a processreport is created with a "LIKELY_MEMORY_LEAK"
                             if(memConsecutiveIncCounter >= DEFAULT_CONSECUTIVE_MEM_INC)
                             {
-                                log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],"LIKELY_MEMORY_LEAK,");
+                                log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],tempReport);
                             }
                             //if minimumMemValue is below the threshold of firstGCMemMinValue*10%, then the processReport gets the status "OK"
                             else
                             {
-                                log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],"OK,");
+                                log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],tempReport);
                             }
                         }
                     }
