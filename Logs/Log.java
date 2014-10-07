@@ -25,19 +25,48 @@ public class Log implements  ILogging
     private long timeStamp;
     private String ip;
     private int port;
-    private static Statement DB;
+    private Statement DB;
     private Connection DBConnection;
+
+    public Log()
+    {
+        DBConnection = null;
+        DB = null;
+        GCTime = 0;
+        GCTimeStamp = 0;
+        GCmemoryUsageAfter = 0;
+        GCmemoryUsageBefore = 0;
+        memoryUsed = 0;
+        timeStamp = 0;
+        ip = "";
+        port = 0;
+
+        try
+        {
+            initDatabaseConnection();
+
+        }catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
 
     public static final void main(String[] args) throws ClassNotFoundException
     {
         Log test = new Log();
+        //test.DBTableCreation();
     }
 
-    private static void DBTableCreation()
+    public void DBTableCreation()
     {
         try
         {
+           // DBConnection = DriverManager.getConnection("jdbc:sqlite:test.db");
+            DB = DBConnection.createStatement();
+           // DB = DBConnection.createStatement();
             DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
+            //DB.executeUpdate("SELECT count(*) > 0 FROM sqlite_master where tbl_name = MemLog and type=table");
             DB.executeUpdate("DROP TABLE IF EXISTS GCLog");
             DB.executeUpdate("DROP TABLE IF EXISTS GCReport");
             DB.executeUpdate("DROP TABLE IF EXISTS ProcessReport");
@@ -56,13 +85,14 @@ public class Log implements  ILogging
                     "minTimeBetweenGc BIGINT, maxTimeBetweenGc BIGINT, sumCollectionTime BIGINT, minCollectionTime BIGINT, maxCollectionTime BIGINT," +
                     "starttime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INTEGER, gcCount INTEGER, sumMinMemoryUsage BIGINT, reportCount INTEGER, FOREIGN KEY(hostname) REFERENCES GCLog(hostname)," +
                     "FOREIGN KEY(port) REFERENCES GCLog(port) ) ");
+            DB.close();
         }catch (SQLException e)
         {
             e.printStackTrace();
         }
     }
 
-    public static void printSpecifiedTable(String input) throws SQLException
+    public  void printSpecifiedTable(String input) throws SQLException
     {
         try
         {
@@ -174,26 +204,7 @@ public class Log implements  ILogging
         return GCTime;
     }
 
-    public Log()
-    {
-        DBConnection = null;
-        DB = null;
-        GCTime = 0;
-        GCTimeStamp = 0;
-        GCmemoryUsageAfter = 0;
-        GCmemoryUsageBefore = 0;
-        memoryUsed = 0;
-        timeStamp = 0;
-        ip = "";
-        port = 0;
-        try
-        {
-            initDatabaseConnection();
-        }catch (ClassNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-    }
+
 
     public void initDatabaseConnection() throws ClassNotFoundException
     {
@@ -237,8 +248,8 @@ public class Log implements  ILogging
             //test.sendGarbageCollectionLog(0,0,0,0, "127.0.0.1", 3800);
             // DB.executeUpdate("DELETE FROM MemLog WHERE MemId = 4" );
             // ResultSet rs = DB.executeQuery("select * from AnalyzedGCData");
-
-            //   DBTableCreation();
+            //DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
+             // DBTableCreation();
             //printSpecifiedTable("MemLog");
             DB.close();
 
@@ -249,16 +260,16 @@ public class Log implements  ILogging
             // it probably means no database file is found
             System.err.println(e.getMessage());
         }
-        finally {
-            try {
-                if (DBConnection != null)
-                    DBConnection.close();
-            } catch (SQLException e) {
-                // connection close failed.
-                System.err.println(e);
-            }
-
-        }
+//        finally {
+//            try {
+//                if (DBConnection != null)
+//                    DBConnection.close();
+//            } catch (SQLException e) {
+//                // connection close failed.
+//                System.err.println(e);
+//            }
+//
+//        }
 
     }
 
