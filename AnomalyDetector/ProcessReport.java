@@ -73,11 +73,16 @@ public class ProcessReport
     private int weeklyReportCount;
     private int monthlyReportCount;
 
+    public void setUsageAfterFirstGc(long usageAfterFirstGc) {
+        this.usageAfterFirstGc = usageAfterFirstGc;
+    }
+
+    public void setUsageAfterLastGc(long usageAfterLastGc) {
+        this.usageAfterLastGc = usageAfterLastGc;
+    }
 
 
-
-
-    //MemStats
+//MemStats
 
     public ProcessReport(String hostName, int port)
     {
