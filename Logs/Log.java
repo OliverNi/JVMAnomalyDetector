@@ -32,66 +32,7 @@ public class Log implements  ILogging
 
         Log test = new Log();
 
-//        // load the sqlite-JDBC driver using the current class loader
-        Class.forName("org.sqlite.JDBC");
 
-
-        Connection connection = null;
-        try
-        {
-            //possibly secure the tables with a UNIQUE constraint to prevent duplicate rows.
-            // EXAMPLE:    CREATE TABLE a (i INT, j INT, UNIQUE(i, j) ON CONFLICT REPLACE);
-
-
-//            // create a database connection
-            connection = DriverManager.getConnection("jdbc:sqlite:test.db");
-            DB = connection.createStatement();
-            DB.setQueryTimeout(30);  // set timeout to 30 sec.
-
-
-
-
-            // DB.executeUpdate("DROP TABLE IF EXISTS AnalyzedGCData");
-            //   statement.executeUpdate("INSERT INTO MemLog(timestamp, usedMemory, hostname, port) VALUES(13371337, 10241024, '127.0.0.1', 3500)");
-
-            //  System.out.println(test.createMemLogEntry(10001000,1337669,"localhost",3800));
-            //statement.executeUpdate(test.createMemLogEntry(10001000,1337669,"localhost",3800));
-            //statement.executeUpdate("DELETE  FROM MemLog WHERE MemID = 12342145");
-            //statement.executeUpdate("DROP TABLE IF EXISTS MemLog");
-//            statement.executeUpdate("create table person (id integer, name string)");
-//            statement.executeUpdate("insert into person values(1, 'leo')");
-//            statement.executeUpdate("insert into person values(2, 'yui')");
-
-           // AnalyzedGcStats temp = new AnalyzedGcStats();
-         //   test.sendAnalyzedGCData("127.0.0.1",3800,temp);
-
-            //this one gives duplicate rows when performed
-         //  test.sendMemoryLog(1337,2233222, "127.0.0.1",3800);
-            //
-            //test.sendGarbageCollectionLog(0,0,0,0, "127.0.0.1", 3800);
-           // DB.executeUpdate("DELETE FROM MemLog WHERE MemId = 4" );
-           // ResultSet rs = DB.executeQuery("select * from AnalyzedGCData");
-
-         //   DBTableCreation();
-            //printSpecifiedTable("MemLog");
-
-        }
-        catch(SQLException e)
-        {
-            // if the error message is "out of memory",
-            // it probably means no database file is found
-            System.err.println(e.getMessage());
-        }
-        finally {
-            try {
-                if (connection != null)
-                    connection.close();
-            } catch (SQLException e) {
-                // connection close failed.
-                System.err.println(e);
-            }
-
-        }
 
     }
 
@@ -232,6 +173,80 @@ public class Log implements  ILogging
         timeStamp = 0;
         ip = "";
         port = 0;
+        try
+        {
+            initDatabaseConnection();
+        }catch (ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void initDatabaseConnection() throws ClassNotFoundException
+    {
+
+        //        // load the sqlite-JDBC driver using the current class loader
+        Class.forName("org.sqlite.JDBC");
+
+
+        Connection connection = null;
+        try
+        {
+            //possibly secure the tables with a UNIQUE constraint to prevent duplicate rows.
+            // EXAMPLE:    CREATE TABLE a (i INT, j INT, UNIQUE(i, j) ON CONFLICT REPLACE);
+
+
+//            // create a database connection
+            connection = DriverManager.getConnection("jdbc:sqlite:test.db");
+            DB = connection.createStatement();
+            DB.setQueryTimeout(30);  // set timeout to 30 sec.
+
+
+
+
+            // DB.executeUpdate("DROP TABLE IF EXISTS AnalyzedGCData");
+            //   statement.executeUpdate("INSERT INTO MemLog(timestamp, usedMemory, hostname, port) VALUES(13371337, 10241024, '127.0.0.1', 3500)");
+
+            //  System.out.println(test.createMemLogEntry(10001000,1337669,"localhost",3800));
+            //statement.executeUpdate(test.createMemLogEntry(10001000,1337669,"localhost",3800));
+            //statement.executeUpdate("DELETE  FROM MemLog WHERE MemID = 12342145");
+            //statement.executeUpdate("DROP TABLE IF EXISTS MemLog");
+//            statement.executeUpdate("create table person (id integer, name string)");
+//            statement.executeUpdate("insert into person values(1, 'leo')");
+//            statement.executeUpdate("insert into person values(2, 'yui')");
+
+            // AnalyzedGcStats temp = new AnalyzedGcStats();
+            //   test.sendAnalyzedGCData("127.0.0.1",3800,temp);
+
+            //this one gives duplicate rows when performed
+            //  test.sendMemoryLog(1337,2233222, "127.0.0.1",3800);
+            //
+            //test.sendGarbageCollectionLog(0,0,0,0, "127.0.0.1", 3800);
+            // DB.executeUpdate("DELETE FROM MemLog WHERE MemId = 4" );
+            // ResultSet rs = DB.executeQuery("select * from AnalyzedGCData");
+
+            //   DBTableCreation();
+            //printSpecifiedTable("MemLog");
+
+        }
+        catch(SQLException e)
+        {
+            // if the error message is "out of memory",
+            // it probably means no database file is found
+            System.err.println(e.getMessage());
+        }
+        finally {
+            try {
+                if (connection != null)
+                    connection.close();
+            } catch (SQLException e) {
+                // connection close failed.
+                System.err.println(e);
+            }
+
+        }
+
     }
 
     public String getCurrentDate()
@@ -418,6 +433,12 @@ public class Log implements  ILogging
         Map<String, ArrayList<GcStats>> fetch = instanceOfGCStats;
 
         return fetch;
+    }
+
+    @Override
+    public ArrayList<GcStats> getGarbageCollectionStats(long startTime, long endTime, String hostname, int port)
+    {
+        return null;
     }
 
     //@TODO is it really the right table it fetches data from? or is it supposed to be fetching data from a new table called MemReport ?
@@ -718,18 +739,24 @@ public class Log implements  ILogging
         return null;
     }
 
+    //@TODO implement this
     @Override
-    public void sendProcessReport(long startTime, long endTime, int port, String hostname, String status)
-    {
-        try
-        {
-            DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, port, hostname, status" +
-                    "VALUES("+startTime+","+endTime+","+port+","+hostname+","+status+")");
-        }catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
+    public void sendProcessReport(long startTime, long endTime, int port, String hostname, ProcessReport createdProcessReport) {
+
     }
+
+//    @Override
+//    public void sendProcessReport(long startTime, long endTime, int port, String hostname, String status)
+//    {
+//        try
+//        {
+//            DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, port, hostname, status" +
+//                    "VALUES("+startTime+","+endTime+","+port+","+hostname+","+status+")");
+//        }catch (SQLException e)
+//        {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public long firstGcValue(String process)
