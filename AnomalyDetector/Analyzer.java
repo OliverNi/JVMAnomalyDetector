@@ -169,7 +169,9 @@ public class Analyzer {
 
                 long minimumMemValue = 0L;
                 long originalMinimumMemValue = log.firstGcValue(connections.get(i));
+
                 ProcessReport tempReport = new ProcessReport();
+                tempReport.setUsageAfterFirstGc(originalMinimumMemValue);
 
                 try
                 {
@@ -204,6 +206,7 @@ public class Analyzer {
                         }
                         else if (j == todayReports.size()-1 && minimumMemValue < (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
                         {
+                            tempReport.setUsageAfterLastGc(minimumMemValue);
                             //if there has been 5 or more consecutive minMemoryIncreases in a row, then a processreport is created with a "LIKELY_MEMORY_LEAK"
                             if(memConsecutiveIncCounter >= DEFAULT_CONSECUTIVE_MEM_INC)
                             {
