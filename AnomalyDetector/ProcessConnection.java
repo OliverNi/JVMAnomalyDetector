@@ -6,12 +6,18 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  * Created by Oliver on 2014-10-06.
  */
 public class ProcessConnection {
-    public static double DEFAULT_INTERVAL = 1000;
+    public static int DEFAULT_INTERVAL = 20;
     private String hostName;
     private int port;
     private double interval;
 
-    public ProcessConnection(String hostName, int port, double interval){
+    /**
+     * Information about a connection to a process
+     * @param hostName hostname
+     * @param port port
+     * @param interval time in minutes between every analysis.
+     */
+    public ProcessConnection(String hostName, int port, int interval){
         this.hostName = hostName;
         this.port = port;
         this.interval = interval;
