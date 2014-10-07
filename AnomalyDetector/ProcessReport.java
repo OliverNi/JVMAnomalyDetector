@@ -193,7 +193,7 @@ public class ProcessReport
         }
     }
 
-    private AnomalyReport createAnomalyReport(){
+    public AnomalyReport createAnomalyReport(){
         //@TODO Implement
         return null;
     }
