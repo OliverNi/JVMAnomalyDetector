@@ -43,5 +43,10 @@ public class AnomalyReport
         this.port = port;
     }
 
+    public String toString(){
+        //@TODO Implement (Will be used in AnomalyEvent
+        return null;
+    }
+
 
 }
