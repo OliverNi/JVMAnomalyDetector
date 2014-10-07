@@ -800,13 +800,43 @@ public class Log implements  ILogging
         return AllProcessReports;
     }
 
-    //@TODO implement this
     @Override
     public ProcessReport getProcessReport(String hostName, int port)
     {
-//        DB = DBConnection.createStatement();
-//        DB.close()
-        return null;
+        ProcessReport oneReport = new ProcessReport();
+        try
+        {
+            DB = DBConnection.createStatement();
+
+            ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport WHERE "+hostName+" = hostname AND"+port+" = port" +"ORDER BY startTime");
+
+            while(rs.next())
+            {
+                Long startTime = Long.parseLong(rs.getString("startTime"));
+                oneReport.setStartTime(startTime);
+                Long endTime =  Long.parseLong(rs.getString("endTime"));
+                oneReport.setEndTime(endTime);
+                int getport = Integer.parseInt(rs.getString("port"));
+                oneReport.setPort(port);
+                String hostname = rs.getString("hostname");
+                String theHostnamePort = hostname+":"+getport;
+                oneReport.setHostName(hostname);
+                String status = rs.getString("status");
+
+                oneReport.setStatus(status);
+            }
+            DB.close();
+
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        catch (NumberFormatException nfe)
+        {
+            System.out.println("NumberFormatException: " + nfe.getMessage());
+        }
+
+        return oneReport;
     }
 
     //@TODO implement this
