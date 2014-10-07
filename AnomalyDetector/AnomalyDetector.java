@@ -91,7 +91,7 @@ public class AnomalyDetector {
     public ArrayList<String> getConnections(){
         ArrayList<String> connStrings = new ArrayList<>();
         for (ProcessConnection p : connections){
-            connStrings.add(p.getHostName() + p.getPort() + p.getInterval());
+            connStrings.add(p.getHostName() + ":" + p.getPort());
         }
         return connStrings;
     }
