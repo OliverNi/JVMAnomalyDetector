@@ -11,8 +11,19 @@ import Logs.AnalyzedGcReport;
  */
 public class ProcessReport
 {
+    public ProcessReport()
+    {
+        this("Unknown", 0);
+    }
     public ProcessReport(String hostName, int port)
     {
+        usageAfterFirstGc = 0;
+        usageAfterLastGc = 0;
+        consec_mem_inc_count = 0;
+        startTime = 0;
+        endTime = 0;
+        port = 0;
+        hostName = "";
         this.status = Status.OK;
         TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
         PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
@@ -142,9 +153,7 @@ public class ProcessReport
         this.consec_mem_inc_count = consec_mem_inc_count;
     }
 
-    public ProcessReport(){
-        this("Unknown", 0);
-    }
+
 
     public void setHostName(String hostName)
     {
