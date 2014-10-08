@@ -839,12 +839,21 @@ public class Log implements  ILogging
         return oneReport;
     }
 
-    //@TODO implement this
     @Override
     public void sendProcessReport(long startTime, long endTime, int port, String hostname, ProcessReport createdProcessReport)
     {
-//        DB = DBConnection.createStatement();
-//        DB.close();
+        try
+        {
+            DB = DBConnection.createStatement();
+            DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, hostname, port, status, consec_mem_inc_count, usageAfterFirstGc, usageAfterLastGc)"+
+                    " VALUES("+startTime+","+endTime+","+hostname+","+port+","+createdProcessReport.getStatus()+","
+                            +createdProcessReport.getConsec_mem_inc_count()+","+createdProcessReport.getUsageAfterFirstGc()+","
+                            +createdProcessReport.getUsageAfterLastGc()+")");
+            DB.close();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
 //    @Override
@@ -880,8 +889,6 @@ public class Log implements  ILogging
         {
             System.out.println("NumberFormatException: " + nfe.getMessage());
         }
-
-
         return GcMinMemValue;
     }
 
