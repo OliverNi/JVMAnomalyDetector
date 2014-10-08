@@ -96,6 +96,15 @@ public class ProcessReport
 
 //MemStats
 
+
+    public String getHostName() {
+        return hostName;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
     public long getUsageAfterFirstGc() {
         return usageAfterFirstGc;
     }
