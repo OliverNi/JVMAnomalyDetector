@@ -176,5 +176,13 @@ public class AnomalyDetector {
         }
     }
 
+    private static void command(String cmd){
+        switch (cmd){
+            case "COMMAND_EXAMPLE":
+                break;
+            //@TODO Implement CLI commands for example show anomaly reports for a process.
+        }
+    }
+
 
 }
