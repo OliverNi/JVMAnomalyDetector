@@ -135,45 +135,44 @@ public class AnomalyDetector {
 
     public static void main(String args[]){
         //java AnomalyDetector hostname:port, hostname:port 20, hostname:port
-        ArrayList<ProcessConnection> pConnections = new ArrayList<>();
-        int count = 0;
-        while(count < args.length){
-            String hostNPort[] = args[count].split(":");
-            String hostName = hostNPort[0];
-            char lastChar = hostNPort[1].charAt(hostNPort[1].length()-1);
-            count++;
-            if (lastChar == ','){
-                //Create ProcessConnection with default interval
-                int port = Integer.parseInt(hostNPort[1].substring(0, hostNPort[1].length()-1));
-                pConnections.add(new ProcessConnection(hostName, port));
-            }
-            else if (count < args.length){
-                //Create ProcessConnection with specified interval.
-                int port = Integer.parseInt(hostNPort[1]);
-                int interval = 0;
-                if (args[count].charAt(args[count].length()-1) == ','){
-                    interval = Integer.parseInt(args[count].substring(0, args[count].length()-1));
-                }
-                else
-                    interval = Integer.parseInt(args[count]);
-                pConnections.add(new ProcessConnection(hostName, port, interval));
+        if (args.length != 0) {
+            ArrayList<ProcessConnection> pConnections = new ArrayList<>();
+            int count = 0;
+            while (count < args.length) {
+                String hostNPort[] = args[count].split(":");
+                String hostName = hostNPort[0];
+                char lastChar = hostNPort[1].charAt(hostNPort[1].length() - 1);
                 count++;
+                if (lastChar == ',') {
+                    //Create ProcessConnection with default interval
+                    int port = Integer.parseInt(hostNPort[1].substring(0, hostNPort[1].length() - 1));
+                    pConnections.add(new ProcessConnection(hostName, port));
+                } else if (count < args.length) {
+                    //Create ProcessConnection with specified interval.
+                    int port = Integer.parseInt(hostNPort[1]);
+                    int interval = 0;
+                    if (args[count].charAt(args[count].length() - 1) == ',') {
+                        interval = Integer.parseInt(args[count].substring(0, args[count].length() - 1));
+                    } else
+                        interval = Integer.parseInt(args[count]);
+                    pConnections.add(new ProcessConnection(hostName, port, interval));
+                    count++;
+                } else {
+                    int port = Integer.parseInt(hostNPort[1]);
+                    pConnections.add(new ProcessConnection(hostName, port));
+                }
+
             }
-            else{
-                int port = Integer.parseInt(hostNPort[1]);
-                pConnections.add(new ProcessConnection(hostName, port));
+            AnomalyDetector ad = new AnomalyDetector();
+            for (ProcessConnection p : pConnections) {
+                ad.connect(p.getHostName(), p.getPort(), p.getInterval());
             }
 
-        }
-        AnomalyDetector ad = new AnomalyDetector();
-        for (ProcessConnection p : pConnections){
-            ad.connect(p.getHostName(), p.getPort(), p.getInterval());
-        }
+            ArrayList<String> sConnections = ad.getConnections();
 
-        ArrayList<String> sConnections = ad.getConnections();
-
-        for (String s : sConnections){
-            System.out.println(s);
+            for (String s : sConnections) {
+                System.out.println(s);
+            }
         }
     }
 
