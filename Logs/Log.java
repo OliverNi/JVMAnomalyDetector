@@ -930,6 +930,7 @@ public class Log implements  ILogging
                 input = "DELETE FROM MemLog WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
                 DB.executeUpdate(input);
                 input = "DELETE FROM GCReport WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
+                input = "DELETE FROM ProcessReport WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
                 DB.executeUpdate(input);
                 processesCounter++;
             }
