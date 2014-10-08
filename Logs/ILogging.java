@@ -1,5 +1,6 @@
 package Logs;
 
+import AnomalyDetector.AnomalyReport;
 import AnomalyDetector.ProcessReport;
 
 import java.util.ArrayList;
@@ -97,6 +98,15 @@ public interface ILogging {
      * @return
      */
     public ProcessReport getProcessReport(String hostName, int port);
+
+    /**
+     *
+     * @param hostname input for specific ip address/hostname
+     * @param port input for specific process
+     * @return an Arraylist of type AnomalyReports based in hostname, port input
+     */
+    public ArrayList<AnomalyReport> getAnomalyReport(String hostname, int port);
+
 
     /**
      *
