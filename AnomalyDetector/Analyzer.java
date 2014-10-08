@@ -76,6 +76,7 @@ public class Analyzer {
         firstTime = cal.getTime();
 
 
+
         hourlyTimer.schedule(new HourlyTask(), firstTime.getTime(), hour);
         //Daily task
         cal.set(Calendar.HOUR, 23);
