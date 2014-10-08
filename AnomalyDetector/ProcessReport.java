@@ -48,7 +48,6 @@ public class ProcessReport
     private int consec_mem_inc_count;
 
     //GC
-    //@TODO implement these in processReport table, and bring them along
     //Usage after first recorded GC
     private long usageAfterFirstGc;
 
