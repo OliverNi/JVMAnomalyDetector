@@ -60,6 +60,10 @@ public class Analyzer {
     }
 
     private void setTimers(){
+        hourlyTimer = new Timer();
+        dailyTimer = new Timer();
+        weeklyTimer = new Timer();
+        monthlyTimer = new Timer();
         long hour = 3600000L;
         long day = hour * 24;
         long week = day * 7;
