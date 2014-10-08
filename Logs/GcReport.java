@@ -1,9 +1,20 @@
 package Logs;
 
+import AnomalyDetector.AnomalyReport;
+
 /**
  * Created by Oliver on 2014-09-22.
  */
 public class GcReport {
+    public enum Status
+    {
+        LIKELY_MEMORY_LEAK,
+        SUSPECTED_MEMORY_LEAK,
+        POSSIBLE_MEMORY_LEAK,
+        EXCESSIVE_GC_SCAN,
+        OK,
+        UNKNOWN
+    }
     private long sumCollectionTime;
     private long minCollectionTime;
     private long maxCollectionTime;
@@ -23,6 +34,9 @@ public class GcReport {
     private int gcCount;
     private int reportCount;
     private long sumMinMemoryUsage;
+    private Status status;
+    //keeps a track on if the minimumMemvalue after each GC has increased, and counts how many times in a row it has increased.
+    private int consec_mem_inc_count;
 
     /**
      * Constructor
@@ -68,6 +82,7 @@ public class GcReport {
         this.gcCount = gcCount;
         this.reportCount = reportCount;
         this.sumMinMemoryUsage = sumMinMemoryUsage;
+        this.status = Status.UNKNOWN;
     }
 
     public GcReport(){
@@ -258,9 +273,26 @@ public class GcReport {
         this.reportCount = reportCount;
     }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setConsec_mem_inc_count(int consec_mem_inc_count) {
+        this.consec_mem_inc_count = consec_mem_inc_count;
+    }
+
     public long getDuration(){
         return endTime - startTime;
     }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public int getConsec_mem_inc_count() {
+        return consec_mem_inc_count;
+    }
+
     public void addGcReport(GcReport ags){
         //Avg time between GCs
         this.sumTimeBetweenGc = (sumTimeBetweenGc + ags.getAvgTimeBetweenGc()) / 2;
@@ -359,7 +391,10 @@ public class GcReport {
         this.sumCollectionTime += stats.getCollectionTime();
         this.setEndMemoryUsage(stats.getMemoryUsedAfter());
         this.gcCount++;
+    }
 
+    public AnomalyReport createAnomalyReport(){
+        return null; //@TODO Implement
     }
 
 }
