@@ -11,6 +11,13 @@ import Logs.AnalyzedGcReport;
  */
 public class ProcessReport
 {
+    public ProcessReport(String hostName, int port)
+    {
+        this.status = Status.OK;
+        TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
+        PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
+    }
+
     //Create AnomalyReport if excessive GC scan
     public enum Status
     {
@@ -27,8 +34,6 @@ public class ProcessReport
     public static long TIME_BETWEEN_GC_WARNING;
     public static double PERCENTAGE_INC_IN_MEM_USE_WARNING;
 
-
-
     //@TODO possible scrap for the uptime variable
     private int uptimeInDays;
 
@@ -38,6 +43,10 @@ public class ProcessReport
     private String hostName;
     private int port;
     private Status status;
+
+    //keeps a track on if the minimumMemvalue after each GC has increased, and counts how many times in a row it has increased.
+    private int consec_mem_inc_count;
+
     //GC
     //@TODO implement these in processReport table, and bring them along
     //Usage after first recorded GC
@@ -73,6 +82,18 @@ public class ProcessReport
     private int weeklyReportCount;
     private int monthlyReportCount;
 
+
+
+//MemStats
+
+    public long getUsageAfterFirstGc() {
+        return usageAfterFirstGc;
+    }
+
+    public long getUsageAfterLastGc() {
+        return usageAfterLastGc;
+    }
+
     public void setUsageAfterFirstGc(long usageAfterFirstGc) {
         this.usageAfterFirstGc = usageAfterFirstGc;
     }
@@ -82,13 +103,44 @@ public class ProcessReport
     }
 
 
-//MemStats
-
-    public ProcessReport(String hostName, int port)
+    public String getStatus()
     {
-        this.status = Status.OK;
-        TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
-        PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
+        String returnStatus = "";
+        if(status.equals("POSSIBLE_MEMORY_LEAK"))
+        {
+            returnStatus = "POSSIBLE_MEMORY_LEAK";
+        }
+        else if(status.equals("EXCESSIVE_GC_SCAN"))
+        {
+            returnStatus = "EXCESSIVE_GC_SCAN";
+        }
+        else if(status.equals("LIKELY_MEMORY_LEAK"))
+        {
+            returnStatus = "LIKELY_MEMORY_LEAK";
+        }
+        else if(status.equals("SUSPECTED_MEMORY_LEAK"))
+        {
+            returnStatus = "SUSPECTED_MEMORY_LEAK";
+        }
+        else if(status.equals("OK"))
+        {
+            returnStatus = "OK;";
+        }
+        else
+        {
+            returnStatus = "OK";
+        }
+        return returnStatus;
+    }
+
+
+
+    public int getConsec_mem_inc_count() {
+        return consec_mem_inc_count;
+    }
+
+    public void setConsec_mem_inc_count(int consec_mem_inc_count) {
+        this.consec_mem_inc_count = consec_mem_inc_count;
     }
 
     public ProcessReport(){
@@ -145,7 +197,6 @@ public class ProcessReport
         {
             this.status = Status.OK;
         }
-
     }
 
     public double getDailyAvgMemUsageDif(){
