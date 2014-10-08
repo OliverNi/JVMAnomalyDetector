@@ -1,5 +1,6 @@
 package AnomalyDetector;
 
+import Listeners.AnomalyEvent;
 import Logs.AnalyzedGcReport;
 import Logs.GcReport;
 import Logs.GcStats;
@@ -469,6 +470,23 @@ public class Analyzer {
     private void forwardToProcessReport(String hostName, int port, AnalyzedGcReport report){
         ProcessReport pr = log.getProcessReport(hostName, port);
         pr.addReport(report);
+    }
+
+    private void analyzeProcessReport(ProcessReport pReport){
+        //@TODO Implement analysis of pReport
+
+        //If Anomaly Found - Create AnomalyReport
+        AnomalyReport aReport = pReport.createAnomalyReport();
+        fireAnomalyEvent(aReport);
+
+
+    }
+
+    private void fireAnomalyEvent(AnomalyReport aReport){
+        if (ad.getListener() != null){
+            AnomalyEvent e = new AnomalyEvent(aReport);
+            ad.getListener().anomalyFound(e);
+        }
     }
 
     //@TODO Move function calcAvg
