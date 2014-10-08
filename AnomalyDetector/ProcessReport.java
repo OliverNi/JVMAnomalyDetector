@@ -266,8 +266,9 @@ public class ProcessReport
         }
     }
 
+    //@TODO delete method since we decided upon creating anomalyreport in Analyzer class instead?
     public AnomalyReport createAnomalyReport(){
-        //@TODO Implement
+
         return null;
     }
 }
