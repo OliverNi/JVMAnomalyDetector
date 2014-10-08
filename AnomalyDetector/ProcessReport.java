@@ -152,8 +152,6 @@ public class ProcessReport
         return returnStatus;
     }
 
-
-
     public int getConsec_mem_inc_count() {
         return consec_mem_inc_count;
     }
@@ -161,8 +159,6 @@ public class ProcessReport
     public void setConsec_mem_inc_count(int consec_mem_inc_count) {
         this.consec_mem_inc_count = consec_mem_inc_count;
     }
-
-
 
     public void setHostName(String hostName)
     {
