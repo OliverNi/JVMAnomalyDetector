@@ -856,19 +856,6 @@ public class Log implements  ILogging
         }
     }
 
-//    @Override
-//    public void sendProcessReport(long startTime, long endTime, int port, String hostname, String status)
-//    {
-//        try
-//        {
-//            DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, port, hostname, status" +
-//                    "VALUES("+startTime+","+endTime+","+port+","+hostname+","+status+")");
-//        }catch (SQLException e)
-//        {
-//            e.printStackTrace();
-//        }
-//    }
-
     @Override
     public long firstGcValue(String process)
     {
@@ -905,6 +892,8 @@ public class Log implements  ILogging
             DB.executeUpdate(input);
             input = "DELETE FROM MemLog";
             DB.executeUpdate(input);
+            input = "DELETE FROM ProcessReport";
+            DB.executeUpdate(input);
             DB.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -930,6 +919,7 @@ public class Log implements  ILogging
                 input = "DELETE FROM MemLog WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
                 DB.executeUpdate(input);
                 input = "DELETE FROM GCReport WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
+                DB.executeUpdate(input);
                 input = "DELETE FROM ProcessReport WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
                 DB.executeUpdate(input);
                 processesCounter++;
