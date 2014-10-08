@@ -171,13 +171,13 @@ public class Analyzer {
                 //Creates an arraylist of GcStats and fetches all GCstats entries for the current process through the set starttime and endtime above
                 ArrayList<GcStats> todayReports = thisIntervalReportsMap.get(connections.get(i));
 
-                long minimumMemValue = 0L;
+                long minimumMemValue = 0;
                 long originalMinimumMemValue = log.firstGcValue(connections.get(i));
 
                 ProcessReport tempReport = new ProcessReport();
                 tempReport.setUsageAfterFirstGc(originalMinimumMemValue);
 
-                long IntervalStartTimeOnSuspectedMemLeak = 0L;
+                long IntervalStartTimeOnSuspectedMemLeak = 0;
 
                 try
                 {
@@ -224,13 +224,15 @@ public class Analyzer {
                         // then it's time to create a process report with a "SUSPECTED_MEMORY_LEAK" warning
                         if(j == todayReports.size()-1 && minimumMemValue >= (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
                         {
+                            tempReport.setConsec_mem_inc_count(memConsecutiveIncCounter);
                             tempReport.setUsageAfterLastGc(minimumMemValue);
                             tempReport.setStatus("SUSPECTED_MEMORY_LEAK");
+
                             if (IntervalStartTimeOnSuspectedMemLeak != 0)
                             {
                                 log.sendProcessReport(IntervalStartTimeOnSuspectedMemLeak, intervalEndTime.getTime(),port,hostPort[0], tempReport);
                             }
-                            else
+                            else if (IntervalStartTimeOnSuspectedMemLeak == 0)
                             {
                                 log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0], tempReport);
                             }
@@ -239,6 +241,7 @@ public class Analyzer {
                         // if the last gcMinMemvalue is below the 10% threshold of the firstGcMinMemValue
                         else if (j == todayReports.size()-1 && minimumMemValue < (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
                         {
+                            tempReport.setConsec_mem_inc_count(memConsecutiveIncCounter);
                             tempReport.setUsageAfterLastGc(minimumMemValue);
                             //if there has been 5 or more consecutive minMemoryIncreases in a row, then a processreport is created with a "LIKELY_MEMORY_LEAK"
                             if(memConsecutiveIncCounter >= DEFAULT_CONSECUTIVE_MEM_INC)
@@ -254,12 +257,12 @@ public class Analyzer {
                                 }
 
                             }
-                            //if minimumMemValue is below the threshold of firstGCMemMinValue*10%, then the processReport gets the status "OK"
-                            else
-                            {
-                                tempReport.setStatus("OK");
-                                log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],tempReport);
-                            }
+                        //if minimumMemValue is below the threshold of firstGCMemMinValue*10%, then the processReport gets the status "OK"
+                        else
+                        {
+                            tempReport.setStatus("OK");
+                            log.sendProcessReport(intervalStartTime, intervalEndTime.getTime(),port,hostPort[0],tempReport);
+                        }
                         }
                     }
                 }catch (NumberFormatException e)
