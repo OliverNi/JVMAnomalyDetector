@@ -217,7 +217,7 @@ public class Log implements  ILogging
 
 
 //            // create a database connection
-            DBConnection = DriverManager.getConnection("jdbc:sqlite:test4.db");
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -471,6 +471,8 @@ public class Log implements  ILogging
     @Override
     public ArrayList<GcStats> getGarbageCollectionStats(long startTime, long endTime, String hostname, int port)
     {
+        if (countRows("GCLog", hostname, port) < 1)
+            return null;
         GcStats GCstatsFetch = new GcStats();
         ArrayList<GcStats> GCStatistics = new ArrayList<>();
         try
@@ -805,18 +807,33 @@ public class Log implements  ILogging
         return AllProcessReports;
     }
 
+    public int countRows(String tableName, String hostName, int port){
+        String query = "SELECT COUNT(*) AS count FROM " + tableName + " WHERE hostname = " + "'" + hostName + "'" + " AND port = " + port;
+        try {
+            DB = DBConnection.createStatement();
+            ResultSet rs = DB.executeQuery(query);
+            return rs.getInt(1); //@TODO Close stmt?
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        //If error
+        return 0;
+    }
     @Override
     public ProcessReport getProcessReport(String hostName, int port)
     {
         //Return null if it does not exist
         String query = "SELECT COUNT(*) AS count FROM ProcessReport WHERE hostname = " + hostName + " AND port = " + port;
-        try {
+        if (countRows("ProcessReport", hostName, port) < 1)
+            return null;
+       /* try {
+            DB = DBConnection.createStatement(); //@TODO Close?
             ResultSet rsCount = DB.executeQuery(query);
             if (rsCount.getInt(0) < 1)
                 return null;
         } catch (SQLException e) {
             e.printStackTrace();
-        }
+        }*/
 
         ProcessReport oneReport = new ProcessReport();
         try
@@ -884,6 +901,8 @@ public class Log implements  ILogging
         String[] hostPort = process.split(":");
         String hostname = hostPort[0];
         int port = Integer.parseInt(hostPort[1]);
+        if (countRows("ProcessReport", hostname, port) < 1)
+            return 0; //@TODO Better value?
         long GcMinMemValue = 0L;
         String query = "SELECT usageAfterFirstGc FROM ProcessReport WHERE hostname = " + hostname + "AND port = " + port;
         try
