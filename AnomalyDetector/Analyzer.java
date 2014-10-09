@@ -148,7 +148,7 @@ public class Analyzer {
             {
                 try
                 {
-                    String fetchValue = Double.toString((intervalInMinutes[i]*60)*1000);
+                    String fetchValue = Integer.toString((intervalInMinutes[i]*60)*1000);
                     intervalInMs[i] = Long.parseLong(fetchValue);
                 }catch (NumberFormatException e)
                 {
@@ -171,7 +171,7 @@ public class Analyzer {
             {
                 intervalStartTime = cal.getTime().getTime()- intervalInMs[i];
                 if(connections.get(i).contains(":"))
-                {
+                { //@TODO Check for null currentReports
                     String[] hostPortName = connections.get(i).split("\\:");
                     int port = Integer.parseInt(hostPortName[1]);
                     intervalReportsMap.put(connections.get(i),log.getGarbageCollectionStats(intervalStartTime, intervalEndTime.getTime(),hostPortName[0], port )  );
