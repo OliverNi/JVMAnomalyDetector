@@ -217,7 +217,7 @@ public class Log implements  ILogging
 
 
 //            // create a database connection
-            DBConnection = DriverManager.getConnection("jdbc:sqlite:test.db");
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test4.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
