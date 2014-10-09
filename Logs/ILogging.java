@@ -140,6 +140,7 @@ public interface ILogging {
      */
     public void sendUsageAfterLastGc(long usageAfterLastGc, String hostname, int port);
 
+    public void sendUsageAfterFirstGc(long usageAfterLastGc, String hostname, int port);
     /**
      * Clears data for specified processes in the database.
      * @param processes list of processes HOSTNAME:PORT
