@@ -86,7 +86,7 @@ public class Analyzer {
         firstTime = cal.getTime();
 
 
-
+        /*
         hourlyTimer.schedule(new HourlyTask(), firstTime.getTime(), hour);
         //Daily task
         cal.set(Calendar.HOUR, 23);
@@ -110,7 +110,7 @@ public class Analyzer {
         firstTime = cal.getTime();
         //@TODO Fix different amount of days in different months.
         monthlyTimer.schedule(new MonthlyTask(), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-
+        */
         intervalTimer.scheduleAtFixedRate(new IntervalTask(), 0, ad.getInterval(ad.getProcessConnections().get(0).getHostName(),
                 ad.getProcessConnections().get(0).getPort()));
     }
