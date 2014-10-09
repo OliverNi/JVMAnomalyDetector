@@ -230,7 +230,18 @@ public class Analyzer {
                             tempReport.setConsec_mem_inc_count(memConsecutiveIncCounter);
 
                             tempReport.setStatus(GcReport.Status.SUSPECTED_MEMORY_LEAK);
-                            AnomalyReport aReport =  tempReport.createAnomalyReport();
+                            //AnomalyReport aReport =  tempReport.createAnomalyReport();
+                            //If process has a suspected memory leak -> Create an AnomalyReport and fire AnomalyEvent (reports to listener)
+                            AnomalyReport aReport = new AnomalyReport();
+                            aReport.setAnomaly(AnomalyReport.Anomaly.SUSPECTED_MEMORY_LEAK);
+                            aReport.setErrorMsg("Heap memory usage in PS OLD Gen above threshold.");
+                            aReport.setHost(hostPort[0]);
+                            aReport.setPort(port);
+                            aReport.setMemIncreaseBytes(tempReport.getEndMemoryUsage() - originalMinimumMemValue);
+                            ArrayList<GcReport> possibleMemLeakReports = log.getPossibleMemoryLeaks(hostPort[0], port);
+                            aReport.setStartTimeIncrease(possibleMemLeakReports.get(0).getStartTime());//@TODO Implement - Get startTime for the first possible memleak.
+                            aReport.setTimestamp(Calendar.getInstance().getTimeInMillis());
+                            aReport.setMemIncreasePercentage(tempReport.getEndMemoryUsage() / originalMinimumMemValue);
                             fireAnomalyEvent(aReport);
                             if (IntervalStartTimeOnSuspectedMemLeak != 0)
                             {
@@ -250,10 +261,13 @@ public class Analyzer {
                                 {
                                     tempReport.setStartTime(IntervalStartTimeOnSuspectedMemLeak);
                                 }
+                                //@TODO log Possible memory leaks (GcReports) (look at last gc in interval)
                             }
                         }
+
                         log.sendUsageAfterLastGc(tempReport.getEndMemoryUsage(),hostPort[0],port);
                     }
+                    //@TODO log.clearPossibleMemoryLeaks(host, process) if tempReport is OK.
                 }catch (NumberFormatException e)
                 {
                     e.printStackTrace();

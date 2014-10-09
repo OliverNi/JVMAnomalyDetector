@@ -148,4 +148,14 @@ public interface ILogging {
 
     //@TODO implement gcStats count to go back n steps to find when increase started (slow increase)
 
+    public ArrayList<GcReport> getPossibleMemoryLeaks(String host, int port);
+
+    /**
+     * Clears all GcReports marked as POSSIBLE_MEMORY_LEAK for the specified process
+     * @param hostname host
+     * @param port port
+     * @return Number of reports removed
+     */
+    public int clearPossibleMemoryLeaks(String hostname, int port);
+
 }

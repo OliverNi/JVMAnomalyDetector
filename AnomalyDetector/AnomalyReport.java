@@ -10,37 +10,100 @@ package AnomalyDetector;
  */
 public class AnomalyReport
 {
-    public enum Anomaly{
+    public enum Anomaly {
         EXCESSIVE_GC_SCAN,
-        OVER_TIME_INCREASING_MEMORY_USAGE,
-        RAPIDLY_INCREASING_MEMORY_USAGE
+        LIKELY_MEMORY_LEAK,
+        SUSPECTED_MEMORY_LEAK,
+        POSSIBLE_MEMORY_LEAK //May not be used (setting?)
     }
-    private Anomaly type;
-    private String hostname;
+    private long timestamp;
+    private String host;
     private int port;
-    private long timePeriod;
-    private String errorMessage;
-    private String errorAccuracy;
-    private long anomalyStartTime;
-
+    private String errorMsg;
+    private long startTimeIncrease;
+    private Anomaly anomaly;
+    private double memIncreasePercentage;
+    private long memIncreaseBytes;
     public AnomalyReport()
     {
-        hostname = "";
-        port = 0;
-        timePeriod = 0;
-        errorMessage  = "none";
-        errorAccuracy = "none";
-        anomalyStartTime = 0;
+        this(0, null, -1, "No Msg", 0, null, 0, 0);
     }
 
-    public AnomalyReport(long anomalyStartTime, long timePeriod, String errorMessage, String errorAccuracy, String hostname, int port)
-    {
-        this.anomalyStartTime = anomalyStartTime;
-        this.timePeriod = timePeriod;
-        this.errorMessage = errorMessage;
-        this.errorAccuracy = errorAccuracy;
-        this.hostname = hostname;
+    public AnomalyReport(long timestamp, String host, int port, String errorMsg,
+                         long startTimeIncrease, Anomaly anomaly, double memIncreasePercentage,
+                         long memIncreaseBytes) {
+        this.timestamp = timestamp;
+        this.host = host;
         this.port = port;
+        this.errorMsg = errorMsg;
+        this.startTimeIncrease = startTimeIncrease;
+        this.anomaly = anomaly;
+        this.memIncreasePercentage = memIncreasePercentage;
+        this.memIncreaseBytes = memIncreaseBytes;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public long getStartTimeIncrease() {
+        return startTimeIncrease;
+    }
+
+    public Anomaly getAnomaly() {
+        return anomaly;
+    }
+
+    public double getMemIncreasePercentage() {
+        return memIncreasePercentage;
+    }
+
+    public long getMemIncreaseBytes() {
+        return memIncreaseBytes;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+
+    public void setStartTimeIncrease(long startTimeIncrease) {
+        this.startTimeIncrease = startTimeIncrease;
+    }
+
+    public void setAnomaly(Anomaly anomaly) {
+        this.anomaly = anomaly;
+    }
+
+    public void setMemIncreasePercentage(double memIncreasePercentage) {
+        this.memIncreasePercentage = memIncreasePercentage;
+    }
+
+    public void setMemIncreaseBytes(long memIncreaseBytes) {
+        this.memIncreaseBytes = memIncreaseBytes;
     }
 
     @Override

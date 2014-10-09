@@ -22,8 +22,8 @@ public class ProcessReport
         consec_mem_inc_count = 0;
         startTime = 0;
         endTime = 0;
-        port = 0;
-        hostName = "";
+        this.port = 0;
+        this.hostName = "";
         this.status = Status.OK;
         TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
         PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
