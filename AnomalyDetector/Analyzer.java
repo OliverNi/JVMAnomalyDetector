@@ -17,7 +17,7 @@ public class Analyzer {
         HourlyTask(){
         }
         public void run(){
-            analyzeHourlyGc();
+            analyzeIntervalGc();
         }
     }
     class DailyTask extends TimerTask {
@@ -102,8 +102,8 @@ public class Analyzer {
         monthlyTimer.schedule(new MonthlyTask(), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
     }
 
-     //@TODO rename method to analyzeIntervalGc() for example
-    public void analyzeHourlyGc()
+
+    public void analyzeIntervalGc()
     {
             Calendar cal = Calendar.getInstance();
 
