@@ -328,6 +328,9 @@ public class Log implements  ILogging
     public void sendGarbageCollectionLog(long memoryUsedAfter, long memoryUsedBefore, long timestamp, long collectionTime, String hostname, int port)
     {
         //if processreport for this host port doesnt exist, create one here. setusageafterfirstGC = memoryUsedAfter
+        if (getProcessReport(hostname, port) == null){
+            sendUsageAfterFirstGc(memoryUsedAfter, hostname, port);
+        }
         try
         {
             DB = DBConnection.createStatement();
@@ -918,7 +921,39 @@ public class Log implements  ILogging
     //usageAfterLastGc value
     @Override
     public void sendUsageAfterLastGc(long usageAfterLastGc, String hostname, int port) {
+        //ProcessReport exists
+        if (getProcessReport(hostname, port) != null){
+            String query = "UPDATE ProcessReport SET usageAfterLastGc = " + usageAfterLastGc + " WHERE hostname = " +
+                    hostname + " AND " + " port = " + port;
+            try {
+                DB = DBConnection.createStatement();
+                DB.executeUpdate(query);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
+    @Override
+    public void sendUsageAfterFirstGc(long usageAfterFirstGc, String hostname, int port){
+        //ProcessReport does not exist
+        if (getProcessReport(hostname, port) == null){
+            ProcessReport pReport = new ProcessReport(hostname, port);
+            pReport.setUsageAfterFirstGc(usageAfterFirstGc);
+            sendProcessReport(Calendar.getInstance().getTimeInMillis(), Calendar.getInstance().getTimeInMillis(),
+                    port, hostname, pReport);
+        }
+        //ProcessReport exists and needs to be updated
+        else{
+            String query = "UPDATE ProcessReport SET usageAfterFirstGc = " + usageAfterFirstGc + " WHERE hostname = " +
+                    hostname + " AND " + " port = " + port;
+            try {
+                DB = DBConnection.createStatement();
+                DB.executeUpdate(query);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
