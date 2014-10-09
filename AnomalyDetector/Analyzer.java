@@ -44,15 +44,24 @@ public class Analyzer {
             analyzeMonthlyGC();
         }
     }
+    class IntervalTask extends TimerTask{
+        IntervalTask(){
+        }
+        public void run(){
+            analyzeIntervalGc();
+        }
+    }
 
     public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
     public static final double DEFAULT_CONSECUTIVE_MEM_INC = 5;
     private AnomalyDetector ad;
     private ILogging log;
-    Timer hourlyTimer;
+    Timer hourlyTimer; //@TODO remove?
     Timer dailyTimer;
     Timer weeklyTimer;
     Timer monthlyTimer;
+    Timer intervalTimer;
+
 
     public Analyzer(AnomalyDetector ad){
         this.ad = ad;
@@ -65,6 +74,7 @@ public class Analyzer {
         dailyTimer = new Timer();
         weeklyTimer = new Timer();
         monthlyTimer = new Timer();
+        intervalTimer = new Timer();
         long hour = 3600000L;
         long day = hour * 24;
         long week = day * 7;
@@ -100,6 +110,9 @@ public class Analyzer {
         firstTime = cal.getTime();
         //@TODO Fix different amount of days in different months.
         monthlyTimer.schedule(new MonthlyTask(), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+        intervalTimer.scheduleAtFixedRate(new IntervalTask(), 0 , ad.getInterval(ad.getProcessConnections().get(0).getHostName(),
+                ad.getProcessConnections().get(0).getPort()));
     }
 
 
