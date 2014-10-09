@@ -250,8 +250,10 @@ public class Analyzer {
                                 {
                                     tempReport.setStartTime(IntervalStartTimeOnSuspectedMemLeak);
                                 }
+                                //@TODO log Possible memory leaks (GcReports) (look at last gc in interval)
                             }
                         }
+
                         log.sendUsageAfterLastGc(tempReport.getEndMemoryUsage(),hostPort[0],port);
                     }
                 }catch (NumberFormatException e)
