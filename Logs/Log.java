@@ -327,6 +327,7 @@ public class Log implements  ILogging
     @Override
     public void sendGarbageCollectionLog(long memoryUsedAfter, long memoryUsedBefore, long timestamp, long collectionTime, String hostname, int port)
     {
+        //if processreport for this host port doesnt exist, create one here. setusageafterfirstGC = memoryUsedAfter
         try
         {
             DB = DBConnection.createStatement();
@@ -949,6 +950,16 @@ public class Log implements  ILogging
         {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public ArrayList<GcReport> getPossibleMemoryLeaks(String host, int port) {
+        return null;
+    }
+
+    @Override
+    public int clearPossibleMemoryLeaks(String hostname, int port) {
+        return 0;
     }
 
 }
