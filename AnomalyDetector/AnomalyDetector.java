@@ -1,6 +1,7 @@
 package AnomalyDetector;
 
 import Listeners.AnomalyListener;
+import Listeners.SimpleAnomalyListener;
 import Logs.Log;
 
 import java.lang.reflect.Array;
@@ -163,7 +164,8 @@ public class AnomalyDetector {
                 }
 
             }
-            AnomalyDetector ad = new AnomalyDetector();
+            SimpleAnomalyListener listener = new SimpleAnomalyListener();
+            AnomalyDetector ad = new AnomalyDetector(listener);
             for (ProcessConnection p : pConnections) {
                 ad.connect(p.getHostName(), p.getPort(), p.getInterval());
             }
