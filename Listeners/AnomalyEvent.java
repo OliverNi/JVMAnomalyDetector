@@ -29,4 +29,9 @@ public class AnomalyEvent extends EventObject{
     public String getDate(){
         return date.toString();
     }
+
+    @Override
+    public String toString(){
+        return source.toString();
+    }
 }
