@@ -35,9 +35,10 @@ public class AnomalyDetector {
 
     public AnomalyDetector(AnomalyListener listener){
         agents = new ArrayList<>();
-        analyzer = new Analyzer(this);
         connections = new ArrayList<>();
         log = new Log();
+
+
     }
 
     /**
@@ -57,11 +58,14 @@ public class AnomalyDetector {
      */
     public boolean connect(String hostName, int port, int interval){
         boolean success = false;
+
         agents.add(new JMXAgent(hostName, port, this));
         if (agents.get(agents.size() -1).isConnected()){
             agents.get(agents.size()-1).setInterval(interval);
             connections.add(new ProcessConnection(hostName, port, interval));
             success = true;
+            if (connections.size() == 1) //@TODO Fix better solution
+                analyzer = new Analyzer(this);
         }
         else {
             agents.remove(agents.size() - 1);
