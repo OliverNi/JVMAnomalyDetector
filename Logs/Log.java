@@ -878,22 +878,20 @@ public class Log implements  ILogging
         }
     }
 
-    //@TODO add implementation to find the firstGCValue for the specific process in its ProcessReport and submit
     @Override
     public long firstGcValue(String process)
     {
+        String[] hostPort = process.split(":");
+        String hostname = hostPort[0];
+        int port = Integer.parseInt(hostPort[1]);
         long GcMinMemValue = 0L;
+        String query = "SELECT usageAfterFirstGc FROM ProcessReport WHERE hostname = " + hostname + "AND port = " + port;
         try
         {
+
             DB = DBConnection.createStatement();
-            //anropa processReport för specifik process
-
-
-
-//            String input = "SELECT minMemoryUsage FROM GCReport WHERE GCReportId = 1";
-//            ResultSet rs = DB.executeQuery(input);
-//
-//            GcMinMemValue = Long.parseLong(rs.getString("sumMinMemoryUsage"));
+            ResultSet rs = DB.executeQuery(query);
+            GcMinMemValue = Long.parseLong(rs.getString("usageAfterFirstGc"));
             DB.close();
         }catch(SQLException e)
         {
