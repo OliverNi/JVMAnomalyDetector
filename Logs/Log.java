@@ -808,6 +808,16 @@ public class Log implements  ILogging
     @Override
     public ProcessReport getProcessReport(String hostName, int port)
     {
+        //Return null if it does not exist
+        String query = "SELECT COUNT(*) AS count FROM ProcessReport WHERE hostname = " + hostName + " AND port = " + port;
+        try {
+            ResultSet rsCount = DB.executeQuery(query);
+            if (rsCount.getInt(0) < 1)
+                return null;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         ProcessReport oneReport = new ProcessReport();
         try
         {
