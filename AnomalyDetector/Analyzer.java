@@ -53,7 +53,7 @@ public class Analyzer {
     }
 
     public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
-    public static final double DEFAULT_CONSECUTIVE_MEM_INC = 5;
+    public static final double DEFAULT_CONSECUTIVE_MEM_INC = 1;
     private AnomalyDetector ad;
     private ILogging log;
     Timer hourlyTimer; //@TODO remove?
@@ -111,7 +111,7 @@ public class Analyzer {
         //@TODO Fix different amount of days in different months.
         monthlyTimer.schedule(new MonthlyTask(), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
 
-        intervalTimer.scheduleAtFixedRate(new IntervalTask(), 0 , ad.getInterval(ad.getProcessConnections().get(0).getHostName(),
+        intervalTimer.scheduleAtFixedRate(new IntervalTask(), 0, ad.getInterval(ad.getProcessConnections().get(0).getHostName(),
                 ad.getProcessConnections().get(0).getPort()));
     }
 
@@ -208,9 +208,9 @@ public class Analyzer {
 
                     for(int j=0; j<currentReports.size(); j++)
                     {
-                        //compares minimumMemValue from last iteration with a new one on the current iteration, if the newer value keeps rising, there will be a consecutive count
+                        //compares originalMinimumMemValue from last iteration with a new one on the current iteration, if the newer value is above originalMinimumMemValue, there will be a consecutive count
                         //as well as an intervalStartTime which will be set on the timeframe of the increase.
-                        if(minimumMemValue < currentReports.get(j).getMemoryUsedAfter() && minimumMemValue != 0)
+                        if(originalMinimumMemValue < currentReports.get(j).getMemoryUsedAfter() )
                         {
                             if(IntervalStartTimeOnSuspectedMemLeak == 0)
                             {
@@ -219,7 +219,7 @@ public class Analyzer {
                             memConsecutiveIncCounter++;
                         }
                         //if the next value is lower, then the counter is reset together with intervalStartTime.
-                        else if (minimumMemValue >= currentReports.get(j).getMemoryUsedAfter() && minimumMemValue != 0)
+                        else if (originalMinimumMemValue >= currentReports.get(j).getMemoryUsedAfter() && minimumMemValue != 0)
                         {
                             memConsecutiveIncCounter = 0;
                             IntervalStartTimeOnSuspectedMemLeak = 0;
@@ -228,7 +228,7 @@ public class Analyzer {
 
                         //if the value equals or is above 10% threshhold of firstGCMinMemValue then the intervalStartTime is set to this timeframe,
                         // that is if the intervalStartTime has not already been set on another timeframe of a start of a slow increase for example.
-                        if(minimumMemValue >= (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
+                        if(minimumMemValue >= (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) && minimumMemValue != 0 )
                         {
                             if(IntervalStartTimeOnSuspectedMemLeak == 0)
                             {
@@ -243,7 +243,12 @@ public class Analyzer {
                             tempReport.setConsec_mem_inc_count(memConsecutiveIncCounter);
 
                             tempReport.setStatus(GcReport.Status.SUSPECTED_MEMORY_LEAK);
-                            //AnomalyReport aReport =  tempReport.createAnomalyReport();
+
+                            if (IntervalStartTimeOnSuspectedMemLeak != 0)
+                            {
+                                tempReport.setStartTime(IntervalStartTimeOnSuspectedMemLeak);
+                            }
+
                             //If process has a suspected memory leak -> Create an AnomalyReport and fire AnomalyEvent (reports to listener)
                             AnomalyReport aReport = new AnomalyReport();
                             aReport.setAnomaly(AnomalyReport.Anomaly.SUSPECTED_MEMORY_LEAK);
@@ -251,21 +256,35 @@ public class Analyzer {
                             aReport.setHost(hostPort[0]);
                             aReport.setPort(port);
                             aReport.setMemIncreaseBytes(tempReport.getEndMemoryUsage() - originalMinimumMemValue);
+
+                            //fetches the first GcReport for the specific port and hostname which has the possible memory leak status.
+                            //this is done in order to determine if the memory leak started in an interval before the current one.
+                            //if this is not the case, then the  IntervalStartTimeOnSuspectedMemLeak is used from the current interval.
                             ArrayList<GcReport> possibleMemLeakReports = log.getPossibleMemoryLeaks(hostPort[0], port);
-                            aReport.setStartTimeIncrease(possibleMemLeakReports.get(0).getStartTime());//@TODO Implement - Get startTime for the first possible memleak.
+
+                            //if an earlier GcReport is found with status Possible memory leak
+                            if(possibleMemLeakReports.get(0).getStartTime() < tempReport.getStartTime() )
+                            {
+                                aReport.setStartTimeIncrease(possibleMemLeakReports.get(0).getStartTime());
+                            }
+                            //if no earlier  GCReport is found, then it is set to 0, Maybe set it to IntervalStartTimeOnSuspectedMemLeak?
+                            else
+                            {
+                                aReport.setStartTimeIncrease(0);
+                            }
+
                             aReport.setTimestamp(Calendar.getInstance().getTimeInMillis());
                             aReport.setMemIncreasePercentage(tempReport.getEndMemoryUsage() / originalMinimumMemValue);
+
                             fireAnomalyEvent(aReport);
-                            if (IntervalStartTimeOnSuspectedMemLeak != 0)
-                            {
-                               tempReport.setStartTime(IntervalStartTimeOnSuspectedMemLeak);
-                            }
+
+
                         }
                         // if the last gcMinMemvalue is below the 10% threshold of the firstGcMinMemValue
                         else if (j == currentReports.size()-1 && minimumMemValue < (originalMinimumMemValue*DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) )
                         {
                             tempReport.setConsec_mem_inc_count(memConsecutiveIncCounter);
-
+                            tempReport.setStatus(GcReport.Status.OK);
                             //if there has been 5 or more consecutive minMemoryIncreases in a row, then a processreport is created with a "LIKELY_MEMORY_LEAK"
                             if(memConsecutiveIncCounter >= DEFAULT_CONSECUTIVE_MEM_INC)
                             {
@@ -274,13 +293,21 @@ public class Analyzer {
                                 {
                                     tempReport.setStartTime(IntervalStartTimeOnSuspectedMemLeak);
                                 }
-                                //@TODO log Possible memory leaks (GcReports) (look at last gc in interval)
+                                //creates a GCReport log entry for every Possible memory leak.
+                                if(minimumMemValue > originalMinimumMemValue)
+                                {
+                                    log.sendGcReport(hostPort[0], port, tempReport);
+                                }
+                            }
+                            if(tempReport.getStatus().equals(GcReport.Status.OK))
+                            {
+                                log.clearPossibleMemoryLeaks(hostPort[0], port);
                             }
                         }
-
                         log.sendUsageAfterLastGc(tempReport.getEndMemoryUsage(),hostPort[0],port);
                     }
-                    //@TODO log.clearPossibleMemoryLeaks(host, process) if tempReport is OK.
+
+
                 }catch (NumberFormatException e)
                 {
                     e.printStackTrace();
