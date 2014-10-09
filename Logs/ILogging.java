@@ -130,6 +130,16 @@ public interface ILogging {
      */
     public void clearData();
 
+    // anropa ProcessReport och uppdatera firstGC
+
+    /**
+     *  calls on ProcessReport to update it for the specific port and hostname with a new usageAfterLastGc
+     * @param usageAfterLastGc
+     * @param hostname
+     * @param port
+     */
+    public void sendUsageAfterLastGc(long usageAfterLastGc, String hostname, int port);
+
     /**
      * Clears data for specified processes in the database.
      * @param processes list of processes HOSTNAME:PORT

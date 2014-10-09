@@ -1,5 +1,6 @@
 package Logs;
 
+import AnomalyDetector.AnomalyReport;
 import AnomalyDetector.ProcessReport;
 
 import java.lang.reflect.Array;
@@ -840,6 +841,13 @@ public class Log implements  ILogging
     }
 
     @Override
+    public ArrayList<AnomalyReport> getAnomalyReport(String hostname, int port)
+    {
+
+        return null;
+    }
+
+    @Override
     public void sendProcessReport(long startTime, long endTime, int port, String hostname, ProcessReport createdProcessReport)
     {
         try
@@ -856,6 +864,7 @@ public class Log implements  ILogging
         }
     }
 
+    //@TODO add implementation to find the firstGCValue for the specific process in its ProcessReport and submit
     @Override
     public long firstGcValue(String process)
     {
@@ -863,10 +872,14 @@ public class Log implements  ILogging
         try
         {
             DB = DBConnection.createStatement();
-            String input = "SELECT minMemoryUsage FROM GCReport WHERE GCReportId = 1";
-            ResultSet rs = DB.executeQuery(input);
+            //anropa processReport för specifik process
 
-            GcMinMemValue = Long.parseLong(rs.getString("sumMinMemoryUsage"));
+
+
+//            String input = "SELECT minMemoryUsage FROM GCReport WHERE GCReportId = 1";
+//            ResultSet rs = DB.executeQuery(input);
+//
+//            GcMinMemValue = Long.parseLong(rs.getString("sumMinMemoryUsage"));
             DB.close();
         }catch(SQLException e)
         {
@@ -898,6 +911,13 @@ public class Log implements  ILogging
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    //@TODO implement update to send to current ProcessReport for the specific hostname and port  and updates its
+    //usageAfterLastGc value
+    @Override
+    public void sendUsageAfterLastGc(long usageAfterLastGc, String hostname, int port) {
+
     }
 
     @Override
