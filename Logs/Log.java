@@ -812,7 +812,9 @@ public class Log implements  ILogging
         try {
             DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery(query);
-            return rs.getInt(1); //@TODO Close stmt?
+            int count = rs.getInt(1);
+            DB.close();
+            return count;
         } catch (SQLException e) {
             e.printStackTrace();
         }
