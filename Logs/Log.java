@@ -839,7 +839,7 @@ public class Log implements  ILogging
         {
             DB = DBConnection.createStatement();
 
-            ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport WHERE '"+hostName+"' = hostname AND"+port+" = port" +"ORDER BY startTime");
+            ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport WHERE hostname = '"+hostName+"' AND port = "+port +" ORDER BY startTime");
 
             while(rs.next())
             {
