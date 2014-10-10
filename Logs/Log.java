@@ -998,13 +998,13 @@ public class Log implements  ILogging
                 getPortHostname = processes.get(processesCounter);
                 processesCounter++;
                 String[] theSplit = getPortHostname.split("\\:"); //@TODO =hostname? Wrong order? (hostname = theSplit[0])
-                input = "DELETE FROM GCLog WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
+                input = "DELETE FROM GCLog WHERE hostname = '"+theSplit[0]+ "' AND port = "+theSplit[1];
                 DB.executeUpdate(input);
-                input = "DELETE FROM MemLog WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
+                input = "DELETE FROM MemLog WHERE hostname = '"+theSplit[0]+ "' AND port = "+theSplit[1];
                 DB.executeUpdate(input);
-                input = "DELETE FROM GCReport WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
+                input = "DELETE FROM GCReport WHERE hostname = '"+theSplit[0]+ "' AND port = "+theSplit[1];
                 DB.executeUpdate(input);
-                input = "DELETE FROM ProcessReport WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
+                input = "DELETE FROM ProcessReport WHERE hostname = '"+theSplit[0]+ "' AND port = "+theSplit[1];
                 DB.executeUpdate(input);
                 processesCounter++;
             }
