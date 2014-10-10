@@ -478,7 +478,7 @@ public class Log implements  ILogging
         try
         {
             DB = DBConnection.createStatement();
-            ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,hostname,port FROM GCLog " +
+            ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,hostname,port, GCCollectionTime FROM GCLog " +
                     "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+ " AND port = " + port + " AND hostname = '" + hostname+"' ORDER BY timestamp");
             while(rs.next())
             {
