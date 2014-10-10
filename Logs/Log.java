@@ -479,7 +479,7 @@ public class Log implements  ILogging
         {
             DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,hostname,port FROM GCLog " +
-                    "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+ " AND port = " + port + " AND hostname = " + hostname+" ORDER BY timestamp");
+                    "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+ " AND port = " + port + " AND hostname = '" + hostname+"' ORDER BY timestamp");
             while(rs.next())
             {
                 long timestamp = Long.parseLong(rs.getString("timestamp"));
@@ -823,7 +823,6 @@ public class Log implements  ILogging
     public ProcessReport getProcessReport(String hostName, int port)
     {
         //Return null if it does not exist
-        String query = "SELECT COUNT(*) AS count FROM ProcessReport WHERE hostname = " + hostName + " AND port = " + port;
         if (countRows("ProcessReport", hostName, port) < 1)
             return null;
        /* try {
@@ -840,7 +839,7 @@ public class Log implements  ILogging
         {
             DB = DBConnection.createStatement();
 
-            ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport WHERE "+hostName+" = hostname AND"+port+" = port" +"ORDER BY startTime");
+            ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport WHERE '"+hostName+"' = hostname AND"+port+" = port" +"ORDER BY startTime");
 
             while(rs.next())
             {
@@ -885,7 +884,7 @@ public class Log implements  ILogging
         {
             DB = DBConnection.createStatement();
             DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, hostname, port, status, consec_mem_inc_count, usageAfterFirstGc, usageAfterLastGc)"+
-                    " VALUES("+startTime+","+endTime+","+hostname+","+port+","+createdProcessReport.getStatus()+","
+                    " VALUES("+startTime+","+endTime+",'"+hostname+"',"+port+",'"+createdProcessReport.getStatus()+"',"
                             +createdProcessReport.getConsec_mem_inc_count()+","+createdProcessReport.getUsageAfterFirstGc()+","
                             +createdProcessReport.getUsageAfterLastGc()+")");
             DB.close();
@@ -904,7 +903,7 @@ public class Log implements  ILogging
         if (countRows("ProcessReport", hostname, port) < 1)
             return 0; //@TODO Better value?
         long GcMinMemValue = 0L;
-        String query = "SELECT usageAfterFirstGc FROM ProcessReport WHERE hostname = " + hostname + "AND port = " + port;
+        String query = "SELECT usageAfterFirstGc FROM ProcessReport WHERE hostname = '" + hostname + "' AND port = " + port;
         try
         {
 
@@ -950,8 +949,8 @@ public class Log implements  ILogging
     public void sendUsageAfterLastGc(long usageAfterLastGc, String hostname, int port) {
         //ProcessReport exists
         if (getProcessReport(hostname, port) != null){
-            String query = "UPDATE ProcessReport SET usageAfterLastGc = " + usageAfterLastGc + " WHERE hostname = " +
-                    hostname + " AND " + " port = " + port;
+            String query = "UPDATE ProcessReport SET usageAfterLastGc = " + usageAfterLastGc + " WHERE hostname = '" +
+                    hostname + "' AND " + " port = " + port;
             try {
                 DB = DBConnection.createStatement();
                 DB.executeUpdate(query);
@@ -972,8 +971,8 @@ public class Log implements  ILogging
         }
         //ProcessReport exists and needs to be updated
         else{
-            String query = "UPDATE ProcessReport SET usageAfterFirstGc = " + usageAfterFirstGc + " WHERE hostname = " +
-                    hostname + " AND " + " port = " + port;
+            String query = "UPDATE ProcessReport SET usageAfterFirstGc = " + usageAfterFirstGc + " WHERE hostname = '" +
+                    hostname + "' AND " + " port = " + port;
             try {
                 DB = DBConnection.createStatement();
                 DB.executeUpdate(query);
@@ -996,7 +995,7 @@ public class Log implements  ILogging
             {
                 getPortHostname = processes.get(processesCounter);
                 processesCounter++;
-                String[] theSplit = getPortHostname.split("\\:");
+                String[] theSplit = getPortHostname.split("\\:"); //@TODO =hostname? Wrong order? (hostname = theSplit[0])
                 input = "DELETE FROM GCLog WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
                 DB.executeUpdate(input);
                 input = "DELETE FROM MemLog WHERE "+theSplit[0]+ " = hostname AND port = "+theSplit[1];
