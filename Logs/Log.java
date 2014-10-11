@@ -50,7 +50,6 @@ public class Log implements  ILogging
         {
             e.printStackTrace();
         }
-        //@TODO Check if tables have been created, else create tables
         DBTableCreation();
     }
 
@@ -65,21 +64,22 @@ public class Log implements  ILogging
         try
         {
             DB = DBConnection.createStatement();
-            DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
-            DB.executeUpdate("DROP TABLE IF EXISTS GCLog");
-            DB.executeUpdate("DROP TABLE IF EXISTS GCReport");
-            DB.executeUpdate("DROP TABLE IF EXISTS ProcessReport");
 
-            DB.executeUpdate("CREATE TABLE MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)");
+//            DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
+//            DB.executeUpdate("DROP TABLE IF EXISTS GCLog");
+//            DB.executeUpdate("DROP TABLE IF EXISTS GCReport");
+//            DB.executeUpdate("DROP TABLE IF EXISTS ProcessReport");
+//
+            DB.executeUpdate("CREATE TABLE IF NOT EXISTS MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)");
 
-            DB.executeUpdate("CREATE TABLE ProcessReport(prId INTEGER PRIMARY KEY AUTOINCREMENT, startTime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INT, status VARCHAR(25)," +
+            DB.executeUpdate("CREATE TABLE IF NOT EXISTS ProcessReport(prId INTEGER PRIMARY KEY AUTOINCREMENT, startTime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INT, status VARCHAR(25)," +
                     "consec_mem_inc_count INTEGER, usageAfterFirstGc BIGINT, usageAfterLastGc BIGINT )");
 
-            DB.executeUpdate("CREATE TABLE GCLog(gcId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT," +
+            DB.executeUpdate("CREATE TABLE IF NOT EXISTS GCLog(gcId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT," +
                     " memUsageAfter BIGINT, memUsageBefore BIGINT, GCCollectionTime BIGINT, hostname VARCHAR(25), port INTEGER," +
                     " FOREIGN KEY(hostname) REFERENCES GCReport(hostname), FOREIGN KEY(port) REFERENCES GCReport(port) )");
 
-            DB.executeUpdate("CREATE TABLE GCReport(GCReportId INTEGER PRIMARY KEY AUTOINCREMENT, sumCollected BIGINT, minCollected BIGINT, maxCollected BIGINT, minMemoryUsage BIGINT," +
+            DB.executeUpdate("CREATE TABLE IF NOT EXISTS GCReport(GCReportId INTEGER PRIMARY KEY AUTOINCREMENT, sumCollected BIGINT, minCollected BIGINT, maxCollected BIGINT, minMemoryUsage BIGINT," +
                     "maxMemoryUsage BIGINT, sumMemoryUsage BIGINT, startMemoryUsage BIGINT, endMemoryUsage BIGINT,sumTimeBetweenGc BIGINT, " +
                     "minTimeBetweenGc BIGINT, maxTimeBetweenGc BIGINT, sumCollectionTime BIGINT, minCollectionTime BIGINT, maxCollectionTime BIGINT," +
                     "starttime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INTEGER, gcCount INTEGER, sumMinMemoryUsage BIGINT, reportCount INTEGER, status VARCHAR(50), FOREIGN KEY(hostname) REFERENCES GCLog(hostname)," +
@@ -91,7 +91,7 @@ public class Log implements  ILogging
         }
     }
 
-    public  void printSpecifiedTable(String input) throws SQLException
+    public  void printSpecifiedTable(String input)
     {
         try
         {
@@ -218,7 +218,7 @@ public class Log implements  ILogging
 
 
 //            // create a database connection
-            DBConnection = DriverManager.getConnection("jdbc:sqlite:test2.db");
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
