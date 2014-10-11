@@ -257,7 +257,7 @@ public class Analyzer {
                                 ArrayList<GcReport> possibleMemLeakReports = log.getPossibleMemoryLeaks(hostPort[0], port);
 
                                 //if an earlier GcReport is found with status Possible memory leak
-                                if (possibleMemLeakReports.get(0).getStartTime() < tempReport.getStartTime()) {
+                                if (possibleMemLeakReports.size() > 0 && possibleMemLeakReports.get(0).getStartTime() < tempReport.getStartTime()) {
                                     aReport.setStartTimeIncrease(possibleMemLeakReports.get(0).getStartTime());
                                 }
                                 //if no earlier  GCReport is found, then it is set to 0, Maybe set it to IntervalStartTimeOnSuspectedMemLeak?
