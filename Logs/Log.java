@@ -66,10 +66,10 @@ public class Log implements  ILogging
         {
             DB = DBConnection.createStatement();
 
-            DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
-            DB.executeUpdate("DROP TABLE IF EXISTS GCLog");
-            DB.executeUpdate("DROP TABLE IF EXISTS GCReport");
-            DB.executeUpdate("DROP TABLE IF EXISTS ProcessReport");
+//            DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
+//            DB.executeUpdate("DROP TABLE IF EXISTS GCLog");
+//            DB.executeUpdate("DROP TABLE IF EXISTS GCReport");
+//            DB.executeUpdate("DROP TABLE IF EXISTS ProcessReport");
 
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)");
 
