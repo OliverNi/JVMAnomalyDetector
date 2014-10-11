@@ -170,9 +170,7 @@ public class Analyzer {
             //fetches from database per input host/port parameters dynamic startTime and a current time as endtTime
             //and  puts it into a hasmap with corresponding ip:port key
             HashMap<String, ArrayList<GcStats>> intervalReportsMap = new HashMap<>();
-            for(int i=0; i<connections.size(); i++) //@TODO Varför inte använda getGarbageCollectionStats som returnerar en Map?
-                                                    // - Jo för att intervallerna kan vara olika för olika processer.
-                                                    // om alla processer garanterat haft samma intervallvärde så hade det fungerat.
+            for(int i=0; i<connections.size(); i++)
             {
                 intervalStartTime = cal.getTime().getTime()- intervalInMs[i];
                 if(connections.get(i).contains(":"))
