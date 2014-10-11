@@ -832,7 +832,7 @@ public class Log implements  ILogging
      * @return Number of rows found.
      */
     public int countRows(String tableName, String hostName, int port, String columnName, String value){
-        String query = "SELECT COUNT(*) AS count FROM " + tableName + " WHERE hostname = " + "'" + hostName + "'" + " AND port = " + port + " WHERE " +
+        String query = "SELECT COUNT(*) AS count FROM " + tableName + " WHERE hostname = '" + hostName + "' AND port = " + port + " AND " +
                 columnName + " = '" + value + "';";
         try {
             DB = DBConnection.createStatement();
@@ -848,7 +848,7 @@ public class Log implements  ILogging
     }
 
     public void deleteRows(String tableName, String hostName, int port, String columnName, String value){
-        String query = "DELETE FROM " + tableName + " WHERE hostname = " + "'" + hostName + "'" + " AND port = " + port + " WHERE " +
+        String query = "DELETE FROM " + tableName + " WHERE hostname = '" + hostName + "' AND port = " + port + " AND " +
                 columnName + " = '" + value + "';";
         try {
             DB = DBConnection.createStatement();
