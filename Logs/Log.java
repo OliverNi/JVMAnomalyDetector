@@ -610,7 +610,7 @@ public class Log implements  ILogging
             DB = DBConnection.createStatement();
             String input = "INSERT INTO  GCReport(sumCollected, minCollected, maxCollected, minMemoryUsage,"+
                             "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
-                            "minTimeBetweenGc, maxTimeBetweenGc, avgCollectionTime, minCollectionTime, maxCollectionTime,"+
+                            "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
                             "starttime, endTime,hostname, port, gcCount, sumMinMemoryUsage, reportCount) "+
                     "VALUES("+ analyzedDailyGcStats.getSumCollected()+","+analyzedDailyGcStats.getMinCollected()+","+analyzedDailyGcStats.getMaxCollected()+","+analyzedDailyGcStats.getMinMemoryUsage()+","
                     +analyzedDailyGcStats.getMaxMemoryUsage()+","+analyzedDailyGcStats.getSumMemoryUsage()+","+
