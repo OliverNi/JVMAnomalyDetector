@@ -1069,7 +1069,7 @@ public class Log implements  ILogging
     @Override
     public ArrayList<GcReport> getPossibleMemoryLeaks(String host, int port) {
         ArrayList<GcReport> reports = new ArrayList<>();
-        String query = "SELECT * FROM GcReport WHERE status = '" + GcReport.Status.POSSIBLE_MEMORY_LEAK.toString() + "';";
+        String query = "SELECT * FROM GcReport WHERE status = '" + GcReport.Status.POSSIBLE_MEMORY_LEAK.toString() + "' ORDER BY startTime;";
 
         try {
             DB = DBConnection.createStatement();
