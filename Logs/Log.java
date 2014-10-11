@@ -56,7 +56,10 @@ public class Log implements  ILogging
     public static final void main(String[] args) throws ClassNotFoundException
     {
         Log test = new Log();
-        test.DBTableCreation();
+
+        GcReport testing = new GcReport();
+        test.sendGcReport("localhost", 2400,testing);
+        test.printSpecifiedTable("GCReport");
     }
 
     public void DBTableCreation()
@@ -65,11 +68,11 @@ public class Log implements  ILogging
         {
             DB = DBConnection.createStatement();
 
-//            DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
-//            DB.executeUpdate("DROP TABLE IF EXISTS GCLog");
-//            DB.executeUpdate("DROP TABLE IF EXISTS GCReport");
-//            DB.executeUpdate("DROP TABLE IF EXISTS ProcessReport");
-//
+            DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
+            DB.executeUpdate("DROP TABLE IF EXISTS GCLog");
+            DB.executeUpdate("DROP TABLE IF EXISTS GCReport");
+            DB.executeUpdate("DROP TABLE IF EXISTS ProcessReport");
+
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)");
 
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS ProcessReport(prId INTEGER PRIMARY KEY AUTOINCREMENT, startTime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INT, status VARCHAR(25)," +
@@ -122,6 +125,7 @@ public class Log implements  ILogging
                     System.out.println("sumMinMemoryUsage = " + rs.getString("sumMinMemoryUsage"));
                     System.out.println("reportCount = " + rs.getString("reportCount"));
                     System.out.println("gcCount = " + rs.getString("gcCount"));
+
                 } else if (input.equals("MemLog"))
                 {
                     System.out.println("MemId = " + rs.getString("MemId"));
@@ -612,13 +616,13 @@ public class Log implements  ILogging
             String input = "INSERT INTO  GCReport(sumCollected, minCollected, maxCollected, minMemoryUsage,"+
                             "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
                             "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
-                            "starttime, endTime,hostname, port, gcCount, sumMinMemoryUsage, reportCount) "+
+                            "starttime, endTime,hostname, port, gcCount, sumMinMemoryUsage, reportCount, status) "+
                     "VALUES("+ analyzedDailyGcStats.getSumCollected()+","+analyzedDailyGcStats.getMinCollected()+","+analyzedDailyGcStats.getMaxCollected()+","+analyzedDailyGcStats.getMinMemoryUsage()+","
                     +analyzedDailyGcStats.getMaxMemoryUsage()+","+analyzedDailyGcStats.getSumMemoryUsage()+","+
                     analyzedDailyGcStats.getStartMemoryUsage()+","+analyzedDailyGcStats.getEndMemoryUsage()+","+analyzedDailyGcStats.getSumTimeBetweenGc()+","+
-                    analyzedDailyGcStats.getMinTimeBetweenGc()+","+analyzedDailyGcStats.getMaxTimeBetweenGc()+","+analyzedDailyGcStats.getAvgCollectionTime()+","+
+                    analyzedDailyGcStats.getMinTimeBetweenGc()+","+analyzedDailyGcStats.getMaxTimeBetweenGc()+","+analyzedDailyGcStats.getSumCollectionTime()+","+
                     analyzedDailyGcStats.getMinCollectionTime()+","+analyzedDailyGcStats.getMaxCollectionTime()+","+analyzedDailyGcStats.getStartTime()+","+analyzedDailyGcStats.getEndTime()+",'"+hostName+"',"+port+","
-                    +analyzedDailyGcStats.getGcCount()+","+analyzedDailyGcStats.getSumMinMemoryUsage()+","+analyzedDailyGcStats.getReportCount()+")";
+                    +analyzedDailyGcStats.getGcCount()+","+analyzedDailyGcStats.getSumMinMemoryUsage()+","+analyzedDailyGcStats.getReportCount()+", "+"'"+analyzedDailyGcStats.getStatus().toString()+"'"+" )";
             DB.executeUpdate(input);
             DB.close();
         } catch (SQLException e)
@@ -985,8 +989,8 @@ public class Log implements  ILogging
         }
     }
 
-    //@TODO implement update to send to current ProcessReport for the specific hostname and port  and updates its
-    //usageAfterLastGc value
+    //@TODO implement update to send to current ProcessReport for the specific hostname and port  and updates its usageAfterLastGc value
+    // isn't this done already?
     @Override
     public void sendUsageAfterLastGc(long usageAfterLastGc, String hostname, int port) {
         //ProcessReport exists
