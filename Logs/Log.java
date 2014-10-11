@@ -1037,16 +1037,27 @@ public class Log implements  ILogging
             {
                 getPortHostname = processes.get(processesCounter);
                 processesCounter++;
-                String[] theSplit = getPortHostname.split("\\:"); //@TODO =hostname? Wrong order? (hostname = theSplit[0])
-                input = "DELETE FROM GCLog WHERE hostname = '"+theSplit[0]+ "' AND port = "+theSplit[1];
-                DB.executeUpdate(input);
-                input = "DELETE FROM MemLog WHERE hostname = '"+theSplit[0]+ "' AND port = "+theSplit[1];
-                DB.executeUpdate(input);
-                input = "DELETE FROM GCReport WHERE hostname = '"+theSplit[0]+ "' AND port = "+theSplit[1];
-                DB.executeUpdate(input);
-                input = "DELETE FROM ProcessReport WHERE hostname = '"+theSplit[0]+ "' AND port = "+theSplit[1];
-                DB.executeUpdate(input);
-                processesCounter++;
+
+                if(getPortHostname.contains(":"))
+                {
+                    String[] portHostname = getPortHostname.split("\\:"); //@TODO =hostname? Wrong order? (hostname = theSplit[0])
+                    //I don't understand the problem?, according to ILogging info
+                    //about this method, it then states "@param processes list of processes HOSTNAME:PORT",
+                    // which is the correct format to deliver to the string query if the input parameters are correct,
+                    //or do you want a check of input parameters in the correct order?
+
+                    input = "DELETE FROM GCLog WHERE hostname = '"+portHostname[0]+ "' AND port = "+portHostname[1];
+                    DB.executeUpdate(input);
+                    input = "DELETE FROM MemLog WHERE hostname = '"+portHostname[0]+ "' AND port = "+portHostname[1];
+                    DB.executeUpdate(input);
+                    input = "DELETE FROM GCReport WHERE hostname = '"+portHostname[0]+ "' AND port = "+portHostname[1];
+                    DB.executeUpdate(input);
+                    input = "DELETE FROM ProcessReport WHERE hostname = '"+portHostname[0]+ "' AND port = "+portHostname[1];
+                    DB.executeUpdate(input);
+                    processesCounter++;
+                }
+
+
             }
             DB.close();
         } catch (SQLException e)
