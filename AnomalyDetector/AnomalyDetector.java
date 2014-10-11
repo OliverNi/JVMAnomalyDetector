@@ -4,11 +4,14 @@ import Listeners.AnomalyListener;
 import Listeners.SimpleAnomalyListener;
 import Logs.Log;
 
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Scanner;
 
 /**
  * Created by Oliver on 2014-09-10.
@@ -177,17 +180,50 @@ public class AnomalyDetector {
             ArrayList<String> sConnections = ad.getConnections();
 
             for (String s : sConnections) {
-                System.out.println(s);
+                System.out.println("Connected to: " + s);
             }
+
+            String cmdOutput = "";
+
+            do{
+                Scanner in = new Scanner(System.in);
+                System.out.println(command(in.next(), ad));
+                in.close();
+            } while(cmdOutput.equals("Shutting down"));
         }
     }
 
-    private static void command(String cmd){
-        switch (cmd){
-            case "COMMAND_EXAMPLE":
+    private static String command(String cmd, AnomalyDetector ad){
+        String output = "";
+        String[] cmds = cmd.split(" -");
+        String cmdMain = cmds[0];
+        String cmdParam = cmds[1];
+        switch (cmdMain){
+            case "help":{
+                switch(cmdParam){
+
+                }
                 break;
+            }
+            case "clear":{
+                if (cmdParam.equals("all")){
+                    output = "All rows in all tables cleared";
+                    ad.getLog().clearData();
+                }
+                else{
+                    String[] connections = cmdParam.split(",");
+                    for (int i = 0; i < connections.length; i++){
+                        ad.getLog().clearData(new ArrayList<String>(Arrays.asList(connections)));
+                    }
+                    output = "Clearing alla rows in all tables for specified connections";
+                }
+
+                break;
+            }
+
             //@TODO Implement CLI commands for example show anomaly reports for a process.
         }
+        return output;
     }
 
 
