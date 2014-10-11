@@ -58,8 +58,6 @@ public class Log implements  ILogging
         Log test = new Log();
 
         GcReport testing = new GcReport();
-        test.sendGcReport("localhost", 2400,testing);
-        test.printSpecifiedTable("GCReport");
     }
 
     public void DBTableCreation()
@@ -125,6 +123,7 @@ public class Log implements  ILogging
                     System.out.println("sumMinMemoryUsage = " + rs.getString("sumMinMemoryUsage"));
                     System.out.println("reportCount = " + rs.getString("reportCount"));
                     System.out.println("gcCount = " + rs.getString("gcCount"));
+                    System.out.println("status = " + rs.getString("status"));
 
                 } else if (input.equals("MemLog"))
                 {
