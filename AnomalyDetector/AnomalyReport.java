@@ -4,6 +4,8 @@ package AnomalyDetector;
  * Created by Oliver on 2014-09-24.
  */
 
+import java.util.Date;
+
 /**
  * Object created when an anomaly is found. This class is responsible for notifying the AnomalyDetector and
  * Log to be stored away. An object of this class will contain information about the anomaly.
@@ -108,8 +110,19 @@ public class AnomalyReport
 
     @Override
     public String toString(){
-        //@TODO Implement (Will be used in AnomalyEvent
-        return null;
+        String info = new String();
+        info += "Anomaly Detected \n";
+        Date time = new Date();
+        time.setTime(timestamp);
+        info += ("Time: " + time.toString() + "\n");
+        info += "Process operating on: " + host + ":" + port + "\n";
+        info += errorMsg + "\n";
+        info += "Type: " + anomaly.toString() + "\n";
+        time.setTime(startTimeIncrease);
+        info += "Memory increase started at: " + time.toString() + "\n"; //@TODO Maybe Change to between (time between the Gc pre memleak and GC after memleak)
+        info += "Memory has increased by: " + memIncreasePercentage + "% \n";
+        info += "Memory has increased by: " + memIncreaseBytes + " bytes \n";
+        return info;
     }
 
 
