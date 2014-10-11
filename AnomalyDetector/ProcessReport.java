@@ -213,14 +213,20 @@ public class ProcessReport
     }
 
     public double getDailyAvgMemUsageDif(){
+        if (dailyReportCount == 0)
+            return 0;
         return dailySumMemUsageDif / dailyReportCount;
     }
 
     public double getWeeklyAvgMemUsageDif(){
+        if (weeklyReportCount == 0)
+            return 0;
         return weeklySumMemUsageDif / weeklyReportCount;
     }
 
     public double getMonthlyAvgMemUsageDif(){
+        if (monthlyReportCount == 0)
+            return 0;
         return monthlySumMemUsageDif / monthlyReportCount;
     }
 
