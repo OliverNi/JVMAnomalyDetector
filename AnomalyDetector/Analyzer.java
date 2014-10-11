@@ -174,7 +174,7 @@ public class Analyzer {
             {
                 intervalStartTime = cal.getTime().getTime()- intervalInMs[i];
                 if(connections.get(i).contains(":"))
-                { //@TODO Check for null currentReports
+                {
                     String[] hostPortName = connections.get(i).split("\\:");
                     int port = Integer.parseInt(hostPortName[1]);
                     intervalReportsMap.put(connections.get(i),log.getGarbageCollectionStats(intervalStartTime, intervalEndTime.getTime(),hostPortName[0], port )  );
