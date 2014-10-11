@@ -171,6 +171,8 @@ public class Analyzer {
             //and  puts it into a hasmap with corresponding ip:port key
             HashMap<String, ArrayList<GcStats>> intervalReportsMap = new HashMap<>();
             for(int i=0; i<connections.size(); i++) //@TODO Varför inte använda getGarbageCollectionStats som returnerar en Map?
+                                                    // - Jo för att intervallerna kan vara olika för olika processer.
+                                                    // om alla processer garanterat haft samma intervallvärde så hade det fungerat.
             {
                 intervalStartTime = cal.getTime().getTime()- intervalInMs[i];
                 if(connections.get(i).contains(":"))
@@ -180,15 +182,14 @@ public class Analyzer {
                     intervalReportsMap.put(connections.get(i),log.getGarbageCollectionStats(intervalStartTime, intervalEndTime.getTime(),hostPortName[0], port )  );
                 }
             }
-            //inputs all fetched GCCollectionStats (from GCReport table DB) with a startTime and endTime depending on each process's set interval time and assigns them to a Map.
-            Map<String, ArrayList<GcStats>> thisIntervalReportsMap = intervalReportsMap;//@TODO Varför skapa en ny map?
-
 
             //for each process, a new GCstats is created
             for (int i = 0;  i < connections.size(); i++)
             {
                 //Creates an arraylist of GcStats and fetches all GCstats entries for the current process through the set starttime and endtime above
-                ArrayList<GcStats> currentReports = thisIntervalReportsMap.get(connections.get(i));
+                ArrayList<GcStats> currentReports = intervalReportsMap.get(connections.get(i));
+
+
                 if (currentReports != null) { //@TODO Debug this, always null? or is this okay?
                     long minimumMemValue = 0;
                     long originalMinimumMemValue = log.firstGcValue(connections.get(i));
