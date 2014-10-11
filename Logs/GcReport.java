@@ -90,6 +90,8 @@ public class GcReport {
     }
 
     public long getAvgCollected() {
+        if (gcCount == 0)
+            return 0;
         return sumCollected / gcCount;
     }
 
@@ -110,7 +112,9 @@ public class GcReport {
     }
 
     public long getAvgMemoryUsage() {
-        return sumMemoryUsage;
+        if (gcCount == 0)
+            return 0;
+        return sumMemoryUsage / gcCount;
     }
 
     public long getStartTime() {
@@ -130,7 +134,9 @@ public class GcReport {
     }
 
     public long getAvgTimeBetweenGc() {
-        return sumTimeBetweenGc;
+        if (gcCount == 0)
+            return 0;
+        return sumTimeBetweenGc / gcCount;
     }
 
     public long getMinTimeBetweenGc() {
@@ -146,6 +152,8 @@ public class GcReport {
     }
 
     public long getAvgCollectionTime() {
+        if (gcCount == 0)
+            return 0;
         return sumCollectionTime / gcCount;
     }
 
@@ -185,10 +193,6 @@ public class GcReport {
         return sumMinMemoryUsage;
     }
 
-    public void setAvgCollected(long avgCollected) {
-        this.sumCollected = avgCollected;
-    }
-
     public void setMinCollected(long minCollected) {
         this.minCollected = minCollected;
     }
@@ -205,10 +209,6 @@ public class GcReport {
         this.maxMemoryUsage = maxMemoryUsage;
     }
 
-    public void setAvgMemoryUsage(long avgMemoryUsage) {
-        this.sumMemoryUsage = avgMemoryUsage;
-    }
-
     public void setStartTime(long startTime) {
         this.startTime = startTime;
     }
@@ -223,10 +223,6 @@ public class GcReport {
 
     public void setEndMemoryUsage(long endMemoryUsage) {
         this.endMemoryUsage = endMemoryUsage;
-    }
-
-    public void setAvgTimeBetweenGc(long avgTimeBetweenGc) {
-        this.sumTimeBetweenGc = avgTimeBetweenGc;
     }
 
     public void setMinTimeBetweenGc(long minTimeBetweenGc) {
