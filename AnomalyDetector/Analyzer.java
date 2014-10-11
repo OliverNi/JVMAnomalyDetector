@@ -170,7 +170,7 @@ public class Analyzer {
             //fetches from database per input host/port parameters dynamic startTime and a current time as endtTime
             //and  puts it into a hasmap with corresponding ip:port key
             HashMap<String, ArrayList<GcStats>> intervalReportsMap = new HashMap<>();
-            for(int i=0; i<connections.size(); i++)
+            for(int i=0; i<connections.size(); i++) //@TODO Varför inte använda getGarbageCollectionStats som returnerar en Map?
             {
                 intervalStartTime = cal.getTime().getTime()- intervalInMs[i];
                 if(connections.get(i).contains(":"))
@@ -181,7 +181,7 @@ public class Analyzer {
                 }
             }
             //inputs all fetched GCCollectionStats (from GCReport table DB) with a startTime and endTime depending on each process's set interval time and assigns them to a Map.
-            Map<String, ArrayList<GcStats>> thisIntervalReportsMap = intervalReportsMap;
+            Map<String, ArrayList<GcStats>> thisIntervalReportsMap = intervalReportsMap;//@TODO Varför skapa en ny map?
 
 
             //for each process, a new GCstats is created
