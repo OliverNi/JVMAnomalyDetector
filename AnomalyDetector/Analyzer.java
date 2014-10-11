@@ -124,7 +124,7 @@ public class Analyzer {
             Calendar cal = Calendar.getInstance();
 
             //fetches all current processes in the format of ip:port
-            ArrayList<String> connections = ad.getConnections();
+            ArrayList<String> connections = ad.getConnections(); //@TODO You can use getProcessConnections to save som hassle.
 
 
             int amountOfConnections = 0;
