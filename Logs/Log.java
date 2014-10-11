@@ -821,6 +821,43 @@ public class Log implements  ILogging
         //If error
         return 0;
     }
+
+    /**
+     * Returns number of rows in specified table where the specified column has the specified value
+     * @param tableName Name of the table in the database
+     * @param hostName hostname of process (connection)
+     * @param port port of process (connection)
+     * @param columnName Name of column which will be used in a WHERE-condition
+     * @param value Value in specified column
+     * @return Number of rows found.
+     */
+    public int countRows(String tableName, String hostName, int port, String columnName, String value){
+        String query = "SELECT COUNT(*) AS count FROM " + tableName + " WHERE hostname = " + "'" + hostName + "'" + " AND port = " + port + " WHERE " +
+                columnName + " = '" + value + "';";
+        try {
+            DB = DBConnection.createStatement();
+            ResultSet rs = DB.executeQuery(query);
+            int count = rs.getInt(1);
+            DB.close();
+            return count;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        //If error
+        return 0;
+    }
+
+    public void deleteRows(String tableName, String hostName, int port, String columnName, String value){
+        String query = "DELETE FROM " + tableName + " WHERE hostname = " + "'" + hostName + "'" + " AND port = " + port + " WHERE " +
+                columnName + " = '" + value + "';";
+        try {
+            DB = DBConnection.createStatement();
+            DB.executeQuery(query);
+            DB.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public ProcessReport getProcessReport(String hostName, int port)
     {
@@ -1017,12 +1054,89 @@ public class Log implements  ILogging
 
     @Override
     public ArrayList<GcReport> getPossibleMemoryLeaks(String host, int port) {
-        return null;
+        ArrayList<GcReport> reports = new ArrayList<>();
+        String query = "SELECT * FROM GcReport WHERE status = '" + GcReport.Status.POSSIBLE_MEMORY_LEAK.toString() + "';";
+
+        try {
+            DB = DBConnection.createStatement();
+            ResultSet rs = DB.executeQuery(query);
+
+            while (rs.next()){
+                GcReport theGcReport = new GcReport();
+                long sumCollected = Long.parseLong(rs.getString("sumCollected"));
+                theGcReport.setSumCollected(sumCollected);
+
+                long maxCollected = Long.parseLong(rs.getString("maxCollected"));
+                theGcReport.setMaxCollected(maxCollected);
+
+                long minCollected = Long.parseLong(rs.getString("minCollected"));
+                theGcReport.setMinCollected(minCollected);
+
+                long minMemoryUsage = Long.parseLong(rs.getString("minMemoryUsage"));
+                theGcReport.setMinMemoryUsage(minMemoryUsage);
+
+                long maxMemoryUsage = Long.parseLong(rs.getString("maxMemoryUsage"));
+                theGcReport.setMaxMemoryUsage(maxMemoryUsage);
+
+                long sumMemoryUsage = Long.parseLong(rs.getString("sumMemoryUsage"));
+                theGcReport.setSumMemoryUsage(sumMemoryUsage);
+
+                long startMemoryUsage = Long.parseLong(rs.getString("startMemoryUsage"));
+                theGcReport.setStartMemoryUsage(startMemoryUsage);
+
+                long endMemoryUsage = Long.parseLong(rs.getString("endMemoryUsage"));
+                theGcReport.setEndMemoryUsage(endMemoryUsage);
+
+                long sumTimeBetweenGC = Long.parseLong(rs.getString("sumTimeBetweenGc"));
+                theGcReport.setSumTimeBetweenGc(sumTimeBetweenGC);
+
+                long minTimeBetweenGc = Long.parseLong(rs.getString("minTimeBetweenGc"));
+                theGcReport.setMinTimeBetweenGc(minTimeBetweenGc);
+
+                long maxTimeBetweenGc = Long.parseLong(rs.getString("maxTimeBetweenGc"));
+                theGcReport.setMaxTimeBetweenGc(maxTimeBetweenGc);
+
+                long sumCollectionTime = Long.parseLong(rs.getString("sumCollectionTime"));
+                theGcReport.setSumCollectionTime(sumCollectionTime);
+
+                long minCollectionTime = Long.parseLong(rs.getString("minCollectionTime"));
+                theGcReport.setMinCollectionTime(minCollectionTime);
+
+                long maxCollectionTime = Long.parseLong(rs.getString("maxCollectionTime"));
+                theGcReport.setMaxCollectionTime(maxCollectionTime);
+
+                long fetchedstartTime = Long.parseLong(rs.getString("startTime"));
+                theGcReport.setStartTime(fetchedstartTime);
+
+                long fetchedendTime = Long.parseLong(rs.getString("endTime"));
+                theGcReport.setEndTime(fetchedendTime);
+
+                long sumMinMemoryUsage = Long.parseLong(rs.getString("sumMinMemoryUsage"));
+                theGcReport.setSumMinMemoryUsage(sumMinMemoryUsage);
+
+                int reportCount = Integer.parseInt(rs.getString("reportCount"));
+                theGcReport.setReportCount(reportCount);
+
+                int gcCount = Integer.parseInt(rs.getString("gcCount"));
+                theGcReport.setGcCount(gcCount);
+
+                String fetchHostnamePort = rs.getString("hostname")+":"+rs.getString("port");
+
+                reports.add(theGcReport);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        return reports;
     }
 
     @Override
     public int clearPossibleMemoryLeaks(String hostname, int port) {
-        return 0;
+        int count = countRows("GcReport", hostname, port, "status", GcReport.Status.POSSIBLE_MEMORY_LEAK.toString());
+        deleteRows("GcReport", hostname, port, "status", GcReport.Status.POSSIBLE_MEMORY_LEAK.toString());
+        return count;
     }
 
 }
