@@ -50,7 +50,8 @@ public class Log implements  ILogging
         {
             e.printStackTrace();
         }
-
+        //@TODO Check if tables have been created, else create tables
+        DBTableCreation();
     }
 
     public static final void main(String[] args) throws ClassNotFoundException
@@ -217,7 +218,7 @@ public class Log implements  ILogging
 
 
 //            // create a database connection
-            DBConnection = DriverManager.getConnection("jdbc:sqlite:test.db");
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test2.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -847,16 +848,18 @@ public class Log implements  ILogging
         return 0;
     }
 
-    public void deleteRows(String tableName, String hostName, int port, String columnName, String value){
+    public int deleteRows(String tableName, String hostName, int port, String columnName, String value){
+        int count = 0;
         String query = "DELETE FROM " + tableName + " WHERE hostname = '" + hostName + "' AND port = " + port + " AND " +
                 columnName + " = '" + value + "';";
         try {
             DB = DBConnection.createStatement();
-            DB.executeQuery(query);
+            count = DB.executeUpdate(query);
             DB.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return count;
     }
     @Override
     public ProcessReport getProcessReport(String hostName, int port)
