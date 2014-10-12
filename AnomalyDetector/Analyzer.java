@@ -75,6 +75,7 @@ public class Analyzer {
         weeklyTimer = new Timer();
         monthlyTimer = new Timer();
         intervalTimer = new Timer();
+        long minute = 60000L;
         long hour = 3600000L;
         long day = hour * 24;
         long week = day * 7;
@@ -115,7 +116,7 @@ public class Analyzer {
         //@TODO Fix timers for several processes, not just one.
         int firstInterval = ad.getInterval(ad.getProcessConnections().get(0).getHostName(),
                 ad.getProcessConnections().get(0).getPort());
-        intervalTimer.scheduleAtFixedRate(new IntervalTask(), firstInterval, firstInterval);
+        intervalTimer.scheduleAtFixedRate(new IntervalTask(), firstInterval * minute, firstInterval * minute);
     }
 
 
