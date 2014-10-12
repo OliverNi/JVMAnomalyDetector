@@ -197,7 +197,9 @@ public class AnomalyDetector {
         String output = "";
         String[] cmds = cmd.split(" -");
         String cmdMain = cmds[0];
-        String cmdParam = cmds[1];
+        String cmdParam = "";
+        if (cmds.length > 1)
+            cmdParam = cmds[1];
         switch (cmdMain){
             case "help":{
                 switch(cmdParam){
