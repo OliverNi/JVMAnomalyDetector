@@ -26,7 +26,7 @@ public class Log implements  ILogging
     private long timeStamp;
     private String ip;
     private int port;
-    private Statement DB;
+    private Statement DB; //@TODO Change to local variable
     private Connection DBConnection;
 
     public Log()
@@ -221,7 +221,7 @@ public class Log implements  ILogging
 
 
 //            // create a database connection
-            DBConnection = DriverManager.getConnection("jdbc:sqlite:test.db");
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test4.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -870,15 +870,6 @@ public class Log implements  ILogging
         //Return null if it does not exist
         if (countRows("ProcessReport", hostName, port) < 1)
             return null;
-       /* try {
-            DB = DBConnection.createStatement(); //@TODO Close?
-            ResultSet rsCount = DB.executeQuery(query);
-            if (rsCount.getInt(0) < 1)
-                return null;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }*/
-
         ProcessReport oneReport = new ProcessReport();
         try
         {
@@ -999,6 +990,7 @@ public class Log implements  ILogging
             try {
                 DB = DBConnection.createStatement();
                 DB.executeUpdate(query);
+                DB.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
