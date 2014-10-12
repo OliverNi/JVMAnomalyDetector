@@ -913,6 +913,8 @@ public class Log implements  ILogging
         return null;
     }
 
+    //@TODO not sure if this is still used, if so, then it needs to be modified to either to create a processreport,
+    // and a check if exists to modify an existing one
     @Override
     public void sendProcessReport(long startTime, long endTime, int port, String hostname, ProcessReport createdProcessReport)
     {
