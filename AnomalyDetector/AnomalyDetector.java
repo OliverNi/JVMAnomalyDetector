@@ -223,6 +223,7 @@ public class AnomalyDetector {
 
             //@TODO Implement CLI commands for example show anomaly reports for a process.
             //@TODO (Additional feature) Implement command for opening LogBrowser(GUI).
+            //@TODO Set limit (Threshold)
         }
         return output;
     }
