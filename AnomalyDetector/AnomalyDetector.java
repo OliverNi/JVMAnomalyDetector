@@ -211,6 +211,7 @@ public class AnomalyDetector {
                 break;
             }
             //@TODO "clear" command only works once
+            //@TODO "clear -host:port command doesnt work at all (maybe not implemented)
             case "clear":
                 if (cmdParam.equals("all")){
                     output = "All rows in all tables cleared";
