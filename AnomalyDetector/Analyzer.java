@@ -122,6 +122,7 @@ public class Analyzer {
 
     public void analyzeIntervalGc()
     {
+        System.out.println("DEBUG: Entered interval analysis");
             Calendar cal = Calendar.getInstance();
 
             //fetches all current processes in the format of ip:port
@@ -143,8 +144,9 @@ public class Analyzer {
                 {
 
                     String hostName = connections.get(i).getHostName();
-                    int Port = connections.get(i).getPort();
-                    intervalInMinutes[i] = ad.getInterval(hostName, Port);
+                    int port = connections.get(i).getPort();
+                    intervalInMinutes[i] = ad.getInterval(hostName, port);
+                    System.out.println("DEBUG: interval analysis: Connection: " + hostName + ":" + port);
                 }catch (NumberFormatException e)
                 {
                     e.printStackTrace();
@@ -192,12 +194,14 @@ public class Analyzer {
 
 
                 if (currentReports != null) { //@TODO Debug this, always null? or is this okay?
+                    System.out.println("DEBUG: currentReports not null");
                     long minimumMemValue = 0;
                     long originalMinimumMemValue = log.firstGcValue(connections.get(i).getHostName()+":"+connections.get(i).getPort());
 
                     GcReport tempReport = new GcReport();
                     for (GcStats g : currentReports) {
                         tempReport.addGcStats(g);
+                        System.out.println("DEBUG: Adding gcStats");
                     }
 
                     long IntervalStartTimeOnSuspectedMemLeak = 0;
@@ -239,7 +243,7 @@ public class Analyzer {
                                 tempReport.setConsec_mem_inc_count(memConsecutiveIncCounter);
 
                                 tempReport.setStatus(GcReport.Status.SUSPECTED_MEMORY_LEAK);
-
+                                System.out.println("DEBUG: Suspected Memory Leak");
                                 if (IntervalStartTimeOnSuspectedMemLeak != 0) {
                                     tempReport.setStartTime(IntervalStartTimeOnSuspectedMemLeak);
                                 }
@@ -271,7 +275,7 @@ public class Analyzer {
 
 
                                 //Debugging for anomalyReport
-                                System.out.println("AnomalyReport created with status: "+aReport.toString());
+                                System.out.println("DEBUG: AnomalyReport created with status: "+aReport.toString());
                                 fireAnomalyEvent(aReport);
 
 
@@ -283,6 +287,7 @@ public class Analyzer {
                                 //if there has been 5 or more consecutive minMemoryIncreases in a row, then a processreport is created with a "LIKELY_MEMORY_LEAK"
                                 if (memConsecutiveIncCounter >= DEFAULT_CONSECUTIVE_MEM_INC) {
                                     tempReport.setStatus(GcReport.Status.POSSIBLE_MEMORY_LEAK);
+                                    System.out.println("DEBUG: Possible memory leak");
                                     if (IntervalStartTimeOnSuspectedMemLeak != 0) {
                                         tempReport.setStartTime(IntervalStartTimeOnSuspectedMemLeak);
                                     }
