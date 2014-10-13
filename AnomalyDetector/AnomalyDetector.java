@@ -38,6 +38,7 @@ public class AnomalyDetector {
         agents = new ArrayList<>();
         connections = new ArrayList<>();
         log = new Log();
+        this.listener = listener;
 
 
     }
