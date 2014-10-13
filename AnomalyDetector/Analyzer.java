@@ -5,6 +5,7 @@ import Logs.AnalyzedGcReport;
 import Logs.GcReport;
 import Logs.GcStats;
 import Logs.ILogging;
+import com.sun.org.apache.xpath.internal.SourceTree;
 
 import java.util.*;
 
@@ -280,6 +281,8 @@ public class Analyzer {
                                 aReport.setTimestamp(Calendar.getInstance().getTimeInMillis());
                                 aReport.setMemIncreasePercentage(tempReport.getEndMemoryUsage() / originalMinimumMemValue);
 
+                                //debug for mem increase percentage
+                                System.out.println("DEBUG: Mem increase percentage: "+aReport.getMemIncreasePercentage());
 
                                 //Debugging for anomalyReport
                                 System.out.println("DEBUG: AnomalyReport created with status: "+aReport.toString());
