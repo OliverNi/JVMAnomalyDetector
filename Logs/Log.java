@@ -26,13 +26,11 @@ public class Log implements  ILogging
     private long timeStamp;
     private String ip;
     private int port;
-    private Statement DB; //@TODO Change to local variable
     private Connection DBConnection;
 
     public Log()
     {
         DBConnection = null;
-        DB = null;
         GCTime = 0;
         GCTimeStamp = 0;
         GCmemoryUsageAfter = 0;
@@ -57,13 +55,13 @@ public class Log implements  ILogging
     {
         Log test = new Log();
 
-        GcReport testing = new GcReport();
     }
 
     public void DBTableCreation()
     {
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
 
 //            DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
@@ -96,6 +94,9 @@ public class Log implements  ILogging
     {
         try
         {
+            Statement DB = null;
+            DB = DBConnection.createStatement();
+
             ResultSet rs = DB.executeQuery("SELECT * FROM "+input);
             while(rs.next())
             {
@@ -221,6 +222,7 @@ public class Log implements  ILogging
 
 
 //            // create a database connection
+            Statement DB = null;
             DBConnection = DriverManager.getConnection("jdbc:sqlite:test4.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
@@ -337,6 +339,7 @@ public class Log implements  ILogging
         }
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             DB.executeUpdate("INSERT INTO  GCLog(timestamp, memUsageAfter, memUsageBefore, GCCollectionTime, hostname, port)" +
                     " VALUES("+timestamp +","+memoryUsedAfter+","+memoryUsedBefore+","+collectionTime+",'"+hostname+"',"+port+")");
@@ -353,6 +356,7 @@ public class Log implements  ILogging
     {
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             DB.executeUpdate("INSERT INTO  MemLog(timestamp,usedMemory,hostname,port) VALUES("+timestamp +","+memoryUsed+","+"'"+hostname+"'"+","+port+")");
             DB.close();
@@ -374,6 +378,7 @@ public class Log implements  ILogging
 
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,GCCollectionTime, hostname,port FROM GCLog WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+" ORDER BY timestamp");
 
@@ -426,6 +431,7 @@ public class Log implements  ILogging
         {
             try
             {
+                Statement DB = null;
                 DB = DBConnection.createStatement();
                 while(processesCounter < processes.size())
                 {
@@ -481,6 +487,7 @@ public class Log implements  ILogging
         ArrayList<GcStats> GCStatistics = new ArrayList<>();
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,hostname,port, GCCollectionTime FROM GCLog " +
                     "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+ " AND port = " + port + " AND hostname = '" + hostname+"' ORDER BY timestamp");
@@ -518,6 +525,7 @@ public class Log implements  ILogging
 
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery("SELECT timestamp,usedMemory,hostname,port FROM MemLog " +
                     "WHERE timestamp >="+startTime+" AND timestamp <="+endTime+" ORDER BY timestamp");
@@ -563,6 +571,7 @@ public class Log implements  ILogging
         {
             try
             {
+                Statement DB = null;
                 DB = DBConnection.createStatement();
                 while(processesCounter < processes.size())
                 {
@@ -611,6 +620,7 @@ public class Log implements  ILogging
     {
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             String input = "INSERT INTO  GCReport(sumCollected, minCollected, maxCollected, minMemoryUsage,"+
                             "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
@@ -638,6 +648,7 @@ public class Log implements  ILogging
         HashMap<String, ArrayList<GcReport>> instanceOfGCLog = new HashMap<>();
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             String input = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
                     "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
@@ -730,6 +741,7 @@ public class Log implements  ILogging
         ArrayList<ProcessReport> allProccessReports = new ArrayList<>();
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport ORDER BY startTime");
 
@@ -772,6 +784,7 @@ public class Log implements  ILogging
         int processesCounter = 0;
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             while(processesCounter < processes.size())
             {
@@ -814,6 +827,7 @@ public class Log implements  ILogging
     public int countRows(String tableName, String hostName, int port){
         String query = "SELECT COUNT(*) AS count FROM " + tableName + " WHERE hostname = " + "'" + hostName + "'" + " AND port = " + port;
         try {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery(query);
             int count = rs.getInt(1);
@@ -839,6 +853,7 @@ public class Log implements  ILogging
         String query = "SELECT COUNT(*) AS count FROM " + tableName + " WHERE hostname = '" + hostName + "' AND port = " + port + " AND " +
                 columnName + " = '" + value + "';";
         try {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery(query);
             int count = rs.getInt(1);
@@ -856,6 +871,7 @@ public class Log implements  ILogging
         String query = "DELETE FROM " + tableName + " WHERE hostname = '" + hostName + "' AND port = " + port + " AND " +
                 columnName + " = '" + value + "';";
         try {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             count = DB.executeUpdate(query);
             DB.close();
@@ -873,6 +889,7 @@ public class Log implements  ILogging
         ProcessReport oneReport = new ProcessReport();
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
 
             ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport WHERE hostname = '"+hostName+"' AND port = "+port +" ORDER BY startTime");
@@ -920,6 +937,7 @@ public class Log implements  ILogging
     {
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, hostname, port, status, consec_mem_inc_count, usageAfterFirstGc, usageAfterLastGc)"+
                     " VALUES("+startTime+","+endTime+",'"+hostname+"',"+port+",'"+createdProcessReport.getStatus()+"',"
@@ -944,7 +962,7 @@ public class Log implements  ILogging
         String query = "SELECT usageAfterFirstGc FROM ProcessReport WHERE hostname = '" + hostname + "' AND port = " + port;
         try
         {
-
+            Statement DB = null;
             DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery(query);
             GcMinMemValue = Long.parseLong(rs.getString("usageAfterFirstGc"));
@@ -965,6 +983,7 @@ public class Log implements  ILogging
     {
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             String input = "";
             input = "DELETE FROM GCReport";
@@ -990,6 +1009,7 @@ public class Log implements  ILogging
             String query = "UPDATE ProcessReport SET usageAfterLastGc = " + usageAfterLastGc + " WHERE hostname = '" +
                     hostname + "' AND " + " port = " + port;
             try {
+                Statement DB = null;
                 DB = DBConnection.createStatement();
                 DB.executeUpdate(query);
                 DB.close();
@@ -1013,6 +1033,8 @@ public class Log implements  ILogging
             String query = "UPDATE ProcessReport SET usageAfterFirstGc = " + usageAfterFirstGc + " WHERE hostname = '" +
                     hostname + "' AND " + " port = " + port;
             try {
+                Statement DB = null;
+                DB = DBConnection.createStatement();
                 DB = DBConnection.createStatement();
                 DB.executeUpdate(query);
             } catch (SQLException e) {
@@ -1029,6 +1051,7 @@ public class Log implements  ILogging
         String input = "";
         try
         {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             while(processesCounter < processes.size())
             {
@@ -1064,6 +1087,7 @@ public class Log implements  ILogging
         String query = "SELECT * FROM GcReport WHERE status = '" + GcReport.Status.POSSIBLE_MEMORY_LEAK.toString() + "' ORDER BY startTime;";
 
         try {
+            Statement DB = null;
             DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery(query);
 
