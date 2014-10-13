@@ -210,6 +210,7 @@ public class AnomalyDetector {
                 output += "quit: Shuts down program \n";
                 break;
             }
+            //@TODO "clear" command only works once
             case "clear":
                 if (cmdParam.equals("all")){
                     output = "All rows in all tables cleared";
