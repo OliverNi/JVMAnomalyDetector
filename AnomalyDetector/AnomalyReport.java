@@ -24,7 +24,7 @@ public class AnomalyReport
     private String errorMsg;
     private long startTimeIncrease;
     private Anomaly anomaly;
-    private double memIncreasePercentage;
+    private long memIncreasePercentage;
     private long memIncreaseBytes;
     public AnomalyReport()
     {
@@ -32,7 +32,7 @@ public class AnomalyReport
     }
 
     public AnomalyReport(long timestamp, String host, int port, String errorMsg,
-                         long startTimeIncrease, Anomaly anomaly, double memIncreasePercentage,
+                         long startTimeIncrease, Anomaly anomaly, long memIncreasePercentage,
                          long memIncreaseBytes) {
         this.timestamp = timestamp;
         this.host = host;
@@ -100,7 +100,7 @@ public class AnomalyReport
         this.anomaly = anomaly;
     }
 
-    public void setMemIncreasePercentage(double memIncreasePercentage) {
+    public void setMemIncreasePercentage(long memIncreasePercentage) {
         this.memIncreasePercentage = memIncreasePercentage;
     }
 
