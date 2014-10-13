@@ -220,7 +220,7 @@ public class AnomalyDetector {
                     for (int i = 0; i < connections.length; i++){
                         ad.getLog().clearData(new ArrayList<String>(Arrays.asList(connections)));
                     }
-                    output = "Clearing alla rows in all tables for specified connections";
+                    output = "Clearing all rows in all tables for specified connections";
                 }
                 break;
             case "quit":
