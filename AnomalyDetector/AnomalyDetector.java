@@ -6,12 +6,10 @@ import Logs.Log;
 
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
+import java.util.*;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
 
 /**
  * Created by Oliver on 2014-09-10.
@@ -187,7 +185,11 @@ public class AnomalyDetector {
 
             do{
                 Scanner in = new Scanner(System.in);
-                System.out.println(command(in.next(), ad));
+                try {
+                    System.out.println(command(in.next(), ad));
+                } catch (NoSuchElementException e){
+                    e.printStackTrace();
+                }
                 in.close();
             } while(cmdOutput.equals("Shutting down"));
         }
@@ -202,12 +204,12 @@ public class AnomalyDetector {
             cmdParam = cmds[1];
         switch (cmdMain){
             case "help":{
-                switch(cmdParam){
-
-                }
+                output = "clear: Clears database of all log entries \n";
+                output += " Paramers: -HOST:PORT \n";
+                output += "quit: Shuts down program \n";
                 break;
             }
-            case "clear":{
+            case "clear":
                 if (cmdParam.equals("all")){
                     output = "All rows in all tables cleared";
                     ad.getLog().clearData();
@@ -219,9 +221,10 @@ public class AnomalyDetector {
                     }
                     output = "Clearing alla rows in all tables for specified connections";
                 }
-
                 break;
-            }
+            case "quit":
+                output = "Shutting down";
+                break;
 
             //@TODO Implement CLI commands for example show anomaly reports for a process.
             //@TODO (Additional feature) Implement command for opening LogBrowser(GUI).
