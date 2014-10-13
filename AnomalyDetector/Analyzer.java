@@ -74,7 +74,7 @@ public class Analyzer {
         dailyTimer = new Timer();
         weeklyTimer = new Timer();
         monthlyTimer = new Timer();
-        intervalTimer = new Timer();
+        ArrayList<Timer> intervalTimers = new ArrayList<>();
         long minute = 60000L;
         long hour = 3600000L;
         long day = hour * 24;
@@ -113,10 +113,13 @@ public class Analyzer {
         monthlyTimer.schedule(new MonthlyTask(), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
         */
 
-        //@TODO Fix timers for several processes, not just one.
-        int firstInterval = ad.getInterval(ad.getProcessConnections().get(0).getHostName(),
-                ad.getProcessConnections().get(0).getPort());
-        intervalTimer.scheduleAtFixedRate(new IntervalTask(), firstInterval * minute, firstInterval * minute);
+        for (int i = 0; i < ad.getProcessConnections().size(); i++) {
+            int firstInterval = ad.getInterval(ad.getProcessConnections().get(i).getHostName(),
+                    ad.getProcessConnections().get(i).getPort());
+            intervalTimers.add(new Timer());
+            intervalTimers.get(i).scheduleAtFixedRate(new IntervalTask(), firstInterval * minute, firstInterval * minute);
+        }
+
     }
 
 
