@@ -232,6 +232,10 @@ public class Analyzer {
                             }
                             minimumMemValue = currentReports.get(j).getMemoryUsedAfter();
 
+                            //Debugging
+                            System.out.println("DEBUG: original first GCMinMemValue = "+originalMinimumMemValue);
+                            System.out.println("DEBUG: current GcMinMemValue = "+minimumMemValue);
+
                             //if the value equals or is above 10% threshhold of firstGCMinMemValue then the intervalStartTime is set to this timeframe,
                             // that is if the intervalStartTime has not already been set on another timeframe of a start of a slow increase for example.
                             if (minimumMemValue >= (originalMinimumMemValue * DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) && minimumMemValue != 0) {
