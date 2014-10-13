@@ -125,7 +125,10 @@ public class Analyzer {
             Calendar cal = Calendar.getInstance();
 
             //fetches all current processes in the format of ip:port
-            ArrayList<String> connections = ad.getConnections(); //@TODO You can use getProcessConnections to save som hassle.
+           // ArrayList<String> connections = ad.getConnections(); //@TODO You can use getProcessConnections to save som hassle.
+        ArrayList<ProcessConnection> connections = ad.getProcessConnections();
+
+
 
 
             int amountOfConnections = 0;
@@ -138,9 +141,10 @@ public class Analyzer {
             {
                 try
                 {
-                    String[] hostPortName = connections.get(i).split("\\:");
-                    int parsePort = Integer.parseInt(hostPortName[1]);
-                    intervalInMinutes[i] = ad.getInterval(hostPortName[0], parsePort );
+
+                    String hostName = connections.get(i).getHostName();
+                    int Port = connections.get(i).getPort();
+                    intervalInMinutes[i] = ad.getInterval(hostName, Port);
                 }catch (NumberFormatException e)
                 {
                     e.printStackTrace();
@@ -174,12 +178,10 @@ public class Analyzer {
             for(int i=0; i<connections.size(); i++)
             {
                 intervalStartTime = cal.getTime().getTime()- intervalInMs[i];
-                if(connections.get(i).contains(":"))
-                {
-                    String[] hostPortName = connections.get(i).split("\\:");
-                    int port = Integer.parseInt(hostPortName[1]);
-                    intervalReportsMap.put(connections.get(i),log.getGarbageCollectionStats(intervalStartTime, intervalEndTime.getTime(),hostPortName[0], port )  );
-                }
+
+                String hostName = connections.get(i).getHostName();
+                int port = connections.get(i).getPort();
+                intervalReportsMap.put(connections.get(i).getHostName()+":"+connections.get(i).getPort(),log.getGarbageCollectionStats(intervalStartTime, intervalEndTime.getTime(),hostName, port)  );
             }
 
             //for each process, a new GCstats is created
@@ -191,7 +193,7 @@ public class Analyzer {
 
                 if (currentReports != null) { //@TODO Debug this, always null? or is this okay?
                     long minimumMemValue = 0;
-                    long originalMinimumMemValue = log.firstGcValue(connections.get(i));
+                    long originalMinimumMemValue = log.firstGcValue(connections.get(i).getHostName()+":"+connections.get(i).getPort());
 
                     GcReport tempReport = new GcReport();
                     for (GcStats g : currentReports) {
@@ -203,9 +205,9 @@ public class Analyzer {
                     try {
                         int memConsecutiveIncCounter = 0;
                         //fetches ip for the current process
-                        String[] hostPort = connections.get(i).split(":");
+                       // String[] hostPort = connections.get(i).split(":");
                         //fetches port for the current process
-                        int port = Integer.parseInt(hostPort[1]);
+                      //  int port = Integer.parseInt(hostPort[1]);
 
                         for (int j = 0; j < currentReports.size(); j++) {
                             //compares originalMinimumMemValue from last iteration with a new one on the current iteration, if the newer value is above originalMinimumMemValue, there will be a consecutive count
@@ -246,14 +248,14 @@ public class Analyzer {
                                 AnomalyReport aReport = new AnomalyReport();
                                 aReport.setAnomaly(AnomalyReport.Anomaly.SUSPECTED_MEMORY_LEAK);
                                 aReport.setErrorMsg("Heap memory usage in PS OLD Gen above threshold.");
-                                aReport.setHost(hostPort[0]);
-                                aReport.setPort(port);
+                                aReport.setHost(connections.get(i).getHostName());
+                                aReport.setPort(connections.get(i).getPort());
                                 aReport.setMemIncreaseBytes(tempReport.getEndMemoryUsage() - originalMinimumMemValue);
 
                                 //fetches the first GcReport for the specific port and hostname which has the possible memory leak status.
                                 //this is done in order to determine if the memory leak started in an interval before the current one.
                                 //if this is not the case, then the  IntervalStartTimeOnSuspectedMemLeak is used from the current interval.
-                                ArrayList<GcReport> possibleMemLeakReports = log.getPossibleMemoryLeaks(hostPort[0], port);
+                                ArrayList<GcReport> possibleMemLeakReports = log.getPossibleMemoryLeaks(connections.get(i).getHostName(), connections.get(i).getPort());
 
                                 //if an earlier GcReport is found with status Possible memory leak
                                 if (possibleMemLeakReports.size() > 0 && possibleMemLeakReports.get(0).getStartTime() < tempReport.getStartTime()) {
@@ -267,6 +269,9 @@ public class Analyzer {
                                 aReport.setTimestamp(Calendar.getInstance().getTimeInMillis());
                                 aReport.setMemIncreasePercentage(tempReport.getEndMemoryUsage() / originalMinimumMemValue);
 
+
+                                //Debugging for anomalyReport
+                                System.out.println("AnomalyReport created with status: "+aReport.toString());
                                 fireAnomalyEvent(aReport);
 
 
@@ -283,14 +288,14 @@ public class Analyzer {
                                     }
                                     //creates a GCReport log entry for every Possible memory leak.
                                     if (minimumMemValue > originalMinimumMemValue) {
-                                        log.sendGcReport(hostPort[0], port, tempReport);
+                                        log.sendGcReport(connections.get(i).getHostName(), connections.get(i).getPort(), tempReport);
                                     }
                                 }
                                 if (tempReport.getStatus().equals(GcReport.Status.OK)) {
-                                    log.clearPossibleMemoryLeaks(hostPort[0], port);
+                                    log.clearPossibleMemoryLeaks(connections.get(i).getHostName(), connections.get(i).getPort());
                                 }
                             }
-                            log.sendUsageAfterLastGc(tempReport.getEndMemoryUsage(), hostPort[0], port);
+                            log.sendUsageAfterLastGc(tempReport.getEndMemoryUsage(), connections.get(i).getHostName(), connections.get(i).getPort());
                         }
 
 
