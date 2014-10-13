@@ -188,7 +188,7 @@ public class Analyzer {
             for (int i = 0;  i < connections.size(); i++)
             {
                 //Creates an arraylist of GcStats and fetches all GCstats entries for the current process through the set starttime and endtime above
-                ArrayList<GcStats> currentReports = intervalReportsMap.get(connections.get(i));
+                ArrayList<GcStats> currentReports = intervalReportsMap.get(connections.get(i).getHostName() + ":" + connections.get(i).getPort());
 
 
                 if (currentReports != null) { //@TODO Debug this, always null? or is this okay?
