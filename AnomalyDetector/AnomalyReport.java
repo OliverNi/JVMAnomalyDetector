@@ -100,6 +100,30 @@ public class AnomalyReport
         this.anomaly = anomaly;
     }
 
+    public void setAnomaly(String anomalyStatus)
+    {
+        if(anomalyStatus.contains("EXCESSIVE_GC_SCAN"))
+        {
+            anomaly = Anomaly.EXCESSIVE_GC_SCAN;
+        }
+        else if(anomalyStatus.contains("LIKELY_MEMORY_LEAK"))
+        {
+            anomaly = Anomaly.LIKELY_MEMORY_LEAK;
+        }
+        else if(anomalyStatus.contains("SUSPECTED_MEMORY_LEAK"))
+        {
+            anomaly = Anomaly.SUSPECTED_MEMORY_LEAK;
+        }
+        else if(anomalyStatus.contains("POSSIBLE_MEMORY_LEAK"))
+        {
+            anomaly = Anomaly.POSSIBLE_MEMORY_LEAK;
+        }
+        else
+        {
+            anomaly = Anomaly.POSSIBLE_MEMORY_LEAK;
+        }
+    }
+
     public void setMemIncreasePercentage(long memIncreasePercentage) {
         this.memIncreasePercentage = memIncreasePercentage;
     }
