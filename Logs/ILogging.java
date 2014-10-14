@@ -107,6 +107,11 @@ public interface ILogging {
      */
     public ArrayList<AnomalyReport> getAnomalyReport(String hostname, int port);
 
+    /**
+     * Sends an AnomalyReport to be logged.
+     * @param aReport the AnomalyReport
+     */
+    public void sendAnomalyReport(AnomalyReport aReport);
 
     /**
      *
