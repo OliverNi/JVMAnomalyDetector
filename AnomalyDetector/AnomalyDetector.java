@@ -187,16 +187,13 @@ public class AnomalyDetector {
             }
 
             String cmdOutput = "";
-
+            Scanner in = new Scanner(System.in);
             do{
-                Scanner in = new Scanner(System.in);
-                try {
-                    System.out.println(command(in.next(), ad));
-                } catch (NoSuchElementException e){
-                    e.printStackTrace();
-                }
-                in.close();
-            } while(cmdOutput.equals("Shutting down"));
+
+                System.out.println(command(in.next(), ad));
+                //in.close();
+            } while(!cmdOutput.equals("Shutting down"));
+            in.close();
         }
     }
 
