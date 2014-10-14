@@ -18,7 +18,7 @@ public class Analyzer {
         HourlyTask(){
         }
         public void run(){
-            analyzeIntervalGc();
+
         }
     }
     class DailyTask extends TimerTask {
@@ -46,10 +46,15 @@ public class Analyzer {
         }
     }
     class IntervalTask extends TimerTask{
-        IntervalTask(){
+        String host;
+        int port, interval;
+        IntervalTask(String host, int port, int interval){
+            this.host = host;
+            this.port = port;
+            this.interval = interval;
         }
         public void run(){
-            analyzeIntervalGc();
+            analyzeIntervalGc(host, port, interval);
         }
     }
 
@@ -115,16 +120,17 @@ public class Analyzer {
         */
 
         for (int i = 0; i < ad.getProcessConnections().size(); i++) {
-            int firstInterval = ad.getInterval(ad.getProcessConnections().get(i).getHostName(),
+            int interval = ad.getInterval(ad.getProcessConnections().get(i).getHostName(),
                     ad.getProcessConnections().get(i).getPort());
             intervalTimers.add(new Timer());
-            intervalTimers.get(i).scheduleAtFixedRate(new IntervalTask(), firstInterval * minute, firstInterval * minute);
+            intervalTimers.get(i).scheduleAtFixedRate(new IntervalTask(ad.getProcessConnections().get(i).getHostName(),
+                    ad.getProcessConnections().get(i).getPort(), interval), interval * minute, interval * minute);
         }
 
     }
 
 
-    public void analyzeIntervalGc()
+    public void analyzeIntervalGc(String host, int port, int interval)
     {
         System.out.println("DEBUG: Entered interval analysis");
             Calendar cal = Calendar.getInstance();
