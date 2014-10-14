@@ -83,6 +83,9 @@ public class Log implements  ILogging
                     "minTimeBetweenGc BIGINT, maxTimeBetweenGc BIGINT, sumCollectionTime BIGINT, minCollectionTime BIGINT, maxCollectionTime BIGINT," +
                     "starttime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INTEGER, gcCount INTEGER, sumMinMemoryUsage BIGINT, reportCount INTEGER, status VARCHAR(50), FOREIGN KEY(hostname) REFERENCES GCLog(hostname)," +
                     "FOREIGN KEY(port) REFERENCES GCLog(port) ) ");
+            DB.executeUpdate("CREATE TABLE IF  NOT EXISTS AnomalyReport(aId INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "hostname VARCHAR(25), port INTEGER, timestamp BIGINT, errorMsg VARCHAR(25), startTimeIncrease BIGINT," +
+                    "anomalyStatus VARCHAR(25), memIncreasePercentage BIGINT, memIncreaseBytes BIGINT ");
             DB.close();
         }catch (SQLException e)
         {
@@ -351,6 +354,7 @@ public class Log implements  ILogging
     }
 
     //basic input values  works,
+    //@TODO something fishy  here, SQLException disk I/O error pointed to this method.
     @Override
     public void sendMemoryLog(long memoryUsed, long timestamp, String hostname, int port)
     {
@@ -926,8 +930,44 @@ public class Log implements  ILogging
     @Override
     public ArrayList<AnomalyReport> getAnomalyReport(String hostname, int port)
     {
+        ArrayList<AnomalyReport> fetchReports = new ArrayList<>();
+        AnomalyReport tempReport = new AnomalyReport();
+        try
+        {
+            Statement DB = null;
+            DB = DBConnection.createStatement();
+            ResultSet rs = DB.executeQuery("SELECT hostname, port, timestamp, errorMsg, startTimeIncrease, anomalyStatus," +
+                    "memIncreasePercentage, memIncreaseBytes");
+            while(rs.next())
+            {
+                try
+                {
+                    tempReport.setHost(rs.getString("hostname"));
+                    tempReport.setPort(Integer.parseInt(rs.getString("port")));
+                    tempReport.setTimestamp(Long.parseLong(rs.getString("timestamp")));
+                    tempReport.setErrorMsg(rs.getString("errorMsg"));
+                    tempReport.setStartTimeIncrease(Long.parseLong(rs.getString("startTimeIncrease")));
+                    tempReport.setAnomaly(rs.getString("anomalyStatus"));
+                    tempReport.setMemIncreasePercentage(Long.parseLong(rs.getString("memIncreasePercentage")));
+                    tempReport.setMemIncreaseBytes(Long.parseLong(rs.getString("memIncreaseBytes")));
+                    fetchReports.add(tempReport);
+                }catch (NumberFormatException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            DB.close();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return fetchReports;
+    }
 
-        return null;
+    @Override
+    public void sendAnomalyReport(AnomalyReport aReport)
+    {
+
     }
 
     //@TODO not sure if this is still used, if so, then it needs to be modified to either to create a processreport,
