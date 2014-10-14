@@ -124,7 +124,7 @@ public class Analyzer {
                     ad.getProcessConnections().get(i).getPort());
             intervalTimers.add(new Timer());
             intervalTimers.get(i).scheduleAtFixedRate(new IntervalTask(ad.getProcessConnections().get(i).getHostName(),
-                    ad.getProcessConnections().get(i).getPort(), interval), interval * minute, interval * minute);
+                    ad.getProcessConnections().get(i).getPort(), interval), (interval * minute)+(1000*i), interval * minute);
         }
 
     }
