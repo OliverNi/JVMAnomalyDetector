@@ -6,6 +6,12 @@ import AnomalyDetector.AnomalyReport;
  * Created by Oliver on 2014-09-22.
  */
 public class GcReport {
+    public enum Period{
+        MIXED,
+        DAILY,
+        WEEKLY,
+        MONTHLY
+    }
     public enum Status
     {
         LIKELY_MEMORY_LEAK,
@@ -24,7 +30,7 @@ public class GcReport {
     private long sumCollected;
     private long minCollected;
     private long maxCollected;
-    private long minMemoryUsage;
+    private long minMemoryUsage; //@TODO Check order of every attribute, corresponding with Log?
     private long maxMemoryUsage;
     private long sumMemoryUsage;
     private long startMemoryUsage;
@@ -37,6 +43,7 @@ public class GcReport {
     private Status status;
     //keeps a track on if the minimumMemvalue after each GC has increased, and counts how many times in a row it has increased.
     private int consec_mem_inc_count;
+    private Period period; //@TODO Implement Log
 
     /**
      * Constructor
@@ -83,6 +90,7 @@ public class GcReport {
         this.reportCount = reportCount;
         this.sumMinMemoryUsage = sumMinMemoryUsage;
         this.status = Status.UNKNOWN;
+
     }
 
     public GcReport(){
@@ -191,6 +199,14 @@ public class GcReport {
 
     public long getSumMinMemoryUsage() {
         return sumMinMemoryUsage;
+    }
+
+    public Period getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(Period period) {
+        this.period = period;
     }
 
     public void setMinCollected(long minCollected) {
