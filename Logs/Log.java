@@ -750,7 +750,7 @@ public class Log implements  ILogging
                     "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
                     "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
                     "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, port FROM GCReport WHERE startTime >= "+startTime+" AND" +
-                    " endTime <= "+endTime+ "AND hostname = " + connection.getHostName() + "port = " + connection.getPort() + " ORDER BY startTime";
+                    " endTime <= "+endTime+ " AND hostname = '" + connection.getHostName() + "' AND port = " + connection.getPort() + " ORDER BY startTime";
             ResultSet rs = DB.executeQuery(input);
             while(rs.next())
             {
