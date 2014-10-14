@@ -30,9 +30,9 @@ public class GcReport {
     private long sumCollected;
     private long minCollected;
     private long maxCollected;
+    private long sumMemoryUsage;
     private long minMemoryUsage; //@TODO Check order of every attribute, corresponding with Log?
     private long maxMemoryUsage;
-    private long sumMemoryUsage;
     private long startMemoryUsage;
     private long endMemoryUsage;
     private long startTime;

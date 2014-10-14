@@ -2,6 +2,7 @@ package AnomalyDetector;
 
 //import GUI.Controllers.FrontController;
 //import GUI.LogBrowser;
+import GUI.Controllers.FrontController;
 import Listeners.AnomalyListener;
 import Listeners.SimpleAnomalyListener;
 import Logs.Log;
@@ -242,12 +243,12 @@ public class AnomalyDetector {
                     output = "Format error when trying to set threshold.";
                 break;
             case "browse":
-                /*new Runnable(){
+                new Runnable(){
                     @Override
                 public void run(){
                         new FrontController();
                     }
-                }.run();*/
+                }.run();
                 break;
             case "quit":
                 output = "Shutting down";
