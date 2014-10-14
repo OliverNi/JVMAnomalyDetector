@@ -1,6 +1,7 @@
 package Logs;
 
 import AnomalyDetector.AnomalyReport;
+import AnomalyDetector.ProcessConnection;
 import AnomalyDetector.ProcessReport;
 
 import java.util.ArrayList;
@@ -86,6 +87,8 @@ public interface ILogging {
      * @return A list of GcReports separated by a key HOSTNAME:PORT as a String.
      */
     public Map<String, ArrayList<GcReport>> getGcReports(long startTime, long endTime);
+
+    public ArrayList<GcReport> getGcReports(long startTime, long endTime, ProcessConnection connection);
 
     public Map<String, ArrayList<ProcessReport>> getAllProcessReports();
 
