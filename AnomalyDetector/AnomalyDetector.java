@@ -1,9 +1,11 @@
 package AnomalyDetector;
 
+import GUI.LogBrowser;
 import Listeners.AnomalyListener;
 import Listeners.SimpleAnomalyListener;
 import Logs.Log;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.*;
@@ -140,6 +142,10 @@ public class AnomalyDetector {
         return listener;
     }
 
+    public void setThreshold(double threshold){
+        //@TODO Implement
+    }
+
     public static void main(String args[]){
         //java AnomalyDetector hostname:port, hostname:port 20, hostname:port
         if (args.length != 0) {
@@ -206,12 +212,12 @@ public class AnomalyDetector {
         switch (cmdMain){
             case "help":{
                 output = "clear: Clears database of all log entries \n";
-                output += " Paramers: -HOST:PORT \n";
+                output += " Paramers: -HOST:PORT (clear -HOST:PORT)\n";
                 output += "quit: Shuts down program \n";
                 break;
             }
             //@TODO "clear" command only works once
-            //@TODO "clear -host:port command doesnt work at all (maybe not implemented)
+            //@TODO "clear -host:port command doesn't work at all (maybe not implemented)
             case "clear":
                 if (cmdParam.equals("all")){
                     output = "All rows in all tables cleared";
@@ -220,10 +226,31 @@ public class AnomalyDetector {
                 else{
                     String[] connections = cmdParam.split(",");
                     for (int i = 0; i < connections.length; i++){
-                        ad.getLog().clearData(new ArrayList<String>(Arrays.asList(connections)));
+                        ad.getLog().clearData(new ArrayList<>(Arrays.asList(connections)));
                     }
                     output = "Clearing all rows in all tables for specified connections";
                 }
+                break;
+            case "threshold":
+                if (!cmdParam.equals("")) {
+                    double t = Double.parseDouble(cmdParam);
+                    if (t > 0) {
+                        output = "Threshold set to: " + t + "\n";
+                        ad.setThreshold(t);
+                    }
+                    else
+                        output = "Format error when trying to set threshold.";
+                }
+                else
+                    output = "Format error when trying to set threshold.";
+                break;
+            case "browse":/*
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        new LogBrowser();
+                    }
+                });*/
                 break;
             case "quit":
                 output = "Shutting down";
@@ -231,7 +258,6 @@ public class AnomalyDetector {
 
             //@TODO Implement CLI commands for example show anomaly reports for a process.
             //@TODO (Additional feature) Implement command for opening LogBrowser(GUI).
-            //@TODO Set limit (Threshold)
         }
         return output;
     }
