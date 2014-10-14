@@ -125,6 +125,8 @@ public class Analyzer {
             intervalTimers.add(new Timer());
             intervalTimers.get(i).scheduleAtFixedRate(new IntervalTask(ad.getProcessConnections().get(i).getHostName(),
                     ad.getProcessConnections().get(i).getPort(), interval), (interval * minute)+(1000*i), interval * minute);
+            System.out.println("DEBUG: Timer created for: " + ad.getProcessConnections().get(i).getHostName() + ":" +
+                    ad.getProcessConnections().get(i).getPort());
         }
 
     }
