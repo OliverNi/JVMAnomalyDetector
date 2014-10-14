@@ -967,7 +967,20 @@ public class Log implements  ILogging
     @Override
     public void sendAnomalyReport(AnomalyReport aReport)
     {
-
+        try
+        {
+            Statement DB = null;
+            DB = DBConnection.createStatement();
+            ResultSet rs = DB.executeQuery("INSERT INTO AnomalyReport(hostname, port, timestamp, errorMsg, startTimeIncrease," +
+                    " anomalyStatus, memIncreasePercentage, memIncreaseBytes)"+
+                    "VALUES("+"'"+aReport.getHost()+"',"+aReport.getPort()+","+aReport.getTimestamp()+
+                    ",'"+aReport.getErrorMsg()+"',"+aReport.getStartTimeIncrease()+",'"+aReport.getAnomaly().toString()+"',"+
+                    aReport.getMemIncreasePercentage()+","+aReport.getMemIncreaseBytes()+")");
+            DB.close();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     //@TODO not sure if this is still used, if so, then it needs to be modified to either to create a processreport,
