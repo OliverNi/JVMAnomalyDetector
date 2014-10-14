@@ -83,9 +83,9 @@ public class Log implements  ILogging
                     "minTimeBetweenGc BIGINT, maxTimeBetweenGc BIGINT, sumCollectionTime BIGINT, minCollectionTime BIGINT, maxCollectionTime BIGINT," +
                     "starttime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INTEGER, gcCount INTEGER, sumMinMemoryUsage BIGINT, reportCount INTEGER, status VARCHAR(50), FOREIGN KEY(hostname) REFERENCES GCLog(hostname)," +
                     "FOREIGN KEY(port) REFERENCES GCLog(port) ) ");
-            DB.executeUpdate("CREATE TABLE IF  NOT EXISTS AnomalyReport(aId INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            DB.executeUpdate("CREATE TABLE IF NOT EXISTS AnomalyReport(aId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "hostname VARCHAR(25), port INTEGER, timestamp BIGINT, errorMsg VARCHAR(25), startTimeIncrease BIGINT," +
-                    "anomalyStatus VARCHAR(25), memIncreasePercentage BIGINT, memIncreaseBytes BIGINT ");
+                    "anomalyStatus VARCHAR(25), memIncreasePercentage BIGINT, memIncreaseBytes BIGINT )");
             DB.close();
         }catch (SQLException e)
         {
