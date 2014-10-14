@@ -119,7 +119,7 @@ public class Analyzer {
         monthlyTimer.schedule(new MonthlyTask(), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
         */
 
-        for (int i = 0; i < ad.getProcessConnections().size(); i++) {
+       /* for (int i = 0; i < ad.getProcessConnections().size(); i++) {
             int interval = ad.getInterval(ad.getProcessConnections().get(i).getHostName(),
                     ad.getProcessConnections().get(i).getPort());
             intervalTimers.add(new Timer());
@@ -127,8 +127,16 @@ public class Analyzer {
                     ad.getProcessConnections().get(i).getPort(), interval), (interval * minute)+(1000*i), interval * minute);
             System.out.println("DEBUG: Timer created for: " + ad.getProcessConnections().get(i).getHostName() + ":" +
                     ad.getProcessConnections().get(i).getPort());
-        }
+        }*/
 
+    }
+
+    public void addIntervalTimer(String host, int port, int interval){
+        long minute = 60000L;
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new IntervalTask(host, port, interval), interval * minute, interval * minute);
+        intervalTimers.add(timer);
+        System.out.println("DEBUG: Timer created for: " + host + ":" + port);
     }
 
 
