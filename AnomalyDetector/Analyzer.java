@@ -66,7 +66,7 @@ public class Analyzer {
     Timer dailyTimer;
     Timer weeklyTimer;
     Timer monthlyTimer;
-    Timer intervalTimer;
+    ArrayList<Timer> intervalTimers;
 
 
     public Analyzer(AnomalyDetector ad){
@@ -80,7 +80,7 @@ public class Analyzer {
         dailyTimer = new Timer();
         weeklyTimer = new Timer();
         monthlyTimer = new Timer();
-        ArrayList<Timer> intervalTimers = new ArrayList<>();
+        intervalTimers = new ArrayList<>();
         long minute = 60000L;
         long hour = 3600000L;
         long day = hour * 24;
