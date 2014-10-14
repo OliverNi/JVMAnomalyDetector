@@ -1,5 +1,6 @@
 package AnomalyDetector;
 
+import GUI.Controllers.FrontController;
 import GUI.LogBrowser;
 import Listeners.AnomalyListener;
 import Listeners.SimpleAnomalyListener;
@@ -64,17 +65,14 @@ public class AnomalyDetector {
         boolean success = false;
         //@TODO Use threads?
         agents.add(new JMXAgent(hostName, port, this));
-        if (agents.get(agents.size() -1).isConnected()){
-            agents.get(agents.size()-1).setInterval(interval);
+        agents.get(agents.size()-1).setInterval(interval);
+        if (agents.get(agents.size()-1).isConnected()) {
             connections.add(new ProcessConnection(hostName, port, interval));
             success = true;
-            if (connections.size() == 1) //@TODO Fix better solution
-                analyzer = new Analyzer(this);
         }
-        else {
-            agents.remove(agents.size() - 1);
-            success = false;
-        }
+        success = true;
+        if (connections.size() == 1) //@TODO Fix better solution
+            analyzer = new Analyzer(this);
         return success;
     }
     //@TODO Disconnect if process shuts down?
@@ -244,13 +242,13 @@ public class AnomalyDetector {
                 else
                     output = "Format error when trying to set threshold.";
                 break;
-            case "browse":/*
-                SwingUtilities.invokeLater(new Runnable() {
+            case "browse":
+                new Runnable(){
                     @Override
-                    public void run() {
-                        new LogBrowser();
+                public void run(){
+                        new FrontController();
                     }
-                });*/
+                }.run();
                 break;
             case "quit":
                 output = "Shutting down";
