@@ -1,6 +1,7 @@
 package Logs;
 
 import AnomalyDetector.AnomalyReport;
+import AnomalyDetector.ProcessConnection;
 import AnomalyDetector.ProcessReport;
 
 import java.lang.reflect.Array;
@@ -734,7 +735,98 @@ public class Log implements  ILogging
         }
         Map<String, ArrayList<GcReport>> fetch = instanceOfGCLog;
 
-        return null;
+        return instanceOfGCLog;
+    }
+
+    @Override
+    public ArrayList<GcReport> getGcReports(long startTime, long endTime, ProcessConnection connection) {
+        ArrayList<GcReport> gcReports = new ArrayList<GcReport>();
+
+        try
+        {
+            Statement DB = null;
+            DB = DBConnection.createStatement();
+            String input = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
+                    "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
+                    "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
+                    "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, port FROM GCReport WHERE startTime >= "+startTime+" AND" +
+                    " endTime <= "+endTime+ "AND hostname = " + connection.getHostName() + "port = " + connection.getPort() + " ORDER BY startTime";
+            ResultSet rs = DB.executeQuery(input);
+            while(rs.next())
+            {
+                GcReport theGcReport = new GcReport();
+                long sumCollected = Long.parseLong(rs.getString("sumCollected"));
+                theGcReport.setSumCollected(sumCollected);
+
+                long maxCollected = Long.parseLong(rs.getString("maxCollected"));
+                theGcReport.setMaxCollected(maxCollected);
+
+                long minCollected = Long.parseLong(rs.getString("minCollected"));
+                theGcReport.setMinCollected(minCollected);
+
+                long minMemoryUsage = Long.parseLong(rs.getString("minMemoryUsage"));
+                theGcReport.setMinMemoryUsage(minMemoryUsage);
+
+                long maxMemoryUsage = Long.parseLong(rs.getString("maxMemoryUsage"));
+                theGcReport.setMaxMemoryUsage(maxMemoryUsage);
+
+                long sumMemoryUsage = Long.parseLong(rs.getString("sumMemoryUsage"));
+                theGcReport.setSumMemoryUsage(sumMemoryUsage);
+
+                long startMemoryUsage = Long.parseLong(rs.getString("startMemoryUsage"));
+                theGcReport.setStartMemoryUsage(startMemoryUsage);
+
+                long endMemoryUsage = Long.parseLong(rs.getString("endMemoryUsage"));
+                theGcReport.setEndMemoryUsage(endMemoryUsage);
+
+                long sumTimeBetweenGC = Long.parseLong(rs.getString("sumTimeBetweenGc"));
+                theGcReport.setSumTimeBetweenGc(sumTimeBetweenGC);
+
+                long minTimeBetweenGc = Long.parseLong(rs.getString("minTimeBetweenGc"));
+                theGcReport.setMinTimeBetweenGc(minTimeBetweenGc);
+
+                long maxTimeBetweenGc = Long.parseLong(rs.getString("maxTimeBetweenGc"));
+                theGcReport.setMaxTimeBetweenGc(maxTimeBetweenGc);
+
+                long sumCollectionTime = Long.parseLong(rs.getString("sumCollectionTime"));
+                theGcReport.setSumCollectionTime(sumCollectionTime);
+
+                long minCollectionTime = Long.parseLong(rs.getString("minCollectionTime"));
+                theGcReport.setMinCollectionTime(minCollectionTime);
+
+                long maxCollectionTime = Long.parseLong(rs.getString("maxCollectionTime"));
+                theGcReport.setMaxCollectionTime(maxCollectionTime);
+
+                long fetchedstartTime = Long.parseLong(rs.getString("startTime"));
+                theGcReport.setStartTime(fetchedstartTime);
+
+                long fetchedendTime = Long.parseLong(rs.getString("endTime"));
+                theGcReport.setEndTime(fetchedendTime);
+
+                long sumMinMemoryUsage = Long.parseLong(rs.getString("sumMinMemoryUsage"));
+                theGcReport.setSumMinMemoryUsage(sumMinMemoryUsage);
+
+                int reportCount = Integer.parseInt(rs.getString("reportCount"));
+                theGcReport.setReportCount(reportCount);
+
+                int gcCount = Integer.parseInt(rs.getString("gcCount"));
+                theGcReport.setGcCount(gcCount);
+
+                String fetchHostnamePort = rs.getString("hostname")+":"+rs.getString("port");
+
+                gcReports.add(theGcReport);
+            }
+            DB.close();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        catch (NumberFormatException nfe)
+        {
+            System.out.println("NumberFormatException: " + nfe.getMessage());
+        }
+
+        return gcReports;
     }
 
     @Override
