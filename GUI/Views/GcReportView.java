@@ -100,7 +100,7 @@ public class GcReportView extends View<GcReportListener> implements GcReportResp
         scrollTableLogs.getViewport().add(tableLogs);
         centerPanel.add(scrollTableLogs);
 
-        this.add(centerPanel);
+        this.add(centerPanel, BorderLayout.CENTER);
     }
 
     public void searchAction(ActionEvent e){
@@ -110,6 +110,8 @@ public class GcReportView extends View<GcReportListener> implements GcReportResp
     }
 
     private void populateTable(ArrayList<GcReport> reports){
+        tableLogs.setPreferredScrollableViewportSize(new Dimension(this.getWidth() / 2, this.getHeight()/3));
+        tableLogs.setFillsViewportHeight(true);
         tableLogs.setModel(createTableModel(reports));
         scrollTableLogs.getViewport().repaint();
     }
