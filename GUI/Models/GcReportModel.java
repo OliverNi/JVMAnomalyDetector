@@ -35,8 +35,9 @@ public class GcReportModel extends Model<GcReportResponse>{
                 break;
         }
         //Inform observers
-        reports.add(new GcReport());
-        for (GcReportResponse g : this.getObservers())
-            g.searchResult(reports);
+        if (reports != null) {
+            for (GcReportResponse g : this.getObservers())
+                g.searchResult(reports);
+        }
     }
 }

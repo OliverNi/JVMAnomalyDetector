@@ -25,8 +25,9 @@ public class AnomalyReportModel extends Model<AnomalyReportResponse> {
             case "This month":
                 break;
         }
-        result.add(new AnomalyReport()); //test
-        for (AnomalyReportResponse o : this.getObservers())
-            o.searchResult(result);
+        if (result != null) {
+            for (AnomalyReportResponse o : this.getObservers())
+                o.searchResult(result);
+        }
     }
 }

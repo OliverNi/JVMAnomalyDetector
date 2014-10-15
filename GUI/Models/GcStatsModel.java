@@ -30,8 +30,9 @@ public class GcStatsModel extends Model<GcStatsResponse>{
             case "This month":
                 break;
         }
-        stats.add(new GcStats()); //test
-        for (GcStatsResponse o : this.getObservers())
-            o.searchResult(stats);
+        if (stats != null) {
+            for (GcStatsResponse o : this.getObservers())
+                o.searchResult(stats);
+        }
     }
 }
