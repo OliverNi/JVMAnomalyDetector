@@ -211,7 +211,7 @@ public class AnomalyDetector {
                 output += "quit: Shuts down program \n";
                 break;
             }
-            //@TODO "clear" command only works once
+
             //@TODO "clear -host:port command doesn't work at all (maybe not implemented)
             case "clear":
                 if (cmdParam.equals("all")){
