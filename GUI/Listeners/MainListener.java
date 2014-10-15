@@ -6,4 +6,5 @@ package GUI.Listeners;
 public interface MainListener {
     public void clickGcStats();
     public void clickGcReports();
+    public void clickAnomalyReports();
 }

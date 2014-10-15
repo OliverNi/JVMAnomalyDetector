@@ -31,7 +31,6 @@ public class GcReportController implements GcReportListener {
 
     @Override
     public void search(SearchEvent e) {
-        //@TODO Send to model
         model.getListItems(e.getHost(), e.getPort(), e.getPeriod());
     }
 

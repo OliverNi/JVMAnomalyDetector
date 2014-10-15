@@ -34,4 +34,9 @@ public class MainController implements MainListener{
     public void clickGcReports() {
         FrontController.getInstance().goToGcReportsView();
     }
+
+    @Override
+    public void clickAnomalyReports(){
+        FrontController.getInstance().goToAnomalyReportsView();
+    }
 }

@@ -1,10 +1,10 @@
 package GUI.Views;
 
-import GUI.Events.GcStatsResponse;
+import AnomalyDetector.AnomalyReport;
+import GUI.Events.AnomalyReportResponse;
 import GUI.Events.SearchEvent;
-import GUI.Listeners.GcStatsListener;
+import GUI.Listeners.AnomalyReportListener;
 import GUI.LogBrowser;
-import Logs.GcStats;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -18,9 +18,9 @@ import java.util.Vector;
 /**
  * Created by Oliver on 2014-10-15.
  */
-public class GcStatsView extends ListView<GcStatsListener> implements GcStatsResponse {
+public class AnomalyReportView extends ListView<AnomalyReportListener> implements AnomalyReportResponse {
 
-    public GcStatsView(){
+    public AnomalyReportView(){
         String[] periods = {"All", "Today", "This week", "This month"};
         cboxPeriod.setModel(new DefaultComboBoxModel<String>(periods));
         buttonSearch.addActionListener(new ActionListener() {
@@ -33,12 +33,12 @@ public class GcStatsView extends ListView<GcStatsListener> implements GcStatsRes
 
     private void searchAction(ActionEvent e){
         int port = Integer.parseInt(txtPort.getText());
-        for (GcStatsListener o : this.getObservers())
+        for (AnomalyReportListener o : this.getObservers())
             o.search(new SearchEvent(this, txtHost.getText(), port, cboxPeriod.getSelectedItem().toString()));
     }
 
-    private void populateTable(ArrayList<GcStats> stats){
-        tableLogs.setModel(createTableModel(stats));
+    private void populateTable(ArrayList<AnomalyReport> result){
+        tableLogs.setModel(createTableModel(result));
         tableLogs.setPreferredScrollableViewportSize(new Dimension(LogBrowser.getInstance().getFrame().getWidth(),
                 LogBrowser.getInstance().getFrame().getHeight()));
         tableLogs.setFillsViewportHeight(true);
@@ -47,22 +47,24 @@ public class GcStatsView extends ListView<GcStatsListener> implements GcStatsRes
         this.repaint();
     }
 
-    private DefaultTableModel createTableModel(ArrayList<GcStats> stats){
+    private DefaultTableModel createTableModel(ArrayList<AnomalyReport> result){
         Vector<String> columnNames = new Vector<>();
-        columnNames.add("Mem Used After (kb)");
-        columnNames.add("Mem used before (kb)");
-        columnNames.add("Time");
-        columnNames.add("Col. Time (ms)");
+        columnNames.add("Anomaly");
+        columnNames.add("Time increase");
+        columnNames.add("Memory increase(percentage)");
+        columnNames.add("Memory increase(bytes)");
+        columnNames.add("Error message");
 
         Vector<Vector<Object>> items = new Vector<>();
-        for (GcStats s : stats){
+        for (AnomalyReport r : result){
             Vector<Object> row = new Vector<>();
 
-            row.add(s.getMemoryUsedAfter() /1024);
-            row.add(s.getMemoryUsedBefore() / 1024);
-            Date dateTime = new Date(s.getTimeStamp());
+            row.add(r.getAnomaly().toString());
+            Date dateTime = new Date(r.getStartTimeIncrease());
             row.add(dateTime.toString());
-            row.add(s.getCollectionTime());
+            row.add(r.getMemIncreasePercentage());
+            row.add(r.getMemIncreaseBytes());
+            row.add(r.getErrorMsg());
 
             items.add(row);
         }
@@ -76,10 +78,8 @@ public class GcStatsView extends ListView<GcStatsListener> implements GcStatsRes
 
         return dModel;
     }
-
-
     @Override
-    public void searchResult(ArrayList<GcStats> result) {
+    public void searchResult(ArrayList<AnomalyReport> result) {
         if (result == null){
             System.out.println("DEBUG: No results");
         }

@@ -13,6 +13,7 @@ import java.awt.event.ActionListener;
  */
 public class MainView extends View<MainListener> implements MainResponse {
     private JPanel panelButtonsList = new JPanel();
+    private JButton buttonAnomalyReports = new JButton("Anomaly Reports");
     private JButton buttonGcReports = new JButton("Combined Reports");
     private JButton buttonGcStats = new JButton("GcStats");
 
@@ -22,8 +23,18 @@ public class MainView extends View<MainListener> implements MainResponse {
     }
 
     private void build(){
+        panelButtonsList.setLayout(new BorderLayout());
         panelButtonsList.add(buttonGcStats, BorderLayout.NORTH);
         panelButtonsList.add(buttonGcReports, BorderLayout.CENTER);
+        panelButtonsList.add(buttonAnomalyReports, BorderLayout.SOUTH);
+        this.add(panelButtonsList, BorderLayout.CENTER);
+
+        buttonAnomalyReports.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clickAnomalyReportsAction(e);
+            }
+        });
 
         buttonGcReports.addActionListener(new ActionListener() {
             @Override
@@ -49,6 +60,11 @@ public class MainView extends View<MainListener> implements MainResponse {
     private void clickGcStatsAction(ActionEvent e){
         for (MainListener o : this.getObservers())
             o.clickGcStats();
+    }
+
+    private void clickAnomalyReportsAction(ActionEvent e){
+        for (MainListener o : this.getObservers())
+            o.clickAnomalyReports();
     }
     @Override
     public void changedView() {
