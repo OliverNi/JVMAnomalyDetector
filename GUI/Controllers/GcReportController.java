@@ -35,6 +35,11 @@ public class GcReportController implements GcReportListener {
     }
 
     @Override
+    public void mainMenu() {
+        FrontController.getInstance().goToMainView();
+    }
+
+    @Override
     public void listUpdated(ListUpdatedEvent e) {
 
     }

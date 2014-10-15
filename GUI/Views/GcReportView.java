@@ -20,25 +20,12 @@ import java.util.Vector;
 /**
  * Created by Oliver on 2014-10-14.
  */
-public class GcReportView extends ListView<GcReportListener> implements GcReportResponse {
+public class GcReportView extends ListView implements GcReportResponse {
 
 
     public GcReportView(){
         String[] periods = {"All", "Daily", "Weekly", "Monthly", "Possible Leaks"};
         cboxPeriod.setModel(new DefaultComboBoxModel<String>(periods));
-
-        buttonSearch.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchAction(e);
-            }
-        });
-    }
-
-    public void searchAction(ActionEvent e){
-        int port = Integer.parseInt(txtPort.getText());
-        for (GcReportListener g : this.getObservers())
-            g.search(new SearchEvent(this, txtHost.getText(), port, cboxPeriod.getSelectedItem().toString()));
     }
 
     private void populateTable(ArrayList<GcReport> reports){

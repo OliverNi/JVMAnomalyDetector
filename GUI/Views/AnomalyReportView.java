@@ -18,23 +18,11 @@ import java.util.Vector;
 /**
  * Created by Oliver on 2014-10-15.
  */
-public class AnomalyReportView extends ListView<AnomalyReportListener> implements AnomalyReportResponse {
+public class AnomalyReportView extends ListView implements AnomalyReportResponse {
 
     public AnomalyReportView(){
         String[] periods = {"All", "Today", "This week", "This month"};
         cboxPeriod.setModel(new DefaultComboBoxModel<String>(periods));
-        buttonSearch.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchAction(e);
-            }
-        });
-    }
-
-    private void searchAction(ActionEvent e){
-        int port = Integer.parseInt(txtPort.getText());
-        for (AnomalyReportListener o : this.getObservers())
-            o.search(new SearchEvent(this, txtHost.getText(), port, cboxPeriod.getSelectedItem().toString()));
     }
 
     private void populateTable(ArrayList<AnomalyReport> result){

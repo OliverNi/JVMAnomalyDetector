@@ -18,23 +18,11 @@ import java.util.Vector;
 /**
  * Created by Oliver on 2014-10-15.
  */
-public class GcStatsView extends ListView<GcStatsListener> implements GcStatsResponse {
+public class GcStatsView extends ListView implements GcStatsResponse {
 
     public GcStatsView(){
         String[] periods = {"All", "Today", "This week", "This month"};
         cboxPeriod.setModel(new DefaultComboBoxModel<String>(periods));
-        buttonSearch.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchAction(e);
-            }
-        });
-    }
-
-    private void searchAction(ActionEvent e){
-        int port = Integer.parseInt(txtPort.getText());
-        for (GcStatsListener o : this.getObservers())
-            o.search(new SearchEvent(this, txtHost.getText(), port, cboxPeriod.getSelectedItem().toString()));
     }
 
     private void populateTable(ArrayList<GcStats> stats){

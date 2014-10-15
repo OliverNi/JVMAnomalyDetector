@@ -29,4 +29,9 @@ public class GcStatsController implements GcStatsListener {
     public void search(SearchEvent e) {
         model.getListItems(e.getHost(), e.getPort(), e.getPeriod());
     }
+
+    @Override
+    public void mainMenu() {
+        FrontController.getInstance().goToMainView();
+    }
 }
