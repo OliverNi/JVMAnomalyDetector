@@ -27,6 +27,8 @@ public class LogBrowser{
     }
 
     public void build(){
+        panel.removeAll();
+        cl.removeLayoutComponent(panel);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
 
@@ -41,7 +43,6 @@ public class LogBrowser{
 
     public void add (Component component){
         this.panel.add(component, component.getClass().getSimpleName());
-        //this.cl.show(this.panel, component.getClass().getSimpleName());
         System.out.println("DEBUG: Something added");
     }
 
