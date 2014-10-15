@@ -13,16 +13,16 @@ public class MainController implements MainListener{
     private MainModel model;
 
     public MainController(){
-
-    }
-
-    public void mainAction(){
         this.model = new MainModel();
         this.view = new MainView();
         this.model.subscribe(this.view);
         this.view.subscribe(this);
 
         LogBrowser.getInstance().add(this.view);
+    }
+
+    public void mainAction(){
+        LogBrowser.getInstance().show(this.view);
     }
 
     @Override

@@ -6,11 +6,13 @@ import GUI.LogBrowser;
  * Created by Oliver on 2014-10-14.
  */
 public class FrontController {
-    public static FrontController instance;
-    private MainController mainController = new MainController();
-    private GcReportController gcReportController = new GcReportController();
+    public static FrontController instance = null;
+    private MainController mainController = null;
+    private GcReportController gcReportController = null;
     public FrontController() {
-        LogBrowser.createInstance();
+        LogBrowser.getInstance().build();
+        mainController = new MainController();
+        gcReportController = new GcReportController();
         instance = this;
         goToMainView();
     }
