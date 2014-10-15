@@ -189,9 +189,10 @@ public class AnomalyDetector {
             String cmdOutput = "";
             Scanner in = new Scanner(System.in);
             do{
-
-                System.out.println(command(in.next(), ad));
-                //in.close();
+                if (in.hasNext()) {
+                    cmdOutput = command(in.next(), ad);
+                    System.out.println(cmdOutput);
+                }
             } while(!cmdOutput.equals("Shutting down"));
             in.close();
         }
