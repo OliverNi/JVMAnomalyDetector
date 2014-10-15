@@ -9,10 +9,12 @@ public class FrontController {
     public static FrontController instance = null;
     private MainController mainController = null;
     private GcReportController gcReportController = null;
+    private GcStatsController gcStatsController = null;
     public FrontController() {
         LogBrowser.getInstance().build();
         mainController = new MainController();
         gcReportController = new GcReportController();
+        gcStatsController = new GcStatsController();
         instance = this;
         goToMainView();
     }
@@ -30,7 +32,7 @@ public class FrontController {
     }
 
     public void goToGcStatsView(){
-        //@TODO Implement
+        gcStatsController.browseAction();
     }
 
 }

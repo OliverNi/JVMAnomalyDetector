@@ -20,88 +20,16 @@ import java.util.Vector;
 /**
  * Created by Oliver on 2014-10-14.
  */
-public class GcReportView extends View<GcReportListener> implements GcReportResponse {
-    private JPanel topPanel = new JPanel();
-    private JTextField txtHost = new JTextField();
-    private JTextField txtPort = new JTextField();
-    private JLabel labelHost = new JLabel("Host:");
-    private JLabel labelPort = new JLabel("Port:");
-    private JLabel labelPeriod = new JLabel("Period:");
-    private JComboBox<String> cboxPeriod = new JComboBox<>();
+public class GcReportView extends ListView<GcReportListener> implements GcReportResponse {
 
-    private JPanel timePanel = new JPanel();
-    private JButton buttonSearch = new JButton("Search");
-    private JLabel labelStartDate = new JLabel("Start date (yyyy-MM-dd):");
-    private JLabel labelEndDate = new JLabel("End date (yyyy-MM-dd):");
-    private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    private JFormattedTextField txtStartTime = new JFormattedTextField(dateFormat);
-    private JFormattedTextField txtEndTime = new JFormattedTextField(dateFormat);
-
-    private JPanel centerPanel = new JPanel();
-    private JTable tableLogs = new JTable();
-    private JScrollPane scrollTableLogs = new JScrollPane();
 
     public GcReportView(){
-        this.setLayout(new BorderLayout());
-        build();
-    }
-
-    private void build(){
-        buildTopPanel();
-        buildTimePanel();
-        buildCenterPanel();
-    }
-
-    private void buildTopPanel(){
-        txtHost.setPreferredSize(new Dimension(80, 20));
-        txtPort.setPreferredSize(new Dimension(80, 20));
-
-        String[] periods = {"All", "Daily", "Weekly", "Monthly", "Possible Leaks"};
-        cboxPeriod.setModel(new DefaultComboBoxModel<String>(periods));
-
-        topPanel.add(labelHost);
-        topPanel.add(txtHost);
-
-        topPanel.add(labelPort);
-        topPanel.add(txtPort);
-
-        topPanel.add(labelPeriod);
-        topPanel.add(cboxPeriod);
-
-        this.add(topPanel, BorderLayout.NORTH);
-
-
-    }
-
-    private void buildTimePanel(){
-        txtStartTime.setPreferredSize(new Dimension(80, 20));
-        txtEndTime.setPreferredSize(new Dimension(80, 20));
-
-        timePanel.add(labelStartDate);
-        timePanel.add(txtStartTime);
-
-        timePanel.add(labelEndDate);
-        timePanel.add(txtEndTime);
-
-        timePanel.add(buttonSearch);
-
-        this.add(timePanel, BorderLayout.CENTER);
-
         buttonSearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 searchAction(e);
             }
         });
-    }
-
-    private void buildCenterPanel(){
-        tableLogs.setPreferredScrollableViewportSize(new Dimension(this.getWidth(), this.getHeight() /2));
-        tableLogs.setFillsViewportHeight(true);
-        scrollTableLogs.getViewport().add(tableLogs);
-        centerPanel.add(scrollTableLogs);
-
-        this.add(centerPanel, BorderLayout.SOUTH);
     }
 
     public void searchAction(ActionEvent e){

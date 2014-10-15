@@ -32,12 +32,23 @@ public class MainView extends View<MainListener> implements MainResponse {
             }
         });
 
+        buttonGcStats.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                clickGcStatsAction(e);
+            }
+        });
         this.add(panelButtonsList);
     }
 
     private void clickGcReportAction(ActionEvent e){
         for (MainListener o : this.getObservers())
             o.clickGcReports();
+    }
+
+    private void clickGcStatsAction(ActionEvent e){
+        for (MainListener o : this.getObservers())
+            o.clickGcStats();
     }
     @Override
     public void changedView() {
