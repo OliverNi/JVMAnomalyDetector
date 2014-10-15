@@ -16,7 +16,8 @@ public class AnomalyReport
         EXCESSIVE_GC_SCAN,
         LIKELY_MEMORY_LEAK,
         SUSPECTED_MEMORY_LEAK,
-        POSSIBLE_MEMORY_LEAK //May not be used (setting?)
+        POSSIBLE_MEMORY_LEAK, //May not be used (setting?)
+        UNKNOWN    //If this is shown something has gone wrong
     }
     private long timestamp;
     private String host;
@@ -28,7 +29,7 @@ public class AnomalyReport
     private long memIncreaseBytes;
     public AnomalyReport()
     {
-        this(0, null, -1, "No Msg", 0, null, 0, 0);
+        this(0, "", -1, "No Msg", 0, Anomaly.UNKNOWN, 0, 0);
     }
 
     public AnomalyReport(long timestamp, String host, int port, String errorMsg,
