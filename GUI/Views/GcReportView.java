@@ -3,6 +3,7 @@ package GUI.Views;
 import GUI.Events.GcReportResponse;
 import GUI.Events.SearchEvent;
 import GUI.Listeners.GcReportListener;
+import GUI.LogBrowser;
 import Logs.GcReport;
 
 import javax.swing.*;
@@ -67,7 +68,7 @@ public class GcReportView extends View<GcReportListener> implements GcReportResp
         topPanel.add(labelPeriod);
         topPanel.add(cboxPeriod);
 
-        this.add(topPanel, BorderLayout.PAGE_START);
+        this.add(topPanel, BorderLayout.NORTH);
 
 
     }
@@ -84,7 +85,7 @@ public class GcReportView extends View<GcReportListener> implements GcReportResp
 
         timePanel.add(buttonSearch);
 
-        this.add(timePanel, BorderLayout.AFTER_LAST_LINE);
+        this.add(timePanel, BorderLayout.CENTER);
 
         buttonSearch.addActionListener(new ActionListener() {
             @Override
@@ -95,12 +96,12 @@ public class GcReportView extends View<GcReportListener> implements GcReportResp
     }
 
     private void buildCenterPanel(){
-        tableLogs.setPreferredScrollableViewportSize(new Dimension(this.getWidth() /2, this.getHeight() /2));
+        tableLogs.setPreferredScrollableViewportSize(new Dimension(this.getWidth(), this.getHeight() /2));
         tableLogs.setFillsViewportHeight(true);
         scrollTableLogs.getViewport().add(tableLogs);
         centerPanel.add(scrollTableLogs);
 
-        this.add(centerPanel, BorderLayout.CENTER);
+        this.add(centerPanel, BorderLayout.SOUTH);
     }
 
     public void searchAction(ActionEvent e){
@@ -110,10 +111,13 @@ public class GcReportView extends View<GcReportListener> implements GcReportResp
     }
 
     private void populateTable(ArrayList<GcReport> reports){
-        tableLogs.setPreferredScrollableViewportSize(new Dimension(this.getWidth() / 2, this.getHeight()/3));
+        tableLogs.setPreferredScrollableViewportSize(new Dimension(LogBrowser.getInstance().getFrame().getWidth(),
+                LogBrowser.getInstance().getFrame().getHeight()/2));
         tableLogs.setFillsViewportHeight(true);
         tableLogs.setModel(createTableModel(reports));
         scrollTableLogs.getViewport().repaint();
+        LogBrowser.getInstance().getFrame().repaint();
+        LogBrowser.getInstance().getFrame().getComponent(0).repaint();
     }
 
     private DefaultTableModel createTableModel(ArrayList<GcReport> reports){
