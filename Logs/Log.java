@@ -227,7 +227,7 @@ public class Log implements  ILogging
 
 //            // create a database connection
             Statement DB = null;
-            DBConnection = DriverManager.getConnection("jdbc:sqlite:test4.db");
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test7.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -1029,7 +1029,7 @@ public class Log implements  ILogging
             Statement DB = null;
             DB = DBConnection.createStatement();
             ResultSet rs = DB.executeQuery("SELECT hostname, port, timestamp, errorMsg, startTimeIncrease, anomalyStatus," +
-                    "memIncreasePercentage, memIncreaseBytes");
+                    "memIncreasePercentage, memIncreaseBytes FROM AnomalyReport");
             while(rs.next())
             {
                 try
