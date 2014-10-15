@@ -43,8 +43,8 @@ public class GcReportView extends ListView<GcReportListener> implements GcReport
 
     private void populateTable(ArrayList<GcReport> reports){
         tableLogs.setModel(createTableModel(reports));
-        tableLogs.setPreferredScrollableViewportSize(new Dimension(LogBrowser.getInstance().getFrame().getWidth(),
-                LogBrowser.getInstance().getFrame().getHeight()));
+        tableLogs.setPreferredScrollableViewportSize(new Dimension((int)LogBrowser.getInstance().getFrame().getBounds().getWidth(),
+                (int)LogBrowser.getInstance().getFrame().getBounds().getHeight()));
         tableLogs.setFillsViewportHeight(true);
         scrollTableLogs.getViewport().repaint();
         this.revalidate();

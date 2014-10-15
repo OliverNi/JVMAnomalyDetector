@@ -20,6 +20,9 @@ public class LogBrowser{
     private JPanel panel = new JPanel();
 
     private LogBrowser(){
+        panel.setLayout(new BorderLayout());
+        frame.setSize(800, 600);
+        frame.setResizable(true);
     }
 
     public static LogBrowser getInstance(){
@@ -48,8 +51,6 @@ public class LogBrowser{
 
     public void show(Component component){
         this.cl.show(this.panel, component.getClass().getSimpleName());
-        frame.setSize(800, 600);
-        frame.setResizable(true);
         System.out.println("DEBUG: Show comp");
     }
 }

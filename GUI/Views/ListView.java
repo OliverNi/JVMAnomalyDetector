@@ -2,8 +2,6 @@ package GUI.Views;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -11,7 +9,9 @@ import java.text.SimpleDateFormat;
  * Created by Oliver on 2014-10-15.
  */
 public abstract class ListView<V> extends View<V>{
-    protected JPanel topPanel = new JPanel();
+    protected JPanel panelTop = new JPanel();
+
+    protected JPanel panelSettings = new JPanel();
     protected JTextField txtHost = new JTextField();
     protected JTextField txtPort = new JTextField();
     protected JLabel labelHost = new JLabel("Host:");
@@ -19,7 +19,7 @@ public abstract class ListView<V> extends View<V>{
     protected JLabel labelPeriod = new JLabel("Period:");
     protected JComboBox<String> cboxPeriod = new JComboBox<>();
 
-    protected JPanel timePanel = new JPanel();
+    protected JPanel panelTime = new JPanel();
     protected JButton buttonSearch = new JButton("Search");
     protected JLabel labelStartDate = new JLabel("Start date (yyyy-MM-dd):");
     protected JLabel labelEndDate = new JLabel("End date (yyyy-MM-dd):");
@@ -27,7 +27,7 @@ public abstract class ListView<V> extends View<V>{
     protected JFormattedTextField txtStartTime = new JFormattedTextField(dateFormat);
     protected JFormattedTextField txtEndTime = new JFormattedTextField(dateFormat);
 
-    protected JPanel centerPanel = new JPanel();
+    protected JPanel panelCenter = new JPanel();
     protected JTable tableLogs = new JTable();
     protected JScrollPane scrollTableLogs = new JScrollPane();
 
@@ -37,25 +37,28 @@ public abstract class ListView<V> extends View<V>{
     }
 
     private void build(){
-        buildTopPanel();
         buildTimePanel();
+        buildTopPanel();
         buildCenterPanel();
     }
 
     private void buildTopPanel(){
         this.txtHost.setPreferredSize(new Dimension(80, 20));
         txtPort.setPreferredSize(new Dimension(80, 20));
+        panelTop.setLayout(new BorderLayout());
+        panelSettings.add(labelHost);
+        panelSettings.add(txtHost);
 
-        topPanel.add(labelHost);
-        topPanel.add(txtHost);
+        panelSettings.add(labelPort);
+        panelSettings.add(txtPort);
 
-        topPanel.add(labelPort);
-        topPanel.add(txtPort);
+        panelSettings.add(labelPeriod);
+        panelSettings.add(cboxPeriod);
 
-        topPanel.add(labelPeriod);
-        topPanel.add(cboxPeriod);
+        panelTop.add(panelSettings, BorderLayout.NORTH);
+        panelTop.add(panelTime, BorderLayout.SOUTH);
 
-        this.add(topPanel, BorderLayout.NORTH);
+        this.add(panelTop, BorderLayout.NORTH);
 
 
     }
@@ -64,30 +67,22 @@ public abstract class ListView<V> extends View<V>{
         txtStartTime.setPreferredSize(new Dimension(80, 20));
         txtEndTime.setPreferredSize(new Dimension(80, 20));
 
-        timePanel.add(labelStartDate);
-        timePanel.add(txtStartTime);
+        panelTime.add(labelStartDate);
+        panelTime.add(txtStartTime);
 
-        timePanel.add(labelEndDate);
-        timePanel.add(txtEndTime);
+        panelTime.add(labelEndDate);
+        panelTime.add(txtEndTime);
 
-        timePanel.add(buttonSearch);
-
-        this.add(timePanel, BorderLayout.CENTER);
-
-        /*buttonSearch.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                searchAction(e);
-            }
-        });*/
+        panelTime.add(buttonSearch);
     }
 
     private void buildCenterPanel(){
         tableLogs.setPreferredScrollableViewportSize(new Dimension(this.getWidth(), this.getHeight() /2));
         tableLogs.setFillsViewportHeight(true);
         scrollTableLogs.getViewport().add(tableLogs);
-        centerPanel.add(scrollTableLogs);
+        panelCenter.setLayout(new BorderLayout());
+        panelCenter.add(scrollTableLogs, BorderLayout.CENTER);
 
-        this.add(centerPanel, BorderLayout.SOUTH);
+        this.add(panelCenter, BorderLayout.CENTER);
     }
 }
