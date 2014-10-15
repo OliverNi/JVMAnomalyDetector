@@ -266,7 +266,10 @@ public class Analyzer {
                         }
 
                         aReport.setTimestamp(Calendar.getInstance().getTimeInMillis());
-                        aReport.setMemIncreasePercentage(tempReport.getEndMemoryUsage() / originalMinimumMemValue);
+                        aReport.setMemIncreasePercentage((tempReport.getEndMemoryUsage() / originalMinimumMemValue));
+
+                        //debug for getEndMemoryUsage which is used to calculated MemIncreasePercentage
+                        System.out.println("DEBUG: EndMemoryUsage: "+tempReport.getEndMemoryUsage());
 
                         //debug for mem increase percentage
                         System.out.println("DEBUG: Mem increase percentage: "+aReport.getMemIncreasePercentage());
