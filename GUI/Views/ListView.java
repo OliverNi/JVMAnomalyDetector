@@ -46,9 +46,6 @@ public abstract class ListView<V> extends View<V>{
         this.txtHost.setPreferredSize(new Dimension(80, 20));
         txtPort.setPreferredSize(new Dimension(80, 20));
 
-        String[] periods = {"All", "Daily", "Weekly", "Monthly", "Possible Leaks"};
-        cboxPeriod.setModel(new DefaultComboBoxModel<String>(periods));
-
         topPanel.add(labelHost);
         topPanel.add(txtHost);
 

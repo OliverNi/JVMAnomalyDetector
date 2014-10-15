@@ -7,6 +7,7 @@ import GUI.LogBrowser;
 import Logs.GcReport;
 import Logs.GcStats;
 
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -20,6 +21,8 @@ import java.util.Vector;
 public class GcStatsView extends ListView<GcStatsListener> implements GcStatsResponse {
 
     public GcStatsView(){
+        String[] periods = {"All", "Today", "This week", "This month"};
+        cboxPeriod.setModel(new DefaultComboBoxModel<String>(periods));
         buttonSearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -41,7 +44,6 @@ public class GcStatsView extends ListView<GcStatsListener> implements GcStatsRes
         tableLogs.setFillsViewportHeight(true);
         scrollTableLogs.getViewport().repaint();
         LogBrowser.getInstance().getFrame().repaint();
-       // LogBrowser.getInstance().getFrame().getComponent(0).repaint();
     }
 
     private DefaultTableModel createTableModel(ArrayList<GcStats> stats){

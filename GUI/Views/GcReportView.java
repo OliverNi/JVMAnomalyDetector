@@ -24,6 +24,9 @@ public class GcReportView extends ListView<GcReportListener> implements GcReport
 
 
     public GcReportView(){
+        String[] periods = {"All", "Daily", "Weekly", "Monthly", "Possible Leaks"};
+        cboxPeriod.setModel(new DefaultComboBoxModel<String>(periods));
+
         buttonSearch.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
