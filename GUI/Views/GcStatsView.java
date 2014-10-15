@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Vector;
 
 /**
@@ -40,26 +41,28 @@ public class GcStatsView extends ListView<GcStatsListener> implements GcStatsRes
     private void populateTable(ArrayList<GcStats> stats){
         tableLogs.setModel(createTableModel(stats));
         tableLogs.setPreferredScrollableViewportSize(new Dimension(LogBrowser.getInstance().getFrame().getWidth(),
-                LogBrowser.getInstance().getFrame().getHeight()/2));
+                LogBrowser.getInstance().getFrame().getHeight()));
         tableLogs.setFillsViewportHeight(true);
         scrollTableLogs.getViewport().repaint();
-        LogBrowser.getInstance().getFrame().repaint();
+        this.revalidate();
+        this.repaint();
     }
 
     private DefaultTableModel createTableModel(ArrayList<GcStats> stats){
         Vector<String> columnNames = new Vector<>();
-        columnNames.add("Mem Used After");
-        columnNames.add("Mem used before");
+        columnNames.add("Mem Used After (kb)");
+        columnNames.add("Mem used before (kb)");
         columnNames.add("Time");
-        columnNames.add("Col. Time");
+        columnNames.add("Col. Time (ms)");
 
         Vector<Vector<Object>> items = new Vector<>();
         for (GcStats s : stats){
             Vector<Object> row = new Vector<>();
 
-            row.add(s.getMemoryUsedAfter());
-            row.add(s.getMemoryUsedBefore());
-            row.add(s.getTimeStamp());
+            row.add(s.getMemoryUsedAfter() /1024);
+            row.add(s.getMemoryUsedBefore() / 1024);
+            Date dateTime = new Date(s.getTimeStamp());
+            row.add(dateTime.toString());
             row.add(s.getCollectionTime());
 
             items.add(row);
