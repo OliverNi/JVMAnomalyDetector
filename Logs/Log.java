@@ -50,6 +50,7 @@ public class Log implements  ILogging
             e.printStackTrace();
         }
         DBTableCreation();
+
     }
 
     public static final void main(String[] args) throws ClassNotFoundException
@@ -1046,7 +1047,7 @@ public class Log implements  ILogging
                     tempReport.setErrorMsg(rs.getString("errorMsg"));
                     tempReport.setStartTimeIncrease(Long.parseLong(rs.getString("startTimeIncrease")));
                     tempReport.setAnomaly(rs.getString("anomalyStatus"));
-                    tempReport.setMemIncreasePercentage(Long.parseLong(rs.getString("memIncreasePercentage")));
+                    tempReport.setMemIncreasePercentage(Integer.parseInt(rs.getString("memIncreasePercentage")));
                     tempReport.setMemIncreaseBytes(Long.parseLong(rs.getString("memIncreaseBytes")));
                     fetchReports.add(tempReport);
                 }catch (NumberFormatException e)
