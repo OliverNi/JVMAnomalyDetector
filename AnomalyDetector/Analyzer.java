@@ -531,6 +531,7 @@ public class Analyzer {
         if (ad.getListener() != null){
             System.out.println("fireAnomalyEvent is executed!");
             AnomalyEvent e = new AnomalyEvent(aReport);
+            ad.getLog().sendAnomalyReport(aReport);
             ad.getListener().anomalyFound(e);
         }
     }
