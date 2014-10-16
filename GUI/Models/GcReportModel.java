@@ -32,6 +32,7 @@ public class GcReportModel extends Model<GcReportResponse>{
             case "Monthly":
                 break;
             case "Possible leaks":
+                reports = log.getPossibleMemoryLeaks(host, port);
                 break;
         }
         //Inform observers
