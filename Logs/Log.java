@@ -1069,7 +1069,7 @@ public class Log implements  ILogging
         {
             Statement DB = null;
             DB = DBConnection.createStatement();
-            ResultSet rs = DB.executeQuery("INSERT INTO AnomalyReport(hostname, port, timestamp, errorMsg, startTimeIncrease," +
+            DB.executeUpdate("INSERT INTO AnomalyReport(hostname, port, timestamp, errorMsg, startTimeIncrease," +
                     " anomalyStatus, memIncreasePercentage, memIncreaseBytes)"+
                     "VALUES("+"'"+aReport.getHost()+"',"+aReport.getPort()+","+aReport.getTimestamp()+
                     ",'"+aReport.getErrorMsg()+"',"+aReport.getStartTimeIncrease()+",'"+aReport.getAnomaly().toString()+"',"+
