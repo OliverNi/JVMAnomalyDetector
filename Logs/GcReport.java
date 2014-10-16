@@ -289,6 +289,40 @@ public class GcReport {
         this.status = status;
     }
 
+    public void setStatus(String status)
+    {
+
+        if(status.contains("UNKNOWN"))
+        {
+            this.status = Status.UNKNOWN;
+        }
+        else if (status.contains("OK") )
+        {
+            this.status = Status.OK;
+        }
+        else if(status.contains("EXCESSIVE_GC_SCAN"))
+        {
+            this.status = Status.OK;
+        }
+        else if(status.contains("POSSIBLE_MEMORY_LEAK"))
+        {
+            this.status = Status.POSSIBLE_MEMORY_LEAK;
+        }
+        else if(status.contains("SUSPECTED_MEMORY_LEAK"))
+        {
+            this.status = Status.SUSPECTED_MEMORY_LEAK;
+        }
+        else if(status.contains("LIKELY_MEMORY_LEAK"))
+        {
+            this.status = Status.LIKELY_MEMORY_LEAK;
+        }
+        else
+        {
+            this.status = Status.UNKNOWN;
+        }
+
+    }
+
     public void setConsec_mem_inc_count(int consec_mem_inc_count) {
         this.consec_mem_inc_count = consec_mem_inc_count;
     }
