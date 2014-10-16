@@ -23,6 +23,7 @@ public class MainController implements MainListener{
 
     public void mainAction(){
         LogBrowser.getInstance().show(this.view);
+        this.view.changedView();
     }
 
     @Override
@@ -38,5 +39,10 @@ public class MainController implements MainListener{
     @Override
     public void clickAnomalyReports(){
         FrontController.getInstance().goToAnomalyReportsView();
+    }
+
+    @Override
+    public void clickProcessReports() {
+        FrontController.getInstance().goToProcessReportsView();
     }
 }

@@ -523,8 +523,6 @@ public class Analyzer {
         //@TODO Implement analysis of pReport
 
         //If Anomaly Found - Create AnomalyReport
-        AnomalyReport aReport = pReport.createAnomalyReport();
-        fireAnomalyEvent(aReport);
 
 
     }

@@ -11,12 +11,14 @@ public class FrontController {
     private GcReportController gcReportController = null;
     private GcStatsController gcStatsController = null;
     private AnomalyReportController anomalyReportsController = null;
+    private ProcessReportController processReportController = null;
     public FrontController() {
         LogBrowser.getInstance().build();
         mainController = new MainController();
         gcReportController = new GcReportController();
         gcStatsController = new GcStatsController();
         anomalyReportsController = new AnomalyReportController();
+        processReportController = new ProcessReportController();
         instance = this;
         goToMainView();
     }
@@ -39,6 +41,10 @@ public class FrontController {
 
     public void goToAnomalyReportsView(){
         anomalyReportsController.browseAction();
+    }
+
+    public void goToProcessReportsView(){
+        processReportController.browseAction();
     }
 
 }

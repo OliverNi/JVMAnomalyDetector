@@ -218,6 +218,74 @@ public class ProcessReport
         return dailySumMemUsageDif / dailyReportCount;
     }
 
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public long getEndTime() {
+        return endTime;
+    }
+
+    public double getDailySumMemUsageDif() {
+        return dailySumMemUsageDif;
+    }
+
+    public double getWeeklySumMemUsageDif() {
+        return weeklySumMemUsageDif;
+    }
+
+    public double getMonthlySumMemUsageDif() {
+        return monthlySumMemUsageDif;
+    }
+
+    public double getDailyMinMemUsageDif() {
+        return dailyMinMemUsageDif;
+    }
+
+    public double getMonthlyMinMemUsageDif() {
+        return monthlyMinMemUsageDif;
+    }
+
+    public double getWeeklyMinMemUsageDif() {
+        return weeklyMinMemUsageDif;
+    }
+
+    public int getDailyIncreaseCount() {
+        return dailyIncreaseCount;
+    }
+
+    public int getWeeklyIncreaseCount() {
+        return weeklyIncreaseCount;
+    }
+
+    public int getMonthlyIncreaseCount() {
+        return monthlyIncreaseCount;
+    }
+
+    public int getDailyDecreaseCount() {
+        return dailyDecreaseCount;
+    }
+
+    public int getWeeklyDecreaseCount() {
+        return weeklyDecreaseCount;
+    }
+
+    public int getMonthlyDecreaseCount() {
+        return monthlyDecreaseCount;
+    }
+
+    public int getDailyReportCount() {
+        return dailyReportCount;
+    }
+
+    public int getWeeklyReportCount() {
+        return weeklyReportCount;
+    }
+
+    public int getMonthlyReportCount() {
+        return monthlyReportCount;
+    }
+
     public double getWeeklyAvgMemUsageDif(){
         if (weeklyReportCount == 0)
             return 0;
@@ -268,9 +336,5 @@ public class ProcessReport
         }
     }
 
-    //@TODO delete method since we decided upon creating anomalyreport in Analyzer class instead?
-    public AnomalyReport createAnomalyReport(){
 
-        return null;
-    }
 }

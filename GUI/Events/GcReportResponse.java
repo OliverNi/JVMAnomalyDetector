@@ -8,9 +8,6 @@ import java.util.Map;
 /**
  * Created by Oliver on 2014-10-14.
  */
-public interface GcReportResponse {
+public interface GcReportResponse extends ListViewResponse<GcReport>{
 
-    public void searchResult(ArrayList<GcReport> reports);
-
-    //public void updateLists(long startTime, long endTime);
 }

@@ -20,7 +20,6 @@ public class LogBrowser{
     private JPanel panel = new JPanel();
 
     private LogBrowser(){
-        panel.setLayout(new BorderLayout());
         frame.setSize(800, 600);
         frame.setResizable(true);
     }
@@ -36,7 +35,7 @@ public class LogBrowser{
         frame.setVisible(true);
 
         this.panel.setLayout(this.cl);
-        frame.getContentPane().add(this.panel, BorderLayout.PAGE_START);
+        frame.getContentPane().add(this.panel);
         System.out.println("DEBUG: LogBrowser created");
     }
 

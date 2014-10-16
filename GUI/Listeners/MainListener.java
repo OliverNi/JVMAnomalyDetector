@@ -7,4 +7,5 @@ public interface MainListener {
     public void clickGcStats();
     public void clickGcReports();
     public void clickAnomalyReports();
+    public void clickProcessReports();
 }
