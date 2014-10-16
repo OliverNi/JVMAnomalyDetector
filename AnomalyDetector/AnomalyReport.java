@@ -25,7 +25,7 @@ public class AnomalyReport
     private String errorMsg;
     private long startTimeIncrease;
     private Anomaly anomaly;
-    private long memIncreasePercentage;
+    private double memIncreasePercentage;
     private long memIncreaseBytes;
     public AnomalyReport()
     {
@@ -125,7 +125,7 @@ public class AnomalyReport
         }
     }
 
-    public void setMemIncreasePercentage(long memIncreasePercentage) {
+    public void setMemIncreasePercentage(double memIncreasePercentage) {
         this.memIncreasePercentage = memIncreasePercentage;
     }
 
