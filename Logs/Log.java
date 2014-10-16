@@ -50,7 +50,6 @@ public class Log implements  ILogging
             e.printStackTrace();
         }
         DBTableCreation();
-
     }
 
     public static final void main(String[] args) throws ClassNotFoundException
@@ -659,7 +658,7 @@ public class Log implements  ILogging
             String input = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
                     "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
                     "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
-                   "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, port FROM GCReport WHERE startTime >= "+startTime+" AND endTime <= "+endTime+ " ORDER BY startTime";
+                   "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, status, port FROM GCReport WHERE startTime >= "+startTime+" AND endTime <= "+endTime+ " ORDER BY startTime";
             ResultSet rs = DB.executeQuery(input);
             while(rs.next())
             {
@@ -722,6 +721,9 @@ public class Log implements  ILogging
 
                 String fetchHostnamePort = rs.getString("hostname")+":"+rs.getString("port");
 
+                String status = rs.getString("status");
+                theGcReport.setStatus(status);
+
                 GCReports.add(theGcReport);
                 instanceOfGCLog.put(fetchHostnamePort, GCReports);
             }
@@ -750,7 +752,7 @@ public class Log implements  ILogging
             String input = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
                     "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
                     "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
-                    "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, port FROM GCReport WHERE startTime >= "+startTime+" AND" +
+                    "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, status, port FROM GCReport WHERE startTime >= "+startTime+" AND" +
                     " endTime <= "+endTime+ " AND hostname = '" + connection.getHostName() + "' AND port = " + connection.getPort() + " ORDER BY startTime";
             ResultSet rs = DB.executeQuery(input);
             while(rs.next())
@@ -812,6 +814,9 @@ public class Log implements  ILogging
 
                 int gcCount = Integer.parseInt(rs.getString("gcCount"));
                 theGcReport.setGcCount(gcCount);
+
+                String status = rs.getString("status");
+                theGcReport.setStatus(status);
 
                 String fetchHostnamePort = rs.getString("hostname")+":"+rs.getString("port");
 
