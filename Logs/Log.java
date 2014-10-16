@@ -50,6 +50,7 @@ public class Log implements  ILogging
             e.printStackTrace();
         }
         DBTableCreation();
+
     }
 
     public static final void main(String[] args) throws ClassNotFoundException
@@ -1138,6 +1139,8 @@ public class Log implements  ILogging
             input = "DELETE FROM MemLog";
             DB.executeUpdate(input);
             input = "DELETE FROM ProcessReport";
+            DB.executeUpdate(input);
+            input = "DELETE FROM AnomalyReport";
             DB.executeUpdate(input);
             DB.close();
         } catch (SQLException e) {
