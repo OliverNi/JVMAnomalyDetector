@@ -658,15 +658,17 @@ public class Log implements  ILogging
         ArrayList<GcReport> GCReports = new ArrayList<GcReport>();
         GcReport theGcReport = new GcReport();
         HashMap<String, ArrayList<GcReport>> instanceOfGCLog = new HashMap<>();
+        String query = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
+                "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
+                "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
+                "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, status, port FROM GCReport WHERE startTime >= ? AND endTime <= ? ORDER BY startTime;";
         try
         {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            String input = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
-                    "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
-                    "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
-                   "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, status, port FROM GCReport WHERE startTime >= "+startTime+" AND endTime <= "+endTime+ " ORDER BY startTime";
-            ResultSet rs = DB.executeQuery(input);
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setLong(1, startTime);
+            stmt.setLong(2, endTime);
+
+            ResultSet rs = stmt.executeQuery();
             while(rs.next())
             {
                 long sumCollected = Long.parseLong(rs.getString("sumCollected"));
@@ -734,7 +736,7 @@ public class Log implements  ILogging
                 GCReports.add(theGcReport);
                 instanceOfGCLog.put(fetchHostnamePort, GCReports);
             }
-            DB.close();
+            stmt.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -743,27 +745,39 @@ public class Log implements  ILogging
         {
             System.out.println("NumberFormatException: " + nfe.getMessage());
         }
-        Map<String, ArrayList<GcReport>> fetch = instanceOfGCLog;
 
         return instanceOfGCLog;
     }
 
     @Override
-    public ArrayList<GcReport> getGcReports(long startTime, long endTime, ProcessConnection connection) {
-        ArrayList<GcReport> gcReports = new ArrayList<GcReport>();
+    public Map<String, ArrayList<GcReport>> getGcReports(long startTime, long endTime, ArrayList<ProcessConnection> connections) {
+        HashMap<String, ArrayList<GcReport>> reportsMap = new HashMap<>();
 
+        for (ProcessConnection c : connections) {
+            String key = c.getHostName() + ":" + c.getPort();
+            reportsMap.put(key, getGcReports(startTime, endTime, c));
+        }
+
+        return reportsMap;
+    }
+
+    public ArrayList<GcReport> getGcReports(long startTime, long endTime, ProcessConnection connection){
+        ArrayList<GcReport> gcReports = new ArrayList<GcReport>();
+        String query = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
+                "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
+                "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
+                "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, status, port FROM GCReport WHERE startTime >= ? AND" +
+                " endTime <= ? AND hostname = ? AND port = ? ORDER BY startTime;";
         try
         {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            String input = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
-                    "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
-                    "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
-                    "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, status, port FROM GCReport WHERE startTime >= "+startTime+" AND" +
-                    " endTime <= "+endTime+ " AND hostname = '" + connection.getHostName() + "' AND port = " + connection.getPort() + " ORDER BY startTime";
-            ResultSet rs = DB.executeQuery(input);
-            while(rs.next())
-            {
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setLong(1, startTime);
+            stmt.setLong(2, endTime);
+            stmt.setString(3, connection.getHostName());
+            stmt.setInt(4, connection.getPort());
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
                 GcReport theGcReport = new GcReport();
                 long sumCollected = Long.parseLong(rs.getString("sumCollected"));
                 theGcReport.setSumCollected(sumCollected);
@@ -825,11 +839,11 @@ public class Log implements  ILogging
                 String status = rs.getString("status");
                 theGcReport.setStatus(status);
 
-                String fetchHostnamePort = rs.getString("hostname")+":"+rs.getString("port");
+                String fetchHostnamePort = rs.getString("hostname") + ":" + rs.getString("port");
 
                 gcReports.add(theGcReport);
             }
-            DB.close();
+            stmt.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -840,6 +854,10 @@ public class Log implements  ILogging
         }
 
         return gcReports;
+    }
+
+    public ArrayList<GcReport> getGcReports(long startTime, long endTime, String host, int port){
+        return getGcReports(startTime, endTime, new ProcessConnection(host, port));
     }
 
     @Override
@@ -1079,7 +1097,6 @@ public class Log implements  ILogging
                 "memIncreasePercentage, memIncreaseBytes FROM AnomalyReport WHERE hostname = ? AND port = ? AND timestamp >= ? AND timestamp <= ?;";
         try
         {
-            Statement DB = null;
             PreparedStatement stmt = DBConnection.prepareStatement(query);
             stmt.setString(1, hostName);
             stmt.setInt(2, port);
