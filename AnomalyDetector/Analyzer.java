@@ -43,6 +43,7 @@ public class Analyzer {
         public void run(){
             createMonthlyGcReports();
             analyzeMonthlyGC();
+            scheduleMonthlyTask();
         }
     }
     class IntervalTask extends TimerTask{
@@ -62,7 +63,6 @@ public class Analyzer {
     public static final double DEFAULT_CONSECUTIVE_MEM_INC = 1;
     private AnomalyDetector ad;
     private ILogging log;
-    Timer hourlyTimer; //@TODO remove?
     Timer dailyTimer;
     Timer weeklyTimer;
     Timer monthlyTimer;
@@ -76,59 +76,47 @@ public class Analyzer {
     }
 
     private void setTimers(){
-        hourlyTimer = new Timer();
         dailyTimer = new Timer();
         weeklyTimer = new Timer();
         monthlyTimer = new Timer();
         intervalTimers = new ArrayList<>();
-        long minute = 60000L;
+
         long hour = 3600000L;
         long day = hour * 24;
         long week = day * 7;
-        long month = day * 30;
-        Date firstTime;
+
+        scheduleDailyTask(day);
+        scheduleWeeklyTask(week);
+        scheduleMonthlyTask();
+    }
+
+    private void scheduleDailyTask(long day){
         Calendar cal = Calendar.getInstance();
-        //Hourly task
-        cal.set(Calendar.HOUR, cal.get(Calendar.HOUR) + 1);
-        firstTime = cal.getTime();
-
-
-        /*
-        hourlyTimer.schedule(new HourlyTask(), firstTime.getTime(), hour);
-        //Daily task
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 0);
-        firstTime = cal.getTime();
-        dailyTimer.schedule(new DailyTask(), firstTime.getTime(), day);
-        //Weekly task
+        Date firstTime = cal.getTime();
+        dailyTimer.scheduleAtFixedRate(new DailyTask(), firstTime.getTime(), day);
+    }
+
+    private void scheduleWeeklyTask(long week){
+        Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 0);
-        firstTime = cal.getTime();
-        weeklyTimer.schedule(new WeeklyTask(), firstTime.getTime(), week);
-        //Monthly task
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        Date firstTime = cal.getTime();
+        weeklyTimer.scheduleAtFixedRate(new WeeklyTask(), firstTime.getTime(), week);
+    }
+
+    private void scheduleMonthlyTask(){
+        Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
-        cal.set(Calendar.SECOND, 0);
-        firstTime = cal.getTime();
-        //@TODO Fix different amount of days in different months.
-        monthlyTimer.schedule(new MonthlyTask(), firstTime, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-        */
-
-       /* for (int i = 0; i < ad.getProcessConnections().size(); i++) {
-            int interval = ad.getInterval(ad.getProcessConnections().get(i).getHostName(),
-                    ad.getProcessConnections().get(i).getPort());
-            intervalTimers.add(new Timer());
-            intervalTimers.get(i).scheduleAtFixedRate(new IntervalTask(ad.getProcessConnections().get(i).getHostName(),
-                    ad.getProcessConnections().get(i).getPort(), interval), (interval * minute)+(1000*i), interval * minute);
-            System.out.println("DEBUG: Timer created for: " + ad.getProcessConnections().get(i).getHostName() + ":" +
-                    ad.getProcessConnections().get(i).getPort());
-        }*/
-
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+        Date firstTime = cal.getTime();
+        monthlyTimer.schedule(new MonthlyTask(), firstTime);
     }
 
     public void addIntervalTimer(String host, int port, int interval){
@@ -138,7 +126,6 @@ public class Analyzer {
         intervalTimers.add(timer);
         System.out.println("DEBUG: Timer created for: " + host + ":" + port);
     }
-
 
     public void analyzeIntervalGc(String host, int port, int interval)
     {
