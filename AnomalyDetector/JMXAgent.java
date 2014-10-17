@@ -186,16 +186,39 @@ public class JMXAgent {
      */
     private void addListeners() throws MalformedObjectNameException, IOException, InstanceNotFoundException {
         //Add listener to MXBean
-        ObjectName name = new ObjectName("java.lang:type=GarbageCollector,name=PS MarkSweep");
-        mbsc.addNotificationListener(name, listener, null, null);
+        if(System.getProperty("os.name").startsWith("Windows"))
+        {
+            ObjectName name = new ObjectName("java.lang:type=GarbageCollector,name=PS MarkSweep");
+            mbsc.addNotificationListener(name, listener, null, null);
+        }
+        else if (System.getProperty("os.name").startsWith("Linux"))
+        {
+            ObjectName name = new ObjectName("java.lang:type=GarbageCollector,name=MarkSweepCompact");
+            mbsc.addNotificationListener(name, listener, null, null);
+        }
     }
 
     private void createProxies() throws MalformedObjectNameException{
         //Old Gen
-        oldGenProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Old Gen"),
-                MemoryPoolMXBean.class);
-        //GarbageCollector MarkSweep
-        markSweepProxy = JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=PS MarkSweep"),
-                GarbageCollectorMXBean.class);
+        System.out.println(System.getProperty("os.name"));
+        if(System.getProperty("os.name").startsWith("Windows"))
+        {
+            oldGenProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Old Gen"),
+                    MemoryPoolMXBean.class);
+            //GarbageCollector MarkSweep
+            markSweepProxy = JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=PS MarkSweep"),
+                    GarbageCollectorMXBean.class);
+
+        }
+        else if(System.getProperty("os.name").startsWith("Linux"))
+        {
+            // oldGenProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=PS Old Gen"),
+            oldGenProxy= JMX.newMXBeanProxy(mbsc, new ObjectName("java.lang:type=MemoryPool,name=Tenured Gen"),
+                    MemoryPoolMXBean.class);
+            //GarbageCollector MarkSweep
+            markSweepProxy = JMX.newMBeanProxy(mbsc, new ObjectName("java.lang:type=GarbageCollector,name=MarkSweepCompact"),
+                    GarbageCollectorMXBean.class);
+        }
+
     }
 }
