@@ -6,6 +6,8 @@ package AnomalyDetector;
 
 import Logs.AnalyzedGcReport;
 
+import java.util.Calendar;
+
 /**
  * A Process Report will be responsible for keeping track of a process' status and warn if it suspects a memory leak.
  */
@@ -20,8 +22,8 @@ public class ProcessReport
         usageAfterFirstGc = 0;
         usageAfterLastGc = 0;
         consec_mem_inc_count = 0;
-        startTime = 0;
-        endTime = 0;
+        startTime = Calendar.getInstance().getTimeInMillis();
+        endTime = Calendar.getInstance().getTimeInMillis();
         this.port = 0;
         this.hostName = "";
         this.status = Status.OK;
@@ -210,6 +212,70 @@ public class ProcessReport
         {
             this.status = Status.OK;
         }
+    }
+
+    public void setUptimeInDays(int uptimeInDays) {
+        this.uptimeInDays = uptimeInDays;
+    }
+
+    public void setDailySumMemUsageDif(double dailySumMemUsageDif) {
+        this.dailySumMemUsageDif = dailySumMemUsageDif;
+    }
+
+    public void setWeeklySumMemUsageDif(double weeklySumMemUsageDif) {
+        this.weeklySumMemUsageDif = weeklySumMemUsageDif;
+    }
+
+    public void setMonthlySumMemUsageDif(double monthlySumMemUsageDif) {
+        this.monthlySumMemUsageDif = monthlySumMemUsageDif;
+    }
+
+    public void setDailyMinMemUsageDif(double dailyMinMemUsageDif) {
+        this.dailyMinMemUsageDif = dailyMinMemUsageDif;
+    }
+
+    public void setMonthlyMinMemUsageDif(double monthlyMinMemUsageDif) {
+        this.monthlyMinMemUsageDif = monthlyMinMemUsageDif;
+    }
+
+    public void setWeeklyMinMemUsageDif(double weeklyMinMemUsageDif) {
+        this.weeklyMinMemUsageDif = weeklyMinMemUsageDif;
+    }
+
+    public void setDailyIncreaseCount(int dailyIncreaseCount) {
+        this.dailyIncreaseCount = dailyIncreaseCount;
+    }
+
+    public void setWeeklyIncreaseCount(int weeklyIncreaseCount) {
+        this.weeklyIncreaseCount = weeklyIncreaseCount;
+    }
+
+    public void setMonthlyIncreaseCount(int monthlyIncreaseCount) {
+        this.monthlyIncreaseCount = monthlyIncreaseCount;
+    }
+
+    public void setDailyDecreaseCount(int dailyDecreaseCount) {
+        this.dailyDecreaseCount = dailyDecreaseCount;
+    }
+
+    public void setWeeklyDecreaseCount(int weeklyDecreaseCount) {
+        this.weeklyDecreaseCount = weeklyDecreaseCount;
+    }
+
+    public void setMonthlyDecreaseCount(int monthlyDecreaseCount) {
+        this.monthlyDecreaseCount = monthlyDecreaseCount;
+    }
+
+    public void setDailyReportCount(int dailyReportCount) {
+        this.dailyReportCount = dailyReportCount;
+    }
+
+    public void setWeeklyReportCount(int weeklyReportCount) {
+        this.weeklyReportCount = weeklyReportCount;
+    }
+
+    public void setMonthlyReportCount(int monthlyReportCount) {
+        this.monthlyReportCount = monthlyReportCount;
     }
 
     public double getDailyAvgMemUsageDif(){

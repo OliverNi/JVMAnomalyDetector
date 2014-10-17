@@ -124,13 +124,11 @@ public interface ILogging {
 
     /**
      *
-     * @param startTime from the starting hour of the processReport
-     * @param endTime from the ending hour of the ProcessReport
      * @param port the current port of the process
      * @param hostname the hostname or ip address of the process
-     * @param createdProcessReport the created processReport
+     * @param report the created processReport
      */
-    public void sendProcessReport(long startTime, long endTime, int port, String hostname, ProcessReport createdProcessReport);
+    public void sendProcessReport(int port, String hostname, ProcessReport report);
 
     /**
      * Retrieves usageAfterFirstGc from the specified process

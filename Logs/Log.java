@@ -71,7 +71,9 @@ public class Log implements  ILogging
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)");
 
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS ProcessReport(prId INTEGER PRIMARY KEY AUTOINCREMENT, startTime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INT, status VARCHAR(25)," +
-                    "consec_mem_inc_count INTEGER, usageAfterFirstGc BIGINT, usageAfterLastGc BIGINT )");
+                    "consec_mem_inc_count INT, usageAfterFirstGc BIGINT, usageAfterLastGc BIGINT, dailySumMemUsageDif FLOAT, weeklySumMemUsageDif FLOAT, monthlySumMemUsageDif FLOAT, " +
+                    "dailyMinMemUsageDif FLOAT, weeklyMinMemUsageDif FLOAT, monthlyMinMemUsageDif FLOAT, dailyIncreaseCount INT, weeklyIncreaseCount INT, monthlyIncreaseCount INT, " +
+                    "dailyDecreaseCount INT, weeklyDecreaseCount INT, monthlyDecreaseCount INT, dailyReportCount INT, weeklyReportCount INT, monthlyReportCount INT)");
 
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS GCLog(gcId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT," +
                     " memUsageAfter BIGINT, memUsageBefore BIGINT, GCCollectionTime BIGINT, hostname VARCHAR(25), port INTEGER," +
@@ -225,7 +227,7 @@ public class Log implements  ILogging
 
 //            // create a database connection
             Statement DB = null;
-            DBConnection = DriverManager.getConnection("jdbc:sqlite:test8.db");
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test11.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -881,10 +883,45 @@ public class Log implements  ILogging
                 int port = Integer.parseInt(rs.getString("port"));
                 oneReport.setPort(port);
                 String hostname = rs.getString("hostname");
-                String hostnamePort = hostname+":"+port;
                 oneReport.setHostName(hostname);
                 String status = rs.getString("status");
                 oneReport.setStatus(status);
+                int consecMemInc = rs.getInt("consec_mem_inc_count");
+                oneReport.setConsec_mem_inc_count(consecMemInc);
+                long usageAfterFirstGc = rs.getLong("usageAfterFirstGc");
+                oneReport.setUsageAfterFirstGc(usageAfterFirstGc);
+                long usageAfterLastGc = rs.getLong("usageAfterLastGc");
+                oneReport.setUsageAfterLastGc(usageAfterLastGc);
+                double dailySumMemUsageDif = rs.getDouble("dailySumMemUsageDif");
+                oneReport.setDailySumMemUsageDif(dailySumMemUsageDif);
+                double weeklySumMemUsageDif = rs.getDouble("weeklySumMemUsageDif");
+                oneReport.setWeeklySumMemUsageDif(weeklySumMemUsageDif);
+                double monthlySumMemUsageDif = rs.getDouble("monthlySumMemUsageDif");
+                oneReport.setMonthlySumMemUsageDif(monthlySumMemUsageDif);
+                double dailyMinMemUsageDif = rs.getDouble("dailyMinMemUsageDif");
+                oneReport.setDailyMinMemUsageDif(dailyMinMemUsageDif);
+                double weeklyMinMemUsageDif = rs.getDouble("weeklyMinMemUsageDif");
+                oneReport.setWeeklyMinMemUsageDif(weeklyMinMemUsageDif);
+                double monthlyMinMemUsageDif = rs.getDouble("monthlyMinMemUsageDif");
+                oneReport.setMonthlyMinMemUsageDif(monthlyMinMemUsageDif);
+                int dailyIncreaseCount = rs.getInt("dailyIncreaseCount");
+                oneReport.setDailyIncreaseCount(dailyIncreaseCount);
+                int weeklyIncreaseCount = rs.getInt("weeklyIncreaseCount");
+                oneReport.setWeeklyIncreaseCount(weeklyIncreaseCount);
+                int monthlyIncreaseCount = rs.getInt("monthlyIncreaseCount");
+                oneReport.setMonthlyIncreaseCount(monthlyIncreaseCount);
+                int dailyDecreaseCount = rs.getInt("dailyDecreaseCount");
+                oneReport.setDailyDecreaseCount(dailyDecreaseCount);
+                int weeklyDecreaseCount = rs.getInt("weeklyDecreaseCount");
+                oneReport.setWeeklyDecreaseCount(weeklyDecreaseCount);
+                int monthlyDecreaseCount = rs.getInt("monthlyDecreaseCount");
+                oneReport.setMonthlyDecreaseCount(monthlyDecreaseCount);
+                int dailyReportCount = rs.getInt("dailyReportCount");
+                oneReport.setDailyReportCount(dailyReportCount);
+                int weeklyReportCount = rs.getInt("weeklyReportCount");
+                oneReport.setWeeklyReportCount(weeklyReportCount);
+                int monthlyReportCount = rs.getInt("monthlyReportCount");
+                oneReport.setMonthlyReportCount(monthlyReportCount);
 
                 String key = hostname + ":" + port;
                 reportsMap.put(key, oneReport);
@@ -932,19 +969,52 @@ public class Log implements  ILogging
             ResultSet rs = stmt.executeQuery();
             if (rs.next())
             {
-
                 Long startTime = Long.parseLong(rs.getString("startTime"));
                 oneReport.setStartTime(startTime);
                 Long endTime =  Long.parseLong(rs.getString("endTime"));
                 oneReport.setEndTime(endTime);
-                int getPort = Integer.parseInt(rs.getString("port"));
+                port = Integer.parseInt(rs.getString("port"));
                 oneReport.setPort(port);
                 String hostname = rs.getString("hostname");
-                String theHostnamePort = hostname+":"+getPort;
                 oneReport.setHostName(hostname);
                 String status = rs.getString("status");
-
                 oneReport.setStatus(status);
+                int consecMemInc = rs.getInt("consec_mem_inc_count");
+                oneReport.setConsec_mem_inc_count(consecMemInc);
+                long usageAfterFirstGc = rs.getLong("usageAfterFirstGc");
+                oneReport.setUsageAfterFirstGc(usageAfterFirstGc);
+                long usageAfterLastGc = rs.getLong("usageAfterLastGc");
+                oneReport.setUsageAfterLastGc(usageAfterLastGc);
+                double dailySumMemUsageDif = rs.getDouble("dailySumMemUsageDif");
+                oneReport.setDailySumMemUsageDif(dailySumMemUsageDif);
+                double weeklySumMemUsageDif = rs.getDouble("weeklySumMemUsageDif");
+                oneReport.setWeeklySumMemUsageDif(weeklySumMemUsageDif);
+                double monthlySumMemUsageDif = rs.getDouble("monthlySumMemUsageDif");
+                oneReport.setMonthlySumMemUsageDif(monthlySumMemUsageDif);
+                double dailyMinMemUsageDif = rs.getDouble("dailyMinMemUsageDif");
+                oneReport.setDailyMinMemUsageDif(dailyMinMemUsageDif);
+                double weeklyMinMemUsageDif = rs.getDouble("weeklyMinMemUsageDif");
+                oneReport.setWeeklyMinMemUsageDif(weeklyMinMemUsageDif);
+                double monthlyMinMemUsageDif = rs.getDouble("monthlyMinMemUsageDif");
+                oneReport.setMonthlyMinMemUsageDif(monthlyMinMemUsageDif);
+                int dailyIncreaseCount = rs.getInt("dailyIncreaseCount");
+                oneReport.setDailyIncreaseCount(dailyIncreaseCount);
+                int weeklyIncreaseCount = rs.getInt("weeklyIncreaseCount");
+                oneReport.setWeeklyIncreaseCount(weeklyIncreaseCount);
+                int monthlyIncreaseCount = rs.getInt("monthlyIncreaseCount");
+                oneReport.setMonthlyIncreaseCount(monthlyIncreaseCount);
+                int dailyDecreaseCount = rs.getInt("dailyDecreaseCount");
+                oneReport.setDailyDecreaseCount(dailyDecreaseCount);
+                int weeklyDecreaseCount = rs.getInt("weeklyDecreaseCount");
+                oneReport.setWeeklyDecreaseCount(weeklyDecreaseCount);
+                int monthlyDecreaseCount = rs.getInt("monthlyDecreaseCount");
+                oneReport.setMonthlyDecreaseCount(monthlyDecreaseCount);
+                int dailyReportCount = rs.getInt("dailyReportCount");
+                oneReport.setDailyReportCount(dailyReportCount);
+                int weeklyReportCount = rs.getInt("weeklyReportCount");
+                oneReport.setWeeklyReportCount(weeklyReportCount);
+                int monthlyReportCount = rs.getInt("monthlyReportCount");
+                oneReport.setMonthlyReportCount(monthlyReportCount);
             }
             stmt.close();
 
@@ -1125,16 +1195,21 @@ public class Log implements  ILogging
     //@TODO not sure if this is still used, if so, then it needs to be modified to either to create a processreport,
     // and a check if exists to modify an existing one
     @Override
-    public void sendProcessReport(long startTime, long endTime, int port, String hostname, ProcessReport createdProcessReport)
+    public void sendProcessReport(int port, String hostname, ProcessReport report)
     {
         try
         {
             Statement DB = null;
             DB = DBConnection.createStatement();
-            DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, hostname, port, status, consec_mem_inc_count, usageAfterFirstGc, usageAfterLastGc)"+
-                    " VALUES("+startTime+","+endTime+",'"+hostname+"',"+port+",'"+createdProcessReport.getStatus()+"',"
-                            +createdProcessReport.getConsec_mem_inc_count()+","+createdProcessReport.getUsageAfterFirstGc()+","
-                            +createdProcessReport.getUsageAfterLastGc()+")");
+            DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, hostname, port, status, consec_mem_inc_count, usageAfterFirstGc, usageAfterLastGc, dailySumMemUsageDif, weeklySumMemUsageDif, " +
+                            "monthlySumMemUsageDif, dailyMinMemUsageDif, weeklyMinMemUsageDif, monthlyMinMemUsageDif, dailyIncreaseCount, weeklyIncreaseCount, monthlyIncreaseCount, dailyDecreaseCount, " +
+                            "weeklyDecreaseCount, monthlyDecreaseCount, dailyReportCount, weeklyReportCount, monthlyReportCount)"+
+                            " VALUES("+report.getStartTime()+","+report.getEndTime()+",'"+hostname+"',"+port+",'"+report.getStatus()+"',"
+                            +report.getConsec_mem_inc_count()+","+report.getUsageAfterFirstGc()+","
+                            +report.getUsageAfterLastGc()+","+report.getDailySumMemUsageDif()+","+report.getWeeklySumMemUsageDif()+","+report.getMonthlySumMemUsageDif()+","+report.getDailyMinMemUsageDif()+","
+                            +report.getWeeklyMinMemUsageDif()+","+report.getMonthlyMinMemUsageDif()+","+report.getDailyIncreaseCount()+","+report.getWeeklyIncreaseCount()+","+report.getMonthlyIncreaseCount()+","
+                            +report.getDailyDecreaseCount()+","+report.getWeeklyDecreaseCount()+","+report.getMonthlyDecreaseCount()+","+report.getDailyReportCount()+","+report.getWeeklyReportCount()+","
+                            +report.getMonthlyReportCount()+")");
             DB.close();
         }catch (SQLException e)
         {
@@ -1202,8 +1277,7 @@ public class Log implements  ILogging
         if (getProcessReport(hostname, port) == null){
             ProcessReport pReport = new ProcessReport(hostname, port);
             pReport.setUsageAfterLastGc(usageAfterLastGc);
-            sendProcessReport(Calendar.getInstance().getTimeInMillis(), Calendar.getInstance().getTimeInMillis(),
-                    port, hostname, pReport);
+            sendProcessReport(port, hostname, pReport);
         }
         //ProcessReport exists
         else {
@@ -1227,8 +1301,7 @@ public class Log implements  ILogging
         if (getProcessReport(hostname, port) == null){
             ProcessReport pReport = new ProcessReport(hostname, port);
             pReport.setUsageAfterFirstGc(usageAfterFirstGc);
-            sendProcessReport(Calendar.getInstance().getTimeInMillis(), Calendar.getInstance().getTimeInMillis(),
-                    port, hostname, pReport);
+            sendProcessReport(port, hostname, pReport);
         }
         //ProcessReport exists and needs to be updated
         else{
