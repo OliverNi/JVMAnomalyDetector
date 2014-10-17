@@ -861,16 +861,15 @@ public class Log implements  ILogging
     }
 
     @Override
-    public Map<String, ArrayList<ProcessReport>> getAllProcessReports()
+    public Map<String, ProcessReport> getProcessReports()
     {
-        HashMap<String, ArrayList<ProcessReport>> AddProcessReports  = new HashMap<>();
+        HashMap<String, ProcessReport> reportsMap = new HashMap<>();
         ProcessReport oneReport = new ProcessReport();
-        ArrayList<ProcessReport> allProccessReports = new ArrayList<>();
+        String query = "SELECT startTime, endTime, port, hostname, status FROM ProcessReport ORDER BY startTime";
         try
         {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport ORDER BY startTime");
+            Statement DB = DBConnection.createStatement();
+            ResultSet rs = DB.executeQuery(query);
 
             while(rs.next())
             {
@@ -885,9 +884,9 @@ public class Log implements  ILogging
                 oneReport.setHostName(hostname);
                 String status = rs.getString("status");
                 oneReport.setStatus(status);
-                allProccessReports.add(oneReport);
 
-                AddProcessReports.put(hostnamePort, allProccessReports);
+                String key = hostname + ":" + port;
+                reportsMap.put(key, oneReport);
             }
             DB.close();
         }catch (SQLException e)
@@ -898,46 +897,54 @@ public class Log implements  ILogging
         {
             System.out.println("NumberFormatException: " + nfe.getMessage());
         }
-        Map<String,ArrayList<ProcessReport>> AllProcessReports = AddProcessReports;
-        return AllProcessReports;
+        return reportsMap;
     }
 
     @Override
-    public Map<String, ArrayList<ProcessReport>> getProcessReports(ArrayList<String> processes)
+    public Map<String, ProcessReport> getProcessReports(ArrayList<ProcessConnection> processes)
     {
-        HashMap<String, ArrayList<ProcessReport>> AddProcessReports  = new HashMap<>();
+        HashMap<String, ProcessReport> reportsMap = new HashMap<>();
+
+        for (ProcessConnection p : processes){
+            String key = p.getHostName() + ":" + p.getPort();
+            reportsMap.put(key, getProcessReport(p.getHostName(), p.getPort()));
+        }
+
+        return reportsMap;
+    }
+
+    @Override
+    public ProcessReport getProcessReport(String hostName, int port)
+    {
+        //Return null if it does not exist
+        if (countRows("ProcessReport", hostName, port) < 1)
+            return null;
+
+        String query = "SELECT startTime, endTime, port, hostname, status FROM ProcessReport WHERE hostname = ? AND port = ? ORDER BY startTime;";
         ProcessReport oneReport = new ProcessReport();
-        ArrayList<ProcessReport> allProccessReports = new ArrayList<>();
-        int processesCounter = 0;
         try
         {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            while(processesCounter < processes.size())
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setString(1, hostName);
+            stmt.setInt(2, port);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
             {
-                String[] hostnamePort = processes.get(processesCounter).split("\\:");
-                ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport WHERE "+hostnamePort[0] +" = hostname AND"+hostnamePort[1]+" = port" +"ORDER BY startTime");
+                Long startTime = Long.parseLong(rs.getString("startTime"));
+                oneReport.setStartTime(startTime);
+                Long endTime =  Long.parseLong(rs.getString("endTime"));
+                oneReport.setEndTime(endTime);
+                int getPort = Integer.parseInt(rs.getString("port"));
+                oneReport.setPort(port);
+                String hostname = rs.getString("hostname");
+                String theHostnamePort = hostname+":"+getPort;
+                oneReport.setHostName(hostname);
+                String status = rs.getString("status");
 
-                while(rs.next())
-                {
-                    Long startTime = Long.parseLong(rs.getString("startTime"));
-                    oneReport.setStartTime(startTime);
-                    Long endTime =  Long.parseLong(rs.getString("endTime"));
-                    oneReport.setEndTime(endTime);
-                    int port = Integer.parseInt(rs.getString("port"));
-                    oneReport.setPort(port);
-                    String hostname = rs.getString("hostname");
-                    String theHostnamePort = hostname+":"+port;
-                    oneReport.setHostName(hostname);
-                    String status = rs.getString("status");
-                    oneReport.setStatus(status);
-                    allProccessReports.add(oneReport);
-
-                    AddProcessReports.put(theHostnamePort, allProccessReports);
-                }
-                processesCounter++;
+                oneReport.setStatus(status);
             }
-            DB.close();
+            stmt.close();
 
         }catch (SQLException e)
         {
@@ -947,8 +954,8 @@ public class Log implements  ILogging
         {
             System.out.println("NumberFormatException: " + nfe.getMessage());
         }
-        Map<String,ArrayList<ProcessReport>> AllProcessReports = AddProcessReports;
-        return AllProcessReports;
+
+        return oneReport;
     }
 
     public int countRows(String tableName, String hostName, int port){
@@ -1006,48 +1013,6 @@ public class Log implements  ILogging
             e.printStackTrace();
         }
         return count;
-    }
-    @Override
-    public ProcessReport getProcessReport(String hostName, int port)
-    {
-        //Return null if it does not exist
-        if (countRows("ProcessReport", hostName, port) < 1)
-            return null;
-        ProcessReport oneReport = new ProcessReport();
-        try
-        {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-
-            ResultSet rs = DB.executeQuery("SELECT startTime, endTime, port, hostname, status FROM ProcessReport WHERE hostname = '"+hostName+"' AND port = "+port +" ORDER BY startTime");
-
-            while(rs.next())
-            {
-                Long startTime = Long.parseLong(rs.getString("startTime"));
-                oneReport.setStartTime(startTime);
-                Long endTime =  Long.parseLong(rs.getString("endTime"));
-                oneReport.setEndTime(endTime);
-                int getport = Integer.parseInt(rs.getString("port"));
-                oneReport.setPort(port);
-                String hostname = rs.getString("hostname");
-                String theHostnamePort = hostname+":"+getport;
-                oneReport.setHostName(hostname);
-                String status = rs.getString("status");
-
-                oneReport.setStatus(status);
-            }
-            DB.close();
-
-        }catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        catch (NumberFormatException nfe)
-        {
-            System.out.println("NumberFormatException: " + nfe.getMessage());
-        }
-
-        return oneReport;
     }
 
     @Override

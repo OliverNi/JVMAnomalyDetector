@@ -94,9 +94,9 @@ public interface ILogging {
 
     public ArrayList<GcReport> getGcReports(long startTime, long endTime, String host, int port);
 
-    public Map<String, ArrayList<ProcessReport>> getAllProcessReports();
+    public Map<String, ProcessReport> getProcessReports();
 
-    public Map<String, ArrayList<ProcessReport>> getProcessReports(ArrayList<String> processes);
+    public Map<String, ProcessReport> getProcessReports(ArrayList<ProcessConnection> processes);
 
     /**
      * Retrieves one ProcessReport
