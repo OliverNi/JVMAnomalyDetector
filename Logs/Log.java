@@ -959,13 +959,17 @@ public class Log implements  ILogging
     }
 
     public int countRows(String tableName, String hostName, int port){
-        String query = "SELECT COUNT(*) AS count FROM " + tableName + " WHERE hostname = " + "'" + hostName + "'" + " AND port = " + port;
+        String query = "SELECT COUNT(*) AS count FROM ? WHERE hostname = ? AND port = ?;";
+        int count = 0;
         try {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            ResultSet rs = DB.executeQuery(query);
-            int count = rs.getInt(1);
-            DB.close();
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setString(1, tableName);
+            stmt.setString(2, hostName);
+            stmt.setInt(3, port);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
+                count = rs.getInt(1);
+            stmt.close();
             return count;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -984,14 +988,19 @@ public class Log implements  ILogging
      * @return Number of rows found.
      */
     public int countRows(String tableName, String hostName, int port, String columnName, String value){
-        String query = "SELECT COUNT(*) AS count FROM " + tableName + " WHERE hostname = '" + hostName + "' AND port = " + port + " AND " +
-                columnName + " = '" + value + "';";
+        String query = "SELECT COUNT(*) AS count FROM ? WHERE hostname = ? AND port = ? AND ? = ?;";
+        int count = 0;
         try {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            ResultSet rs = DB.executeQuery(query);
-            int count = rs.getInt(1);
-            DB.close();
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setString(1, tableName);
+            stmt.setString(2, hostName);
+            stmt.setInt(3, port);
+            stmt.setString(4, columnName);
+            stmt.setString(5, value);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
+                count = rs.getInt(1);
+            stmt.close();
             return count;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -1002,13 +1011,16 @@ public class Log implements  ILogging
 
     public int deleteRows(String tableName, String hostName, int port, String columnName, String value){
         int count = 0;
-        String query = "DELETE FROM " + tableName + " WHERE hostname = '" + hostName + "' AND port = " + port + " AND " +
-                columnName + " = '" + value + "';";
+        String query = "DELETE FROM ? WHERE hostname = ? AND port = ? AND ? = ?;";
         try {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            count = DB.executeUpdate(query);
-            DB.close();
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setString(1, tableName);
+            stmt.setString(2, hostName);
+            stmt.setInt(3, port);
+            stmt.setString(4, columnName);
+            stmt.setString(5, value);
+            count = stmt.executeUpdate();
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
