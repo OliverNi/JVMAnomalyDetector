@@ -5,14 +5,11 @@ import AnomalyDetector.ProcessConnection;
 import AnomalyDetector.ProcessReport;
 
 import java.lang.reflect.Array;
+import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.Date;
 
 /**
  * Created by Martin on 2014-09-18.
@@ -87,7 +84,7 @@ public class Log implements  ILogging
                     "FOREIGN KEY(port) REFERENCES GCLog(port) ) ");
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS AnomalyReport(aId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "hostname VARCHAR(25), port INTEGER, timestamp BIGINT, errorMsg VARCHAR(25), startTimeIncrease BIGINT," +
-                    "anomalyStatus VARCHAR(25), memIncreasePercentage BIGINT, memIncreaseBytes BIGINT )");
+                    "anomalyStatus VARCHAR(25), memIncreasePercentage INT, memIncreaseBytes BIGINT )");
             DB.close();
         }catch (SQLException e)
         {
@@ -228,7 +225,7 @@ public class Log implements  ILogging
 
 //            // create a database connection
             Statement DB = null;
-            DBConnection = DriverManager.getConnection("jdbc:sqlite:test7.db");
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test8.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -1027,16 +1024,18 @@ public class Log implements  ILogging
     }
 
     @Override
-    public ArrayList<AnomalyReport> getAnomalyReport(String hostname, int port)
+    public ArrayList<AnomalyReport> getAnomalyReports(String hostname, int port)
     {
         ArrayList<AnomalyReport> fetchReports = new ArrayList<>();
         AnomalyReport tempReport = new AnomalyReport();
+        String query = "SELECT hostname, port, timestamp, errorMsg, startTimeIncrease, anomalyStatus," +
+                "memIncreasePercentage, memIncreaseBytes FROM AnomalyReport WHERE hostname = ? AND port = ?;";
         try
         {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            ResultSet rs = DB.executeQuery("SELECT hostname, port, timestamp, errorMsg, startTimeIncrease, anomalyStatus," +
-                    "memIncreasePercentage, memIncreaseBytes FROM AnomalyReport");
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setString(1, hostname);
+            stmt.setInt(2, port);
+            ResultSet rs = stmt.executeQuery();
             while(rs.next())
             {
                 try
@@ -1055,7 +1054,48 @@ public class Log implements  ILogging
                     e.printStackTrace();
                 }
             }
-            DB.close();
+            stmt.close();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return fetchReports;
+    }
+
+    @Override
+    public ArrayList<AnomalyReport> getAnomalyReports(long startTime, long endTime, String hostName, int port) {
+        ArrayList<AnomalyReport> fetchReports = new ArrayList<>();
+        AnomalyReport tempReport = new AnomalyReport();
+        String query = "SELECT hostname, port, timestamp, errorMsg, startTimeIncrease, anomalyStatus," +
+                "memIncreasePercentage, memIncreaseBytes FROM AnomalyReport WHERE hostname = ? AND port = ? AND timestamp >= ? AND timestamp <= ?;";
+        try
+        {
+            Statement DB = null;
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setString(1, hostName);
+            stmt.setInt(2, port);
+            stmt.setLong(3, startTime);
+            stmt.setLong(4, endTime);
+            ResultSet rs = stmt.executeQuery();
+            while(rs.next())
+            {
+                try
+                {
+                    tempReport.setHost(rs.getString("hostname"));
+                    tempReport.setPort(Integer.parseInt(rs.getString("port")));
+                    tempReport.setTimestamp(Long.parseLong(rs.getString("timestamp")));
+                    tempReport.setErrorMsg(rs.getString("errorMsg"));
+                    tempReport.setStartTimeIncrease(Long.parseLong(rs.getString("startTimeIncrease")));
+                    tempReport.setAnomaly(rs.getString("anomalyStatus"));
+                    tempReport.setMemIncreasePercentage(Integer.parseInt(rs.getString("memIncreasePercentage")));
+                    tempReport.setMemIncreaseBytes(Long.parseLong(rs.getString("memIncreaseBytes")));
+                    fetchReports.add(tempReport);
+                }catch (NumberFormatException e)
+                {
+                    e.printStackTrace();
+                }
+            }
+            stmt.close();
         }catch (SQLException e)
         {
             e.printStackTrace();

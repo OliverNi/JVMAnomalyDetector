@@ -108,7 +108,9 @@ public interface ILogging {
      * @param port input for specific process
      * @return an Arraylist of type AnomalyReports based in hostname, port input
      */
-    public ArrayList<AnomalyReport> getAnomalyReport(String hostname, int port);
+    public ArrayList<AnomalyReport> getAnomalyReports(String hostname, int port);
+
+    public ArrayList<AnomalyReport> getAnomalyReports(long startTime, long endTime, String hostName, int port);
 
     /**
      * Sends an AnomalyReport to be logged.
