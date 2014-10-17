@@ -312,9 +312,7 @@ public class Analyzer {
                             log.clearPossibleMemoryLeaks(host, port);
                         }
                     }
-                    log.sendUsageAfterLastGc(tempReport.getEndMemoryUsage(), host, port);
                 }
-
 
             } catch (NumberFormatException e) {
                 e.printStackTrace();

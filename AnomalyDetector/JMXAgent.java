@@ -62,6 +62,7 @@ public class JMXAgent {
         long timeStamp = Calendar.getInstance().getTimeInMillis();
         long collectionTime = info.getGcInfo().getDuration();
         log.sendGarbageCollectionLog(oldGenAfter.getUsed(), oldGenBefore.getUsed(), timeStamp, collectionTime, hostName, port);
+        log.sendUsageAfterLastGc(oldGenAfter.getUsed(), hostName, port);
     }
 
     /**
