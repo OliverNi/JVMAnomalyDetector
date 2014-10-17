@@ -870,7 +870,7 @@ public class Log implements  ILogging
     public Map<String, ProcessReport> getProcessReports()
     {
         HashMap<String, ProcessReport> reportsMap = new HashMap<>();
-        String query = "SELECT startTime, endTime, port, hostname, status FROM ProcessReport ORDER BY startTime";
+        String query = "SELECT * FROM ProcessReport ORDER BY startTime";
         try
         {
             Statement DB = DBConnection.createStatement();
@@ -889,7 +889,7 @@ public class Log implements  ILogging
                 oneReport.setHostName(hostname);
                 String status = rs.getString("status");
                 oneReport.setStatus(status);
-                int consecMemInc = rs.getInt("consec_mem_inc_count");
+                int consecMemInc = rs.getInt("consecMemIncCount");
                 oneReport.setConsecMemIncCount(consecMemInc);
                 long usageAfterFirstGc = rs.getLong("usageAfterFirstGc");
                 oneReport.setUsageAfterFirstGc(usageAfterFirstGc);
@@ -961,7 +961,7 @@ public class Log implements  ILogging
         if (countRows("ProcessReport", hostName, port) < 1)
             return null;
 
-        String query = "SELECT startTime, endTime, port, hostname, status FROM ProcessReport WHERE hostname = ? AND port = ? ORDER BY startTime;";
+        String query = "SELECT * FROM ProcessReport WHERE hostname = ? AND port = ? ORDER BY startTime;";
         ProcessReport oneReport = new ProcessReport();
         try
         {
