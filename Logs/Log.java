@@ -375,7 +375,6 @@ public class Log implements  ILogging
     public Map<String, ArrayList<GcStats>> getGarbageCollectionStats(long startTime, long endTime)
     {
         ArrayList<GcStats> getGCStats = new ArrayList<GcStats>();
-        GcStats GCstatistics = new GcStats();
         String fetchHostNamePort = "";
         HashMap<String, ArrayList<GcStats>> instanceOfGCStats = new HashMap<>();
         String query = "SELECT timestamp,memUsageAfter,memUsageBefore,GCCollectionTime, hostname,port FROM GCLog WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp;";
@@ -387,6 +386,7 @@ public class Log implements  ILogging
             ResultSet rs = stmt.executeQuery();
             while(rs.next())
             {
+                GcStats GCstatistics = new GcStats();
                 long timestamp = Long.parseLong(rs.getString("timestamp"));
                 GCstatistics.setTimeStamp(timestamp);
 
@@ -425,7 +425,6 @@ public class Log implements  ILogging
     public Map<String, ArrayList<GcStats>> getGarbageCollectionStats(long startTime, long endTime, ArrayList<String> processes)
     {
         ArrayList<GcStats> getGCStats = new ArrayList<GcStats>();
-        GcStats GCstatistics = new GcStats();
         int processesCounter = 0;
         String getPortHostname = "";
         HashMap<String, ArrayList<GcStats>> instanceOfGCStats = new HashMap<>();
@@ -451,6 +450,7 @@ public class Log implements  ILogging
                     ResultSet rs = stmt.executeQuery();
                     while(rs.next())
                     {
+                        GcStats GCstatistics = new GcStats();
                         long timestamp = Long.parseLong(rs.getString("timestamp"));
                         GCstatistics.setTimeStamp(timestamp);
 
@@ -491,7 +491,7 @@ public class Log implements  ILogging
     {
         if (countRows("GCLog", hostname, port) < 1)
             return null;
-        GcStats GCstatsFetch = new GcStats();
+
         ArrayList<GcStats> GCStatistics = new ArrayList<>();
         String query = "SELECT timestamp,memUsageAfter,memUsageBefore,hostname,port, GCCollectionTime FROM GCLog " +
                 "WHERE timestamp >= ? AND timestamp <= ? AND port = ? AND hostname = ? ORDER BY timestamp;";
@@ -505,6 +505,7 @@ public class Log implements  ILogging
             ResultSet rs = stmt.executeQuery();
             while(rs.next())
             {
+                GcStats GCstatsFetch = new GcStats();
                 long timestamp = Long.parseLong(rs.getString("timestamp"));
                 GCstatsFetch.setTimeStamp(timestamp);
 
@@ -531,7 +532,6 @@ public class Log implements  ILogging
     public Map<String, ArrayList<MemoryStats>> getMemoryStats(long startTime, long endTime)
     {
         ArrayList<MemoryStats> getMemStats = new ArrayList<MemoryStats>();
-        MemoryStats memstats = new MemoryStats();
         String fetchHostNamePort = "";
         HashMap<String, ArrayList<MemoryStats>> instanceOfMemStats = new HashMap<>();
 
@@ -543,6 +543,7 @@ public class Log implements  ILogging
                     "WHERE timestamp >="+startTime+" AND timestamp <="+endTime+" ORDER BY timestamp");
             while(rs.next())
             {
+                MemoryStats memstats = new MemoryStats();
                 fetchHostNamePort = rs.getString("hostname")+":"+rs.getString("port");
 
                 long timestamp = Long.parseLong(rs.getString("timestamp"));
@@ -574,7 +575,6 @@ public class Log implements  ILogging
     public Map<String, ArrayList<MemoryStats>> getMemoryStats(long startTime, long endTime, ArrayList<String> processes)
     {
         ArrayList<MemoryStats> getMemStats = new ArrayList<MemoryStats>();
-        MemoryStats memstats = new MemoryStats();
         String fetchHostNamePort = "";
         int processesCounter = 0;
         HashMap<String, ArrayList<MemoryStats>> instanceOfMemStats = new HashMap<>();
@@ -595,6 +595,7 @@ public class Log implements  ILogging
                             "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+" AND hostname = "+theSplit[0]+" AND port = "+theSplit[1]+" ORDER BY timestamp");
                     while(rs.next())
                     {
+                        MemoryStats memstats = new MemoryStats();
                         fetchHostNamePort = rs.getString("hostname")+":"+rs.getString("port");
 
                         long timestamp = Long.parseLong(rs.getString("timestamp"));
@@ -656,7 +657,6 @@ public class Log implements  ILogging
     public Map<String, ArrayList<GcReport>> getGcReports(long startTime, long endTime)
     {
         ArrayList<GcReport> GCReports = new ArrayList<GcReport>();
-        GcReport theGcReport = new GcReport();
         HashMap<String, ArrayList<GcReport>> instanceOfGCLog = new HashMap<>();
         String query = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
                 "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
@@ -671,6 +671,7 @@ public class Log implements  ILogging
             ResultSet rs = stmt.executeQuery();
             while(rs.next())
             {
+                GcReport theGcReport = new GcReport();
                 long sumCollected = Long.parseLong(rs.getString("sumCollected"));
                 theGcReport.setSumCollected(sumCollected);
 
@@ -864,7 +865,6 @@ public class Log implements  ILogging
     public Map<String, ProcessReport> getProcessReports()
     {
         HashMap<String, ProcessReport> reportsMap = new HashMap<>();
-        ProcessReport oneReport = new ProcessReport();
         String query = "SELECT startTime, endTime, port, hostname, status FROM ProcessReport ORDER BY startTime";
         try
         {
@@ -873,6 +873,7 @@ public class Log implements  ILogging
 
             while(rs.next())
             {
+                ProcessReport oneReport = new ProcessReport();
                 Long startTime = Long.parseLong(rs.getString("startTime"));
                 oneReport.setStartTime(startTime);
                 Long endTime =  Long.parseLong(rs.getString("endTime"));
@@ -931,6 +932,7 @@ public class Log implements  ILogging
             ResultSet rs = stmt.executeQuery();
             if (rs.next())
             {
+
                 Long startTime = Long.parseLong(rs.getString("startTime"));
                 oneReport.setStartTime(startTime);
                 Long endTime =  Long.parseLong(rs.getString("endTime"));
@@ -1026,7 +1028,6 @@ public class Log implements  ILogging
     public ArrayList<AnomalyReport> getAnomalyReports(String hostname, int port)
     {
         ArrayList<AnomalyReport> fetchReports = new ArrayList<>();
-        AnomalyReport tempReport = new AnomalyReport();
         String query = "SELECT hostname, port, timestamp, errorMsg, startTimeIncrease, anomalyStatus," +
                 "memIncreasePercentage, memIncreaseBytes FROM AnomalyReport WHERE hostname = ? AND port = ?;";
         try
@@ -1039,6 +1040,7 @@ public class Log implements  ILogging
             {
                 try
                 {
+                    AnomalyReport tempReport = new AnomalyReport();
                     tempReport.setHost(rs.getString("hostname"));
                     tempReport.setPort(Integer.parseInt(rs.getString("port")));
                     tempReport.setTimestamp(Long.parseLong(rs.getString("timestamp")));
@@ -1064,11 +1066,11 @@ public class Log implements  ILogging
     @Override
     public ArrayList<AnomalyReport> getAnomalyReports(long startTime, long endTime, String hostName, int port) {
         ArrayList<AnomalyReport> fetchReports = new ArrayList<>();
-        AnomalyReport tempReport = new AnomalyReport();
         String query = "SELECT hostname, port, timestamp, errorMsg, startTimeIncrease, anomalyStatus," +
                 "memIncreasePercentage, memIncreaseBytes FROM AnomalyReport WHERE hostname = ? AND port = ? AND timestamp >= ? AND timestamp <= ?;";
         try
         {
+            AnomalyReport tempReport = new AnomalyReport();
             PreparedStatement stmt = DBConnection.prepareStatement(query);
             stmt.setString(1, hostName);
             stmt.setInt(2, port);
