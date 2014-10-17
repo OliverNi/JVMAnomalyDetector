@@ -47,9 +47,6 @@ public class ProcessReport
     public static long TIME_BETWEEN_GC_WARNING;
     public static double PERCENTAGE_INC_IN_MEM_USE_WARNING;
 
-    //@TODO possible scrap for the uptime variable
-    private int uptimeInDays;
-
     //@TODO implement in addReport
     private long startTime;
     private long endTime;
@@ -212,10 +209,6 @@ public class ProcessReport
         {
             this.status = Status.OK;
         }
-    }
-
-    public void setUptimeInDays(int uptimeInDays) {
-        this.uptimeInDays = uptimeInDays;
     }
 
     public void setDailySumMemUsageDif(double dailySumMemUsageDif) {
