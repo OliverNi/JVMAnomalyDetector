@@ -378,13 +378,13 @@ public class Log implements  ILogging
         GcStats GCstatistics = new GcStats();
         String fetchHostNamePort = "";
         HashMap<String, ArrayList<GcStats>> instanceOfGCStats = new HashMap<>();
-
+        String query = "SELECT timestamp,memUsageAfter,memUsageBefore,GCCollectionTime, hostname,port FROM GCLog WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp;";
         try
         {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,GCCollectionTime, hostname,port FROM GCLog WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+" ORDER BY timestamp");
-
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setLong(1, startTime);
+            stmt.setLong(2, endTime);
+            ResultSet rs = stmt.executeQuery();
             while(rs.next())
             {
                 long timestamp = Long.parseLong(rs.getString("timestamp"));
@@ -405,7 +405,7 @@ public class Log implements  ILogging
                 instanceOfGCStats.put(fetchHostNamePort, getGCStats);
 
             }
-            DB.close();
+            stmt.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -429,21 +429,26 @@ public class Log implements  ILogging
         int processesCounter = 0;
         String getPortHostname = "";
         HashMap<String, ArrayList<GcStats>> instanceOfGCStats = new HashMap<>();
+        String query = "SELECT timestamp,memUsageAfter,memUsageBefore,hostname,port FROM GCLog " +
+                "WHERE timestamp >= ? AND timestamp <= ? AND port = ? AND hostname = ? ORDER BY timestamp;";
 
         if (processes.toString().contains(":"))
         {
             try
             {
-                Statement DB = null;
-                DB = DBConnection.createStatement();
+                PreparedStatement stmt = DBConnection.prepareStatement(query);
                 while(processesCounter < processes.size())
                 {
                     getPortHostname = processes.get(processesCounter);
                     processesCounter++;
                     String[] theSplit = getPortHostname.split("\\:");
+                    int port = Integer.parseInt(theSplit[1]);
 
-                    ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,hostname,port FROM GCLog " +
-                            "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+ " AND port = " + theSplit[1] + " AND hostname = " + theSplit[0]+" ORDER BY timestamp");
+                    stmt.setLong(1, startTime);
+                    stmt.setLong(2, endTime);
+                    stmt.setInt(3, port);
+                    stmt.setString(4, theSplit[0]);
+                    ResultSet rs = stmt.executeQuery();
                     while(rs.next())
                     {
                         long timestamp = Long.parseLong(rs.getString("timestamp"));
@@ -462,7 +467,7 @@ public class Log implements  ILogging
                         instanceOfGCStats.put(getPortHostname, getGCStats);
                     }
                 }
-                DB.close();
+                stmt.close();
             } catch (SQLException e)
             {
                 e.printStackTrace();
@@ -488,12 +493,16 @@ public class Log implements  ILogging
             return null;
         GcStats GCstatsFetch = new GcStats();
         ArrayList<GcStats> GCStatistics = new ArrayList<>();
+        String query = "SELECT timestamp,memUsageAfter,memUsageBefore,hostname,port, GCCollectionTime FROM GCLog " +
+                "WHERE timestamp >= ? AND timestamp <= ? AND port = ? AND hostname = ? ORDER BY timestamp;";
         try
         {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            ResultSet rs = DB.executeQuery("SELECT timestamp,memUsageAfter,memUsageBefore,hostname,port, GCCollectionTime FROM GCLog " +
-                    "WHERE timestamp >= "+startTime+" AND timestamp <= "+endTime+ " AND port = " + port + " AND hostname = '" + hostname+"' ORDER BY timestamp");
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setLong(1, startTime);
+            stmt.setLong(2, endTime);
+            stmt.setInt(3, port);
+            stmt.setString(4, hostname);
+            ResultSet rs = stmt.executeQuery();
             while(rs.next())
             {
                 long timestamp = Long.parseLong(rs.getString("timestamp"));
@@ -509,7 +518,7 @@ public class Log implements  ILogging
                 GCstatsFetch.setCollectionTime(GCCollectionTime);
                 GCStatistics.add(GCstatsFetch);
             }
-            DB.close();
+            stmt.close();
         }catch (SQLException e)
         {
             e.printStackTrace();
