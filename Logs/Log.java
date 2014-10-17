@@ -959,13 +959,12 @@ public class Log implements  ILogging
     }
 
     public int countRows(String tableName, String hostName, int port){
-        String query = "SELECT COUNT(*) AS count FROM ? WHERE hostname = ? AND port = ?;";
+        String query = "SELECT COUNT(*) AS count FROM " + tableName + " WHERE hostname = ? AND port = ?;";
         int count = 0;
         try {
             PreparedStatement stmt = DBConnection.prepareStatement(query);
-            stmt.setString(1, tableName);
-            stmt.setString(2, hostName);
-            stmt.setInt(3, port);
+            stmt.setString(1, hostName);
+            stmt.setInt(2, port);
             ResultSet rs = stmt.executeQuery();
             if (rs.next())
                 count = rs.getInt(1);
@@ -988,15 +987,13 @@ public class Log implements  ILogging
      * @return Number of rows found.
      */
     public int countRows(String tableName, String hostName, int port, String columnName, String value){
-        String query = "SELECT COUNT(*) AS count FROM ? WHERE hostname = ? AND port = ? AND ? = ?;";
+        String query = "SELECT COUNT(*) AS count FROM " + tableName + " WHERE hostname = ? AND port = ? AND " + columnName + " = ?;";
         int count = 0;
         try {
             PreparedStatement stmt = DBConnection.prepareStatement(query);
-            stmt.setString(1, tableName);
-            stmt.setString(2, hostName);
-            stmt.setInt(3, port);
-            stmt.setString(4, columnName);
-            stmt.setString(5, value);
+            stmt.setString(1, hostName);
+            stmt.setInt(2, port);
+            stmt.setString(3, value);
             ResultSet rs = stmt.executeQuery();
             if (rs.next())
                 count = rs.getInt(1);
@@ -1011,14 +1008,12 @@ public class Log implements  ILogging
 
     public int deleteRows(String tableName, String hostName, int port, String columnName, String value){
         int count = 0;
-        String query = "DELETE FROM ? WHERE hostname = ? AND port = ? AND ? = ?;";
+        String query = "DELETE FROM " + tableName + " WHERE hostname = ? AND port = ? AND " + columnName + " = ?;";
         try {
             PreparedStatement stmt = DBConnection.prepareStatement(query);
-            stmt.setString(1, tableName);
-            stmt.setString(2, hostName);
-            stmt.setInt(3, port);
-            stmt.setString(4, columnName);
-            stmt.setString(5, value);
+            stmt.setString(1, hostName);
+            stmt.setInt(2, port);
+            stmt.setString(3, value);
             count = stmt.executeUpdate();
             stmt.close();
         } catch (SQLException e) {
