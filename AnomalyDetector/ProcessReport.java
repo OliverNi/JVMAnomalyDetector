@@ -74,13 +74,11 @@ public class ProcessReport
     private double monthlyMinMemUsageDif;
     private double weeklyMinMemUsageDif;
 
-    //@TODO Possibly remove, not sure how it would be used to find memory leaks. Should instead focus on minimum value
     //How many times have the memory usage increased compared to the previous day/week/month
     private int dailyIncreaseCount;
     private int weeklyIncreaseCount;
     private int monthlyIncreaseCount;
 
-    //@TODO Possibly remove, not sure how it would be used to find memory leaks. Should instead focus on minimum value
     //How many times have the memory usage decreased compared to the previous day/week/month
     private int dailyDecreaseCount;
     private int weeklyDecreaseCount;
@@ -359,9 +357,6 @@ public class ProcessReport
 
     public void addReport(AnalyzedGcReport report){
         switch(report.getType()){
-            case HOURLY:
-
-                break;
             case DAILY:
                 if (report.getAvgMinMemoryUsageDif() < dailyMinMemUsageDif)
                     dailyMinMemUsageDif = report.getAvgMinMemoryUsageDif();

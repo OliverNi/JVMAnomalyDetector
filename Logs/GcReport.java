@@ -2,16 +2,46 @@ package Logs;
 
 import AnomalyDetector.AnomalyReport;
 
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Oliver on 2014-09-22.
  */
 public class GcReport {
     public enum Period{
-        MIXED,
-        DAILY,
-        WEEKLY,
-        MONTHLY
+        MIXED (0),
+        DAILY  (1),
+        WEEKLY (2),
+        MONTHLY (3);
+
+        private int value;
+        private Period(int value){
+            this.value = value;
+        }
+
+        public int getValue(){
+            return value;
+        }
+
+        private static final Map<Integer, Period> lookup;
+        public static Period forInt(int id){
+            return values()[id -1];
+        }
+
+        public static Period getPeriod(int id){
+            return lookup.get(id);
+        }
+
+        static{
+            lookup  = new HashMap<>();
+            for (Period p : EnumSet.allOf(Period.class)){
+                lookup.put(p.value, p);
+            }
+        }
     }
+
     public enum Status
     {
         LIKELY_MEMORY_LEAK,
@@ -31,7 +61,7 @@ public class GcReport {
     private long minCollected;
     private long maxCollected;
     private long sumMemoryUsage;
-    private long minMemoryUsage; //@TODO Check order of every attribute, corresponding with Log?
+    private long minMemoryUsage;
     private long maxMemoryUsage;
     private long startMemoryUsage;
     private long endMemoryUsage;
@@ -90,6 +120,8 @@ public class GcReport {
         this.reportCount = reportCount;
         this.sumMinMemoryUsage = sumMinMemoryUsage;
         this.status = Status.UNKNOWN;
+        this.period = Period.MIXED;
+        period = Period.forInt(1);
 
     }
 
@@ -439,8 +471,5 @@ public class GcReport {
         this.gcCount++;
     }
 
-    public AnomalyReport createAnomalyReport(){
-        return null; //@TODO Implement
-    }
 
 }

@@ -22,6 +22,7 @@ public class GcStats {
     public void setMemoryUsedAfter(long memoryUsedAfter) {
         this.memoryUsedAfter = memoryUsedAfter;
     }
+
     public long getCollectionTime() {
         return collectionTime;
     }

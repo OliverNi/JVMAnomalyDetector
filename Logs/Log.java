@@ -85,7 +85,7 @@ public class Log implements  ILogging
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS GCReport(GCReportId INTEGER PRIMARY KEY AUTOINCREMENT, sumCollected BIGINT, minCollected BIGINT, maxCollected BIGINT, minMemoryUsage BIGINT," +
                     "maxMemoryUsage BIGINT, sumMemoryUsage BIGINT, startMemoryUsage BIGINT, endMemoryUsage BIGINT,sumTimeBetweenGc BIGINT, " +
                     "minTimeBetweenGc BIGINT, maxTimeBetweenGc BIGINT, sumCollectionTime BIGINT, minCollectionTime BIGINT, maxCollectionTime BIGINT," +
-                    "starttime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INTEGER, gcCount INTEGER, sumMinMemoryUsage BIGINT, reportCount INTEGER, status VARCHAR(50), FOREIGN KEY(hostname) REFERENCES GCLog(hostname)," +
+                    "starttime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INTEGER, gcCount INTEGER, sumMinMemoryUsage BIGINT, reportCount INTEGER, status VARCHAR(50), period INT, FOREIGN KEY(hostname) REFERENCES GCLog(hostname)," +
                     "FOREIGN KEY(port) REFERENCES GCLog(port) ) ");
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS AnomalyReport(aId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "hostname VARCHAR(25), port INTEGER, timestamp BIGINT, errorMsg VARCHAR(25), startTimeIncrease BIGINT," +
@@ -230,7 +230,7 @@ public class Log implements  ILogging
 
 //            // create a database connection
             Statement DB = null;
-            DBConnection = DriverManager.getConnection("jdbc:sqlite:test13.db");
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test17.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -643,13 +643,13 @@ public class Log implements  ILogging
             String input = "INSERT INTO  GCReport(sumCollected, minCollected, maxCollected, minMemoryUsage,"+
                             "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
                             "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
-                            "starttime, endTime,hostname, port, gcCount, sumMinMemoryUsage, reportCount, status) "+
+                            "starttime, endTime,hostname, port, gcCount, sumMinMemoryUsage, reportCount, status, period) "+
                     "VALUES("+ analyzedDailyGcStats.getSumCollected()+","+analyzedDailyGcStats.getMinCollected()+","+analyzedDailyGcStats.getMaxCollected()+","+analyzedDailyGcStats.getMinMemoryUsage()+","
                     +analyzedDailyGcStats.getMaxMemoryUsage()+","+analyzedDailyGcStats.getSumMemoryUsage()+","+
                     analyzedDailyGcStats.getStartMemoryUsage()+","+analyzedDailyGcStats.getEndMemoryUsage()+","+analyzedDailyGcStats.getSumTimeBetweenGc()+","+
                     analyzedDailyGcStats.getMinTimeBetweenGc()+","+analyzedDailyGcStats.getMaxTimeBetweenGc()+","+analyzedDailyGcStats.getSumCollectionTime()+","+
                     analyzedDailyGcStats.getMinCollectionTime()+","+analyzedDailyGcStats.getMaxCollectionTime()+","+analyzedDailyGcStats.getStartTime()+","+analyzedDailyGcStats.getEndTime()+",'"+hostName+"',"+port+","
-                    +analyzedDailyGcStats.getGcCount()+","+analyzedDailyGcStats.getSumMinMemoryUsage()+","+analyzedDailyGcStats.getReportCount()+", "+"'"+analyzedDailyGcStats.getStatus().toString()+"'"+" )";
+                    +analyzedDailyGcStats.getGcCount()+","+analyzedDailyGcStats.getSumMinMemoryUsage()+","+analyzedDailyGcStats.getReportCount()+", "+"'"+analyzedDailyGcStats.getStatus().toString()+"', "+ analyzedDailyGcStats.getPeriod().getValue() + " )";
             DB.executeUpdate(input);
             DB.close();
         } catch (SQLException e)
@@ -661,12 +661,8 @@ public class Log implements  ILogging
     @Override
     public Map<String, ArrayList<GcReport>> getGcReports(long startTime, long endTime)
     {
-        ArrayList<GcReport> GCReports = new ArrayList<GcReport>();
-        HashMap<String, ArrayList<GcReport>> instanceOfGCLog = new HashMap<>();
-        String query = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
-                "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
-                "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
-                "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, status, port FROM GCReport WHERE startTime >= ? AND endTime <= ? ORDER BY startTime;";
+        HashMap<String, ArrayList<GcReport>> reportsMap = new HashMap<>();
+        String query = "SELECT * FROM GCReport WHERE startTime >= ? AND endTime <= ? ORDER BY startTime;";
         try
         {
             PreparedStatement stmt = DBConnection.prepareStatement(query);
@@ -734,13 +730,18 @@ public class Log implements  ILogging
                 int gcCount = Integer.parseInt(rs.getString("gcCount"));
                 theGcReport.setGcCount(gcCount);
 
-                String fetchHostnamePort = rs.getString("hostname")+":"+rs.getString("port");
+                String key = rs.getString("hostname")+":"+rs.getString("port");
 
                 String status = rs.getString("status");
                 theGcReport.setStatus(status);
 
-                GCReports.add(theGcReport);
-                instanceOfGCLog.put(fetchHostnamePort, GCReports);
+                int period = rs.getInt("period");
+                theGcReport.setPeriod(GcReport.Period.getPeriod(period));
+
+                if (!reportsMap.containsKey(key)){
+                    reportsMap.put(key, new ArrayList<GcReport>());
+                }
+                reportsMap.get(key).add(theGcReport);
             }
             stmt.close();
         } catch (SQLException e)
@@ -752,7 +753,7 @@ public class Log implements  ILogging
             System.out.println("NumberFormatException: " + nfe.getMessage());
         }
 
-        return instanceOfGCLog;
+        return reportsMap;
     }
 
     @Override
@@ -769,10 +770,7 @@ public class Log implements  ILogging
 
     public ArrayList<GcReport> getGcReports(long startTime, long endTime, ProcessConnection connection){
         ArrayList<GcReport> gcReports = new ArrayList<GcReport>();
-        String query = "SELECT sumCollected, minCollected, maxCollected, minMemoryUsage," +
-                "maxMemoryUsage, sumMemoryUsage, startMemoryUsage, endMemoryUsage,sumTimeBetweenGc,"+
-                "minTimeBetweenGc, maxTimeBetweenGc, sumCollectionTime, minCollectionTime, maxCollectionTime,"+
-                "starttime, endTime,gcCount, sumMinMemoryUsage, reportCount, hostname, status, port FROM GCReport WHERE startTime >= ? AND" +
+        String query = "SELECT * FROM GCReport WHERE startTime >= ? AND" +
                 " endTime <= ? AND hostname = ? AND port = ? ORDER BY startTime;";
         try
         {
@@ -845,6 +843,9 @@ public class Log implements  ILogging
                 String status = rs.getString("status");
                 theGcReport.setStatus(status);
 
+                int period = rs.getInt("period");
+                theGcReport.setPeriod(GcReport.Period.getPeriod(period));
+
                 String fetchHostnamePort = rs.getString("hostname") + ":" + rs.getString("port");
 
                 gcReports.add(theGcReport);
@@ -864,6 +865,212 @@ public class Log implements  ILogging
 
     public ArrayList<GcReport> getGcReports(long startTime, long endTime, String host, int port){
         return getGcReports(startTime, endTime, new ProcessConnection(host, port));
+    }
+
+    @Override
+    public Map<String, ArrayList<GcReport>> getGcReports(long startTime, long endTime, GcReport.Period period) {
+        HashMap<String, ArrayList<GcReport>> reportsMap = new HashMap<>();
+        String query = "SELECT * FROM GCReport WHERE startTime >= ? AND endTime <= ? AND period = ? ORDER BY startTime;";
+
+        try {
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setLong(1, startTime);
+            stmt.setLong(2, endTime);
+            stmt.setInt(3, period.getValue());
+            ResultSet rs = stmt.executeQuery();
+
+            while(rs.next()){
+                GcReport theGcReport = new GcReport();
+                long sumCollected = Long.parseLong(rs.getString("sumCollected"));
+                theGcReport.setSumCollected(sumCollected);
+
+                long maxCollected = Long.parseLong(rs.getString("maxCollected"));
+                theGcReport.setMaxCollected(maxCollected);
+
+                long minCollected = Long.parseLong(rs.getString("minCollected"));
+                theGcReport.setMinCollected(minCollected);
+
+                long minMemoryUsage = Long.parseLong(rs.getString("minMemoryUsage"));
+                theGcReport.setMinMemoryUsage(minMemoryUsage);
+
+                long maxMemoryUsage = Long.parseLong(rs.getString("maxMemoryUsage"));
+                theGcReport.setMaxMemoryUsage(maxMemoryUsage);
+
+                long sumMemoryUsage = Long.parseLong(rs.getString("sumMemoryUsage"));
+                theGcReport.setSumMemoryUsage(sumMemoryUsage);
+
+                long startMemoryUsage = Long.parseLong(rs.getString("startMemoryUsage"));
+                theGcReport.setStartMemoryUsage(startMemoryUsage);
+
+                long endMemoryUsage = Long.parseLong(rs.getString("endMemoryUsage"));
+                theGcReport.setEndMemoryUsage(endMemoryUsage);
+
+                long sumTimeBetweenGC = Long.parseLong(rs.getString("sumTimeBetweenGc"));
+                theGcReport.setSumTimeBetweenGc(sumTimeBetweenGC);
+
+                long minTimeBetweenGc = Long.parseLong(rs.getString("minTimeBetweenGc"));
+                theGcReport.setMinTimeBetweenGc(minTimeBetweenGc);
+
+                long maxTimeBetweenGc = Long.parseLong(rs.getString("maxTimeBetweenGc"));
+                theGcReport.setMaxTimeBetweenGc(maxTimeBetweenGc);
+
+                long sumCollectionTime = Long.parseLong(rs.getString("sumCollectionTime"));
+                theGcReport.setSumCollectionTime(sumCollectionTime);
+
+                long minCollectionTime = Long.parseLong(rs.getString("minCollectionTime"));
+                theGcReport.setMinCollectionTime(minCollectionTime);
+
+                long maxCollectionTime = Long.parseLong(rs.getString("maxCollectionTime"));
+                theGcReport.setMaxCollectionTime(maxCollectionTime);
+
+                long fetchedstartTime = Long.parseLong(rs.getString("startTime"));
+                theGcReport.setStartTime(fetchedstartTime);
+
+                long fetchedendTime = Long.parseLong(rs.getString("endTime"));
+                theGcReport.setEndTime(fetchedendTime);
+
+                long sumMinMemoryUsage = Long.parseLong(rs.getString("sumMinMemoryUsage"));
+                theGcReport.setSumMinMemoryUsage(sumMinMemoryUsage);
+
+                int reportCount = Integer.parseInt(rs.getString("reportCount"));
+                theGcReport.setReportCount(reportCount);
+
+                int gcCount = Integer.parseInt(rs.getString("gcCount"));
+                theGcReport.setGcCount(gcCount);
+
+                String key = rs.getString("hostname")+":"+rs.getString("port");
+
+                String status = rs.getString("status");
+                theGcReport.setStatus(status);
+
+                int periodDb = rs.getInt("period");
+                theGcReport.setPeriod(GcReport.Period.getPeriod(periodDb));
+
+                if (!reportsMap.containsKey(key)){
+                    reportsMap.put(key, new ArrayList<GcReport>());
+                }
+                reportsMap.get(key).add(theGcReport);
+            }
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return reportsMap;
+    }
+
+    @Override
+    public Map<String, ArrayList<GcReport>> getGcReports(long startTime, long endTime, GcReport.Period period, ArrayList<ProcessConnection> connections) {
+        HashMap<String, ArrayList<GcReport>> reportsMap = new HashMap<>();
+
+        for (ProcessConnection c : connections) {
+            String key = c.getHostName() + ":" + c.getPort();
+            reportsMap.put(key, getGcReports(startTime, endTime, period, c));
+        }
+
+        return reportsMap;
+    }
+
+    @Override
+    public ArrayList<GcReport> getGcReports(long startTime, long endTime, GcReport.Period period, ProcessConnection connection){
+        ArrayList<GcReport> gcReports = new ArrayList<GcReport>();
+        String query = "SELECT * FROM GCReport WHERE startTime >= ? AND" +
+                " endTime <= ? AND hostname = ? AND port = ? AND period = ? ORDER BY startTime;";
+        try
+        {
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setLong(1, startTime);
+            stmt.setLong(2, endTime);
+            stmt.setString(3, connection.getHostName());
+            stmt.setInt(4, connection.getPort());
+            stmt.setInt(5, period.getValue());
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                GcReport theGcReport = new GcReport();
+                long sumCollected = Long.parseLong(rs.getString("sumCollected"));
+                theGcReport.setSumCollected(sumCollected);
+
+                long maxCollected = Long.parseLong(rs.getString("maxCollected"));
+                theGcReport.setMaxCollected(maxCollected);
+
+                long minCollected = Long.parseLong(rs.getString("minCollected"));
+                theGcReport.setMinCollected(minCollected);
+
+                long minMemoryUsage = Long.parseLong(rs.getString("minMemoryUsage"));
+                theGcReport.setMinMemoryUsage(minMemoryUsage);
+
+                long maxMemoryUsage = Long.parseLong(rs.getString("maxMemoryUsage"));
+                theGcReport.setMaxMemoryUsage(maxMemoryUsage);
+
+                long sumMemoryUsage = Long.parseLong(rs.getString("sumMemoryUsage"));
+                theGcReport.setSumMemoryUsage(sumMemoryUsage);
+
+                long startMemoryUsage = Long.parseLong(rs.getString("startMemoryUsage"));
+                theGcReport.setStartMemoryUsage(startMemoryUsage);
+
+                long endMemoryUsage = Long.parseLong(rs.getString("endMemoryUsage"));
+                theGcReport.setEndMemoryUsage(endMemoryUsage);
+
+                long sumTimeBetweenGC = Long.parseLong(rs.getString("sumTimeBetweenGc"));
+                theGcReport.setSumTimeBetweenGc(sumTimeBetweenGC);
+
+                long minTimeBetweenGc = Long.parseLong(rs.getString("minTimeBetweenGc"));
+                theGcReport.setMinTimeBetweenGc(minTimeBetweenGc);
+
+                long maxTimeBetweenGc = Long.parseLong(rs.getString("maxTimeBetweenGc"));
+                theGcReport.setMaxTimeBetweenGc(maxTimeBetweenGc);
+
+                long sumCollectionTime = Long.parseLong(rs.getString("sumCollectionTime"));
+                theGcReport.setSumCollectionTime(sumCollectionTime);
+
+                long minCollectionTime = Long.parseLong(rs.getString("minCollectionTime"));
+                theGcReport.setMinCollectionTime(minCollectionTime);
+
+                long maxCollectionTime = Long.parseLong(rs.getString("maxCollectionTime"));
+                theGcReport.setMaxCollectionTime(maxCollectionTime);
+
+                long fetchedstartTime = Long.parseLong(rs.getString("startTime"));
+                theGcReport.setStartTime(fetchedstartTime);
+
+                long fetchedendTime = Long.parseLong(rs.getString("endTime"));
+                theGcReport.setEndTime(fetchedendTime);
+
+                long sumMinMemoryUsage = Long.parseLong(rs.getString("sumMinMemoryUsage"));
+                theGcReport.setSumMinMemoryUsage(sumMinMemoryUsage);
+
+                int reportCount = Integer.parseInt(rs.getString("reportCount"));
+                theGcReport.setReportCount(reportCount);
+
+                int gcCount = Integer.parseInt(rs.getString("gcCount"));
+                theGcReport.setGcCount(gcCount);
+
+                String status = rs.getString("status");
+                theGcReport.setStatus(status);
+
+                int periodDb = rs.getInt("period");
+                theGcReport.setPeriod(GcReport.Period.getPeriod(periodDb));
+
+                String fetchHostnamePort = rs.getString("hostname") + ":" + rs.getString("port");
+
+                gcReports.add(theGcReport);
+            }
+            stmt.close();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        catch (NumberFormatException nfe)
+        {
+            System.out.println("NumberFormatException: " + nfe.getMessage());
+        }
+
+        return gcReports;
+    }
+
+    @Override
+    public ArrayList<GcReport> getGcReports(long startTime, long endTime, GcReport.Period period, String host, int port) {
+        return getGcReports(startTime, endTime, period, new ProcessConnection(host, port));
     }
 
     @Override
