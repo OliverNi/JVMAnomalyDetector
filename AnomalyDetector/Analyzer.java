@@ -178,7 +178,7 @@ public class Analyzer {
         ArrayList<GcStats> currentReports = intervalReportsMap.get(host + ":" + port);
 
 
-        if (currentReports != null) { //@TODO Debug this, always null? or is this okay?
+        if (currentReports != null) {
             System.out.println("DEBUG: currentReports not null");
             long minimumMemValue = 0;
             long originalMinimumMemValue = log.firstGcValue(host+":"+port);
@@ -536,15 +536,4 @@ public class Analyzer {
             ad.getListener().anomalyFound(e);
         }
     }
-
-    //@TODO Move function calcAvg
-    private long calcAvg(long[] arr){
-        long sum = 0;
-        for (int i = 0; i < arr.length; i++){
-            sum += arr[i];
-        }
-        return sum / arr.length;
-    }
-
-
 }

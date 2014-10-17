@@ -6,7 +6,6 @@ import java.util.EventObject;
  * Created by Oliver on 2014-10-14.
  */
 public class SearchEvent extends EventObject {
-    //@TODO Implement time
     String host;
     int port;
     String period;
