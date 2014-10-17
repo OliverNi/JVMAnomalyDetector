@@ -20,25 +20,28 @@ public class GcReportModel extends Model<GcReportResponse>{
     }
 
     public void getListItems(String host, int port, String period){
-        ArrayList<GcReport> reports = null;
+        ArrayList<GcReport> result = null;
         switch(period){
             case "All":
-                reports = log.getGcReports(0L, Long.MAX_VALUE, new ProcessConnection(host, port));
+                result = log.getGcReports(0L, Long.MAX_VALUE, new ProcessConnection(host, port));
                 break;
             case "Daily":
+                result = log.getGcReports(0L, Long.MAX_VALUE, GcReport.Period.DAILY, new ProcessConnection(host, port));
                 break;
             case "Weekly":
+                result = log.getGcReports(0L, Long.MAX_VALUE, GcReport.Period.WEEKLY, new ProcessConnection(host, port));
                 break;
             case "Monthly":
+                result = log.getGcReports(0L, Long.MAX_VALUE, GcReport.Period.MONTHLY, new ProcessConnection(host, port));
                 break;
             case "Possible leaks":
-                reports = log.getPossibleMemoryLeaks(host, port);
+                result = log.getPossibleMemoryLeaks(host, port);
                 break;
         }
         //Inform observers
-        if (reports != null) {
+        if (result != null) {
             for (GcReportResponse g : this.getObservers())
-                g.searchResult(reports);
+                g.searchResult(result);
         }
         else{
             for (GcReportResponse g : this.getObservers())
