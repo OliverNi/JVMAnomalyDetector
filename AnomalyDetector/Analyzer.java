@@ -178,7 +178,7 @@ public class Analyzer {
         ArrayList<GcStats> currentReports = intervalReportsMap.get(host + ":" + port);
 
 
-        if (currentReports != null) { //@TODO Debug this, always null? or is this okay?
+        if (currentReports != null) {
             System.out.println("DEBUG: currentReports not null");
             long minimumMemValue = 0;
             long originalMinimumMemValue = log.firstGcValue(host+":"+port);
