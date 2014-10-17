@@ -35,8 +35,10 @@ public class ProcessReportView extends ListView implements ProcessReportResponse
         Vector<String> columnNames = getColumnNames(period);
 
         Vector<Vector<Object>> items = new Vector<>();
-        Vector<Object> row = getRow(report, period);
-        items.add(row);
+        if (report != null) {
+            Vector<Object> row = getRow(report, period);
+            items.add(row);
+        }
 
         DefaultTableModel dModel = new DefaultTableModel(items, columnNames){
             @Override
@@ -99,6 +101,7 @@ public class ProcessReportView extends ListView implements ProcessReportResponse
     @Override
     public void searchResult(ProcessReport result, String period) {
         if (result == null){
+            populateTable(null, period);
             System.out.println("DEBUG: No results");
         }
         else{

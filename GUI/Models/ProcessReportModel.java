@@ -18,5 +18,9 @@ public class ProcessReportModel extends Model<ProcessReportResponse> {
             for (ProcessReportResponse o : this.getObservers())
                 o.searchResult(result, period);
         }
+        else{
+            for (ProcessReportResponse o : this.getObservers())
+                o.searchResult(null, period);
+        }
     }
 }

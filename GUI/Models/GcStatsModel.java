@@ -75,5 +75,9 @@ public class GcStatsModel extends Model<GcStatsResponse>{
             for (GcStatsResponse o : this.getObservers())
                 o.searchResult(result);
         }
+        else {
+            for (GcStatsResponse o : this.getObservers())
+                o.searchResult(new ArrayList<GcStats>());
+        }
     }
 }

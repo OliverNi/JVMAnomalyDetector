@@ -40,5 +40,10 @@ public class GcReportModel extends Model<GcReportResponse>{
             for (GcReportResponse g : this.getObservers())
                 g.searchResult(reports);
         }
+        else{
+            for (GcReportResponse g : this.getObservers())
+                g.searchResult(new ArrayList<GcReport>());
+        }
+
     }
 }

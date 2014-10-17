@@ -70,5 +70,9 @@ public class AnomalyReportModel extends Model<AnomalyReportResponse> {
             for (AnomalyReportResponse o : this.getObservers())
                 o.searchResult(result);
         }
+        else {
+            for (AnomalyReportResponse o : this.getObservers())
+                o.searchResult(new ArrayList<AnomalyReport>());
+        }
     }
 }
