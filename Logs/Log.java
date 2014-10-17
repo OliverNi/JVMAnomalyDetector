@@ -1140,16 +1140,18 @@ public class Log implements  ILogging
         String hostname = hostPort[0];
         int port = Integer.parseInt(hostPort[1]);
         if (countRows("ProcessReport", hostname, port) < 1)
-            return 0; //@TODO Better value?
-        long GcMinMemValue = 0L;
-        String query = "SELECT usageAfterFirstGc FROM ProcessReport WHERE hostname = '" + hostname + "' AND port = " + port;
+            return -1;
+        long GcMinMemValue = -1;
+        String query = "SELECT usageAfterFirstGc FROM ProcessReport WHERE hostname = ? AND port = ?;";
         try
         {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            ResultSet rs = DB.executeQuery(query);
-            GcMinMemValue = Long.parseLong(rs.getString("usageAfterFirstGc"));
-            DB.close();
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setString(1, hostname);
+            stmt.setInt(2, port);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
+                GcMinMemValue = Long.parseLong(rs.getString("usageAfterFirstGc"));
+            stmt.close();
         }catch(SQLException e)
         {
             e.printStackTrace();
