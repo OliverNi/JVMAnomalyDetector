@@ -21,7 +21,7 @@ public class ProcessReport
     {
         usageAfterFirstGc = 0;
         usageAfterLastGc = 0;
-        consec_mem_inc_count = 0;
+        consecMemIncCount = 0;
         startTime = Calendar.getInstance().getTimeInMillis();
         endTime = Calendar.getInstance().getTimeInMillis();
         this.port = 0;
@@ -58,7 +58,7 @@ public class ProcessReport
     private Status status;
 
     //keeps a track on if the minimumMemvalue after each GC has increased, and counts how many times in a row it has increased.
-    private int consec_mem_inc_count;
+    private int consecMemIncCount;
 
     //GC
     //Usage after first recorded GC
@@ -154,12 +154,12 @@ public class ProcessReport
         return returnStatus;
     }
 
-    public int getConsec_mem_inc_count() {
-        return consec_mem_inc_count;
+    public int getConsecMemIncCount() {
+        return consecMemIncCount;
     }
 
-    public void setConsec_mem_inc_count(int consec_mem_inc_count) {
-        this.consec_mem_inc_count = consec_mem_inc_count;
+    public void setConsecMemIncCount(int consecMemIncCount) {
+        this.consecMemIncCount = consecMemIncCount;
     }
 
     public void setHostName(String hostName)

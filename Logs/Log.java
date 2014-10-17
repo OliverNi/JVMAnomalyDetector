@@ -4,7 +4,6 @@ import AnomalyDetector.AnomalyReport;
 import AnomalyDetector.ProcessConnection;
 import AnomalyDetector.ProcessReport;
 
-import java.lang.reflect.Array;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -70,8 +69,8 @@ public class Log implements  ILogging
 
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)");
 
-            DB.executeUpdate("CREATE TABLE IF NOT EXISTS ProcessReport(prId INTEGER PRIMARY KEY AUTOINCREMENT, startTime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INT, status VARCHAR(25)," +
-                    "consec_mem_inc_count INT, usageAfterFirstGc BIGINT, usageAfterLastGc BIGINT, dailySumMemUsageDif FLOAT, weeklySumMemUsageDif FLOAT, monthlySumMemUsageDif FLOAT, " +
+            DB.executeUpdate("CREATE TABLE IF NOT EXISTS ProcessReport(prId INTEGER PRIMARY KEY AUTOINCREMENT, startTime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INT, status VARCHAR(25), " +
+                    "consecMemIncCount INT, usageAfterFirstGc BIGINT, usageAfterLastGc BIGINT, dailySumMemUsageDif FLOAT, weeklySumMemUsageDif FLOAT, monthlySumMemUsageDif FLOAT, " +
                     "dailyMinMemUsageDif FLOAT, weeklyMinMemUsageDif FLOAT, monthlyMinMemUsageDif FLOAT, dailyIncreaseCount INT, weeklyIncreaseCount INT, monthlyIncreaseCount INT, " +
                     "dailyDecreaseCount INT, weeklyDecreaseCount INT, monthlyDecreaseCount INT, dailyReportCount INT, weeklyReportCount INT, monthlyReportCount INT)");
 
@@ -227,7 +226,7 @@ public class Log implements  ILogging
 
 //            // create a database connection
             Statement DB = null;
-            DBConnection = DriverManager.getConnection("jdbc:sqlite:test11.db");
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test13.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -887,7 +886,7 @@ public class Log implements  ILogging
                 String status = rs.getString("status");
                 oneReport.setStatus(status);
                 int consecMemInc = rs.getInt("consec_mem_inc_count");
-                oneReport.setConsec_mem_inc_count(consecMemInc);
+                oneReport.setConsecMemIncCount(consecMemInc);
                 long usageAfterFirstGc = rs.getLong("usageAfterFirstGc");
                 oneReport.setUsageAfterFirstGc(usageAfterFirstGc);
                 long usageAfterLastGc = rs.getLong("usageAfterLastGc");
@@ -979,8 +978,8 @@ public class Log implements  ILogging
                 oneReport.setHostName(hostname);
                 String status = rs.getString("status");
                 oneReport.setStatus(status);
-                int consecMemInc = rs.getInt("consec_mem_inc_count");
-                oneReport.setConsec_mem_inc_count(consecMemInc);
+                int consecMemInc = rs.getInt("consecMemIncCount");
+                oneReport.setConsecMemIncCount(consecMemInc);
                 long usageAfterFirstGc = rs.getLong("usageAfterFirstGc");
                 oneReport.setUsageAfterFirstGc(usageAfterFirstGc);
                 long usageAfterLastGc = rs.getLong("usageAfterLastGc");
@@ -1201,11 +1200,11 @@ public class Log implements  ILogging
         {
             Statement DB = null;
             DB = DBConnection.createStatement();
-            DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, hostname, port, status, consec_mem_inc_count, usageAfterFirstGc, usageAfterLastGc, dailySumMemUsageDif, weeklySumMemUsageDif, " +
+            DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, hostname, port, status, consecMemIncCount, usageAfterFirstGc, usageAfterLastGc, dailySumMemUsageDif, weeklySumMemUsageDif, " +
                             "monthlySumMemUsageDif, dailyMinMemUsageDif, weeklyMinMemUsageDif, monthlyMinMemUsageDif, dailyIncreaseCount, weeklyIncreaseCount, monthlyIncreaseCount, dailyDecreaseCount, " +
                             "weeklyDecreaseCount, monthlyDecreaseCount, dailyReportCount, weeklyReportCount, monthlyReportCount)"+
                             " VALUES("+report.getStartTime()+","+report.getEndTime()+",'"+hostname+"',"+port+",'"+report.getStatus()+"',"
-                            +report.getConsec_mem_inc_count()+","+report.getUsageAfterFirstGc()+","
+                            +report.getConsecMemIncCount()+","+report.getUsageAfterFirstGc()+","
                             +report.getUsageAfterLastGc()+","+report.getDailySumMemUsageDif()+","+report.getWeeklySumMemUsageDif()+","+report.getMonthlySumMemUsageDif()+","+report.getDailyMinMemUsageDif()+","
                             +report.getWeeklyMinMemUsageDif()+","+report.getMonthlyMinMemUsageDif()+","+report.getDailyIncreaseCount()+","+report.getWeeklyIncreaseCount()+","+report.getMonthlyIncreaseCount()+","
                             +report.getDailyDecreaseCount()+","+report.getWeeklyDecreaseCount()+","+report.getMonthlyDecreaseCount()+","+report.getDailyReportCount()+","+report.getWeeklyReportCount()+","
