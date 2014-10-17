@@ -1196,19 +1196,25 @@ public class Log implements  ILogging
         }
     }
 
-    //@TODO implement update to send to current ProcessReport for the specific hostname and port  and updates its usageAfterLastGc value
-    // isn't this done already?
     @Override
     public void sendUsageAfterLastGc(long usageAfterLastGc, String hostname, int port) {
+        //ProcessReport does not exist
+        if (getProcessReport(hostname, port) == null){
+            ProcessReport pReport = new ProcessReport(hostname, port);
+            pReport.setUsageAfterLastGc(usageAfterLastGc);
+            sendProcessReport(Calendar.getInstance().getTimeInMillis(), Calendar.getInstance().getTimeInMillis(),
+                    port, hostname, pReport);
+        }
         //ProcessReport exists
-        if (getProcessReport(hostname, port) != null){
-            String query = "UPDATE ProcessReport SET usageAfterLastGc = " + usageAfterLastGc + " WHERE hostname = '" +
-                    hostname + "' AND " + " port = " + port;
+        else {
+            String query = "UPDATE ProcessReport SET usageAfterLastGc = ? WHERE hostname = ? AND port = ?;";
             try {
-                Statement DB = null;
-                DB = DBConnection.createStatement();
-                DB.executeUpdate(query);
-                DB.close();
+                PreparedStatement stmt = DBConnection.prepareStatement(query);
+                stmt.setLong(1, usageAfterLastGc);
+                stmt.setString(2, hostname);
+                stmt.setInt(3, port);
+                stmt.executeUpdate();
+                stmt.close();
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -1230,7 +1236,6 @@ public class Log implements  ILogging
                     hostname + "' AND " + " port = " + port;
             try {
                 Statement DB = null;
-                DB = DBConnection.createStatement();
                 DB = DBConnection.createStatement();
                 DB.executeUpdate(query);
             } catch (SQLException e) {
