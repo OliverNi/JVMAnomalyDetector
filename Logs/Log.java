@@ -1236,8 +1236,6 @@ public class Log implements  ILogging
         String input = "";
         try
         {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
             while(processesCounter < processes.size())
             {
                 getPortHostname = processes.get(processesCounter);
@@ -1246,20 +1244,34 @@ public class Log implements  ILogging
                 if(getPortHostname.contains(":"))
                 {
                     String[] portHostname = getPortHostname.split("\\:");
-                    input = "DELETE FROM GCLog WHERE hostname = '"+portHostname[0]+ "' AND port = "+portHostname[1];
-                    DB.executeUpdate(input);
-                    input = "DELETE FROM MemLog WHERE hostname = '"+portHostname[0]+ "' AND port = "+portHostname[1];
-                    DB.executeUpdate(input);
-                    input = "DELETE FROM GCReport WHERE hostname = '"+portHostname[0]+ "' AND port = "+portHostname[1];
-                    DB.executeUpdate(input);
-                    input = "DELETE FROM ProcessReport WHERE hostname = '"+portHostname[0]+ "' AND port = "+portHostname[1];
-                    DB.executeUpdate(input);
-                    processesCounter++;
+                    String host = portHostname[0];
+                    int port = Integer.parseInt(portHostname[1]);
+                    input = "DELETE FROM GCLog WHERE hostname = ? AND port = ?;";
+                    PreparedStatement stmt = DBConnection.prepareStatement(input);
+                    stmt.setString(1, host);
+                    stmt.setInt(2, port);
+                    stmt.executeUpdate(input);
+                    stmt.close();
+                    input = "DELETE FROM MemLog WHERE hostname = ? AND port = ?;";
+                    stmt = DBConnection.prepareStatement(input);
+                    stmt.setString(1, host);
+                    stmt.setInt(2, port);
+                    stmt.executeUpdate(input);
+                    stmt.close();
+                    input = "DELETE FROM GCReport WHERE hostname = ? AND port = ?;";
+                    stmt = DBConnection.prepareStatement(input);
+                    stmt.setString(1, host);
+                    stmt.setInt(2, port);
+                    stmt.executeUpdate(input);
+                    stmt.close();
+                    input = "DELETE FROM ProcessReport WHERE hostname = ? AND port = ?";
+                    stmt = DBConnection.prepareStatement(input);
+                    stmt.setString(1, host);
+                    stmt.setInt(2, port);
+                    stmt.executeUpdate(input);
+                    stmt.close();
                 }
-
-
             }
-            DB.close();
         } catch (SQLException e)
         {
             e.printStackTrace();
@@ -1269,13 +1281,15 @@ public class Log implements  ILogging
     @Override
     public ArrayList<GcReport> getPossibleMemoryLeaks(String host, int port) {
         ArrayList<GcReport> reports = new ArrayList<>();
-        String query = "SELECT * FROM GcReport WHERE status = '" + GcReport.Status.POSSIBLE_MEMORY_LEAK.toString() + "' ORDER BY startTime;";
+        String query = "SELECT * FROM GcReport WHERE status = ? AND hostname = ? AND port = ? ORDER BY startTime;";
 
         try {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            ResultSet rs = DB.executeQuery(query);
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setString(1, GcReport.Status.POSSIBLE_MEMORY_LEAK.toString());
+            stmt.setString(2, host);
+            stmt.setInt(3, port);
 
+            ResultSet rs = stmt.executeQuery();
             while (rs.next()){
                 GcReport theGcReport = new GcReport();
                 long sumCollected = Long.parseLong(rs.getString("sumCollected"));
@@ -1342,8 +1356,6 @@ public class Log implements  ILogging
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-
         return reports;
     }
 
