@@ -52,6 +52,10 @@ public class Log implements  ILogging
     public static final void main(String[] args) throws ClassNotFoundException
     {
         Log test = new Log();
+        ProcessReport report = new ProcessReport();
+        test.sendProcessReport(3555,"localhost",report);
+
+        test.printSpecifiedTable("ProcessReport");
 
     }
 
@@ -154,7 +158,7 @@ public class Log implements  ILogging
                     System.out.println("hostname = " + rs.getString("hostname"));
                     System.out.println("port = " + rs.getString("port"));
                     System.out.println("status = " + rs.getString("status"));
-                    System.out.println("consec_mem_inc_count = " + rs.getString("consec_mem_inc_count"));
+                    System.out.println("consecMemIncCount = " + rs.getString("consecMemIncCount"));
                     System.out.println("usageAfterFirstGc = " + rs.getString("usageAfterFirstGc"));
                     System.out.println("usageAfterLastGc = " + rs.getString("usageAfterLastGc"));
                 }
