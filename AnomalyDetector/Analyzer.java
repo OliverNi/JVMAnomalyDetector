@@ -536,15 +536,4 @@ public class Analyzer {
             ad.getListener().anomalyFound(e);
         }
     }
-
-    //@TODO Move function calcAvg
-    private long calcAvg(long[] arr){
-        long sum = 0;
-        for (int i = 0; i < arr.length; i++){
-            sum += arr[i];
-        }
-        return sum / arr.length;
-    }
-
-
 }
