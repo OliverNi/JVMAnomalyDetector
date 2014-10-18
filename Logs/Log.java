@@ -4,6 +4,7 @@ import AnomalyDetector.AnomalyReport;
 import AnomalyDetector.ProcessConnection;
 import AnomalyDetector.ProcessReport;
 
+import java.lang.reflect.*;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -26,7 +27,6 @@ public class Log implements  ILogging
     private String ip;
     private int port;
     private Connection DBConnection;
-
     public static Log getInstance(){
         return instance;
     }
@@ -62,11 +62,6 @@ public class Log implements  ILogging
     public static final void main(String[] args) throws ClassNotFoundException
     {
         Log test = Log.getInstance();
-        ProcessReport report = new ProcessReport();
-        test.sendProcessReport(3555,"localhost",report);
-
-        test.printSpecifiedTable("ProcessReport");
-
     }
 
     public void DBTableCreation()
@@ -1547,32 +1542,32 @@ public class Log implements  ILogging
 
                 if(getPortHostname.contains(":"))
                 {
-                    String[] portHostname = getPortHostname.split("\\:");
+                    String[] portHostname = getPortHostname.split(":");
                     String host = portHostname[0];
                     int port = Integer.parseInt(portHostname[1]);
                     input = "DELETE FROM GCLog WHERE hostname = ? AND port = ?;";
                     PreparedStatement stmt = DBConnection.prepareStatement(input);
                     stmt.setString(1, host);
                     stmt.setInt(2, port);
-                    stmt.executeUpdate(input);
+                    stmt.executeUpdate();
                     stmt.close();
                     input = "DELETE FROM MemLog WHERE hostname = ? AND port = ?;";
                     stmt = DBConnection.prepareStatement(input);
                     stmt.setString(1, host);
                     stmt.setInt(2, port);
-                    stmt.executeUpdate(input);
+                    stmt.executeUpdate();
                     stmt.close();
                     input = "DELETE FROM GCReport WHERE hostname = ? AND port = ?;";
                     stmt = DBConnection.prepareStatement(input);
                     stmt.setString(1, host);
                     stmt.setInt(2, port);
-                    stmt.executeUpdate(input);
+                    stmt.executeUpdate();
                     stmt.close();
                     input = "DELETE FROM ProcessReport WHERE hostname = ? AND port = ?";
                     stmt = DBConnection.prepareStatement(input);
                     stmt.setString(1, host);
                     stmt.setInt(2, port);
-                    stmt.executeUpdate(input);
+                    stmt.executeUpdate();
                     stmt.close();
                 }
             }
@@ -1585,7 +1580,7 @@ public class Log implements  ILogging
     @Override
     public ArrayList<GcReport> getPossibleMemoryLeaks(String host, int port) {
         ArrayList<GcReport> reports = new ArrayList<>();
-        String query = "SELECT * FROM GcReport WHERE status = ? AND hostname = ? AND port = ? ORDER BY startTime;";
+        String query = "SELECT * FROM GCReport WHERE status = ? AND hostname = ? AND port = ? ORDER BY startTime;";
 
         try {
             PreparedStatement stmt = DBConnection.prepareStatement(query);
