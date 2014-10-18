@@ -138,7 +138,7 @@ public class Analyzer {
             if ((currentGc.getTimeStamp() - timeLastGc) < timeWarning) {
                 AnomalyReport aReport = new AnomalyReport();
                 aReport.setAnomaly(AnomalyReport.Anomaly.EXCESSIVE_GC_SCAN);
-                aReport.setErrorMsg("Time between Garbage Collections has gone under " + timeWarning + " seconds!");
+                aReport.setErrorMsg("Time between Garbage Collections has gone under " + timeWarning + " milliseconds!");
                 aReport.setHost(host);
                 aReport.setPort(port);
                 aReport.setMemIncreaseBytes(currentGc.getMemoryUsedAfter() - pReport.getUsageAfterFirstGc());
