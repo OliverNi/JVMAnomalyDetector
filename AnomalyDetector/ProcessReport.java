@@ -119,32 +119,7 @@ public class ProcessReport
 
     public String getStatus()
     {
-        String returnStatus = "";
-        if(status.equals("POSSIBLE_MEMORY_LEAK"))
-        {
-            returnStatus = "POSSIBLE_MEMORY_LEAK";
-        }
-        else if(status.equals("EXCESSIVE_GC_SCAN"))
-        {
-            returnStatus = "EXCESSIVE_GC_SCAN";
-        }
-        else if(status.equals("LIKELY_MEMORY_LEAK"))
-        {
-            returnStatus = "LIKELY_MEMORY_LEAK";
-        }
-        else if(status.equals("SUSPECTED_MEMORY_LEAK"))
-        {
-            returnStatus = "SUSPECTED_MEMORY_LEAK";
-        }
-        else if(status.equals("OK"))
-        {
-            returnStatus = "OK;";
-        }
-        else
-        {
-            returnStatus = "OK";
-        }
-        return returnStatus;
+        return status.toString();
     }
 
     public int getConsecMemIncCount() {
