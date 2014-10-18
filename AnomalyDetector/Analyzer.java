@@ -142,7 +142,7 @@ public class Analyzer {
                 aReport.setHost(host);
                 aReport.setPort(port);
                 aReport.setMemIncreaseBytes(currentGc.getMemoryUsedAfter() - pReport.getUsageAfterFirstGc());
-                int percentage = (int) ((currentGc.getMemoryUsedAfter() - pReport.getUsageAfterFirstGc()) / pReport.getUsageAfterFirstGc()) * 100;
+                int percentage = (int) ((((double)currentGc.getMemoryUsedAfter() - pReport.getUsageAfterFirstGc()) / pReport.getUsageAfterFirstGc()) * 100);
                 aReport.setMemIncreasePercentage(percentage);
                 aReport.setTimestamp(currentGc.getTimeStamp());
                 fireAnomalyEvent(aReport);
