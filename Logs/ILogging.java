@@ -145,6 +145,10 @@ public interface ILogging {
      */
     public long firstGcValue(String process);
 
+    public long getTimeOfLastGc(ProcessConnection connection);
+
+    public void sendTimeOfLastGc(ProcessConnection connection, long timeOfLastGc);
+
     /**
      * Clears data for all processes in the database
      */

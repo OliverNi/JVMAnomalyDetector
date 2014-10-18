@@ -87,6 +87,8 @@ public class ProcessReport
     private int weeklyReportCount;
     private int monthlyReportCount;
 
+    private long timeOfLastGc;
+
 
 
 //MemStats
@@ -240,6 +242,14 @@ public class ProcessReport
 
     public void setMonthlyReportCount(int monthlyReportCount) {
         this.monthlyReportCount = monthlyReportCount;
+    }
+
+    public long getTimeOfLastGc() {
+        return timeOfLastGc;
+    }
+
+    public void setTimeOfLastGc(long timeOfLastGc) {
+        this.timeOfLastGc = timeOfLastGc;
     }
 
     public double getDailyAvgMemUsageDif(){

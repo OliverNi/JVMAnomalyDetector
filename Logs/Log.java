@@ -81,7 +81,7 @@ public class Log implements  ILogging
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS ProcessReport(prId INTEGER PRIMARY KEY AUTOINCREMENT, startTime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INT, status VARCHAR(25), " +
                     "consecMemIncCount INT, usageAfterFirstGc BIGINT, usageAfterLastGc BIGINT, dailySumMemUsageDif FLOAT, weeklySumMemUsageDif FLOAT, monthlySumMemUsageDif FLOAT, " +
                     "dailyMinMemUsageDif FLOAT, weeklyMinMemUsageDif FLOAT, monthlyMinMemUsageDif FLOAT, dailyIncreaseCount INT, weeklyIncreaseCount INT, monthlyIncreaseCount INT, " +
-                    "dailyDecreaseCount INT, weeklyDecreaseCount INT, monthlyDecreaseCount INT, dailyReportCount INT, weeklyReportCount INT, monthlyReportCount INT)");
+                    "dailyDecreaseCount INT, weeklyDecreaseCount INT, monthlyDecreaseCount INT, dailyReportCount INT, weeklyReportCount INT, monthlyReportCount INT, timeOfLastGc BIGINT)");
 
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS GCLog(gcId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT," +
                     " memUsageAfter BIGINT, memUsageBefore BIGINT, GCCollectionTime BIGINT, hostname VARCHAR(25), port INTEGER," +
@@ -92,6 +92,7 @@ public class Log implements  ILogging
                     "minTimeBetweenGc BIGINT, maxTimeBetweenGc BIGINT, sumCollectionTime BIGINT, minCollectionTime BIGINT, maxCollectionTime BIGINT," +
                     "starttime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INTEGER, gcCount INTEGER, sumMinMemoryUsage BIGINT, reportCount INTEGER, status VARCHAR(50), period INT, FOREIGN KEY(hostname) REFERENCES GCLog(hostname)," +
                     "FOREIGN KEY(port) REFERENCES GCLog(port) ) ");
+
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS AnomalyReport(aId INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     "hostname VARCHAR(25), port INTEGER, timestamp BIGINT, errorMsg VARCHAR(25), startTimeIncrease BIGINT," +
                     "anomalyStatus VARCHAR(25), memIncreasePercentage INT, memIncreaseBytes BIGINT )");
@@ -1132,6 +1133,8 @@ public class Log implements  ILogging
                 oneReport.setWeeklyReportCount(weeklyReportCount);
                 int monthlyReportCount = rs.getInt("monthlyReportCount");
                 oneReport.setMonthlyReportCount(monthlyReportCount);
+                long timeOfLastGc = rs.getLong("timeOfLastGc");
+                oneReport.setTimeOfLastGc(timeOfLastGc);
 
                 String key = hostname + ":" + port;
                 reportsMap.put(key, oneReport);
@@ -1225,6 +1228,8 @@ public class Log implements  ILogging
                 oneReport.setWeeklyReportCount(weeklyReportCount);
                 int monthlyReportCount = rs.getInt("monthlyReportCount");
                 oneReport.setMonthlyReportCount(monthlyReportCount);
+                long timeOfLastGc = rs.getLong("timeOfLastGc");
+                oneReport.setTimeOfLastGc(timeOfLastGc);
             }
             stmt.close();
 
@@ -1413,13 +1418,13 @@ public class Log implements  ILogging
             DB = DBConnection.createStatement();
             DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, hostname, port, status, consecMemIncCount, usageAfterFirstGc, usageAfterLastGc, dailySumMemUsageDif, weeklySumMemUsageDif, " +
                             "monthlySumMemUsageDif, dailyMinMemUsageDif, weeklyMinMemUsageDif, monthlyMinMemUsageDif, dailyIncreaseCount, weeklyIncreaseCount, monthlyIncreaseCount, dailyDecreaseCount, " +
-                            "weeklyDecreaseCount, monthlyDecreaseCount, dailyReportCount, weeklyReportCount, monthlyReportCount)"+
+                            "weeklyDecreaseCount, monthlyDecreaseCount, dailyReportCount, weeklyReportCount, monthlyReportCount, timeOfLastGc)"+
                             " VALUES("+report.getStartTime()+","+report.getEndTime()+",'"+hostname+"',"+port+",'"+report.getStatus()+"',"
                             +report.getConsecMemIncCount()+","+report.getUsageAfterFirstGc()+","
                             +report.getUsageAfterLastGc()+","+report.getDailySumMemUsageDif()+","+report.getWeeklySumMemUsageDif()+","+report.getMonthlySumMemUsageDif()+","+report.getDailyMinMemUsageDif()+","
                             +report.getWeeklyMinMemUsageDif()+","+report.getMonthlyMinMemUsageDif()+","+report.getDailyIncreaseCount()+","+report.getWeeklyIncreaseCount()+","+report.getMonthlyIncreaseCount()+","
                             +report.getDailyDecreaseCount()+","+report.getWeeklyDecreaseCount()+","+report.getMonthlyDecreaseCount()+","+report.getDailyReportCount()+","+report.getWeeklyReportCount()+","
-                            +report.getMonthlyReportCount()+")");
+                            +report.getMonthlyReportCount()+report.getTimeOfLastGc()+")");
             DB.close();
         }catch (SQLException e)
         {
@@ -1455,6 +1460,39 @@ public class Log implements  ILogging
             System.out.println("NumberFormatException: " + nfe.getMessage());
         }
         return GcMinMemValue;
+    }
+
+    @Override
+    public long getTimeOfLastGc(ProcessConnection connection) {
+        String query = "SELECT timeOfLastGc FROM ProcessReport WHERE hostname = ? AND port = ?;";
+        long timeOfLastGc = -1;
+        try {
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setString(1, connection.getHostName());
+            stmt.setInt(2, port);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next())
+                timeOfLastGc = rs.getLong("timeOfLastGc");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return timeOfLastGc;
+    }
+
+    @Override
+    public void sendTimeOfLastGc(ProcessConnection connection, long timeOfLastGc) {
+        String query = "UPDATE ProcessReport SET timeOfLastGC = ? WHERE hostname = ? AND port = ?;";
+
+        try {
+            PreparedStatement stmt = DBConnection.prepareStatement(query);
+            stmt.setLong(1, timeOfLastGc);
+            stmt.setString(2, connection.getHostName());
+            stmt.setInt(3, connection.getPort());
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
