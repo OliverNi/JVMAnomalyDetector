@@ -283,7 +283,9 @@ public class Analyzer {
                         String origMemUsage = Long.toString(originalMinimumMemValue);
                         double originalMemUsage = Double.valueOf(origMemUsage);
 
-                        double calculateMemIncreasePercentage = ((endMemUsage/originalMemUsage)*100);
+                        //calculates latest number which is bigger, with the original smaller value * 100 and
+                        // then subtracts 100 to get percentage increase.
+                        double calculateMemIncreasePercentage = (((endMemUsage/originalMemUsage)*100)-100);
 
                         int memIncPercTest = (int) calculateMemIncreasePercentage;
                         aReport.setMemIncreasePercentage(memIncPercTest);
