@@ -31,6 +31,11 @@ public class AnomalyDetector {
     private ArrayList<ProcessConnection> connections;
     private Analyzer analyzer;
     private AnomalyListener listener;
+
+    public Analyzer getAnalyzer() {
+        return analyzer;
+    }
+
     public AnomalyDetector(){
         this(null);
     }
@@ -39,7 +44,7 @@ public class AnomalyDetector {
         agents = new ArrayList<>();
         connections = new ArrayList<>();
         log = Log.getInstance();
-        analyzer = Analyzer.getInstance();
+        analyzer = new Analyzer(this);
         this.listener = listener;
 
 

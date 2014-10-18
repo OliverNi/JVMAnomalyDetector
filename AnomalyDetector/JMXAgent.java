@@ -1,6 +1,8 @@
 package AnomalyDetector;
 
+import Logs.GcStats;
 import Logs.ILogging;
+import Logs.Log;
 import com.sun.management.GarbageCollectionNotificationInfo;
 
 import javax.management.*;
@@ -62,8 +64,8 @@ public class JMXAgent {
         long timeStamp = Calendar.getInstance().getTimeInMillis();
         long collectionTime = info.getGcInfo().getDuration();
         log.sendGarbageCollectionLog(oldGenAfter.getUsed(), oldGenBefore.getUsed(), timeStamp, collectionTime, hostName, port);
-
         log.sendUsageAfterLastGc(oldGenAfter.getUsed(), hostName, port);
+        ad.getAnalyzer().analyzeExcessiveGcScan(hostName, port, new GcStats(oldGenAfter.getUsed(), oldGenBefore.getUsed(), timeStamp, collectionTime));
     }
 
     /**
@@ -134,7 +136,7 @@ public class JMXAgent {
         this.hostName = hostName;
         this.port = port;
         this.ad = ad;
-        log = ad.getLog();
+        log = Log.getInstance();
         this.listener = new AgentListener(this);
         this.interval=DEFAULT_INTERVAL_MINUTES;
         this.timer = new Timer();
