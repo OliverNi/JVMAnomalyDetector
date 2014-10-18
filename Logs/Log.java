@@ -236,7 +236,7 @@ public class Log implements  ILogging
 
 //            // create a database connection
             Statement DB = null;
-            DBConnection = DriverManager.getConnection("jdbc:sqlite:test17.db");
+            DBConnection = DriverManager.getConnection("jdbc:sqlite:test19.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
 
@@ -1424,7 +1424,7 @@ public class Log implements  ILogging
                             +report.getUsageAfterLastGc()+","+report.getDailySumMemUsageDif()+","+report.getWeeklySumMemUsageDif()+","+report.getMonthlySumMemUsageDif()+","+report.getDailyMinMemUsageDif()+","
                             +report.getWeeklyMinMemUsageDif()+","+report.getMonthlyMinMemUsageDif()+","+report.getDailyIncreaseCount()+","+report.getWeeklyIncreaseCount()+","+report.getMonthlyIncreaseCount()+","
                             +report.getDailyDecreaseCount()+","+report.getWeeklyDecreaseCount()+","+report.getMonthlyDecreaseCount()+","+report.getDailyReportCount()+","+report.getWeeklyReportCount()+","
-                            +report.getMonthlyReportCount()+report.getTimeOfLastGc()+")");
+                            +report.getMonthlyReportCount()+","+report.getTimeOfLastGc()+")");
             DB.close();
         }catch (SQLException e)
         {
