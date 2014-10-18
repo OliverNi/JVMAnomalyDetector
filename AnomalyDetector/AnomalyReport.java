@@ -135,18 +135,19 @@ public class AnomalyReport
 
     @Override
     public String toString(){
-        String info = new String();
-        info += "Anomaly Detected \n";
+        String info = "Anomaly Detected \n";
         Date time = new Date();
         time.setTime(timestamp);
         info += ("Time: " + time.toString() + "\n");
         info += "Process operating on: " + host + ":" + port + "\n";
         info += errorMsg + "\n";
         info += "Type: " + anomaly.toString() + "\n";
-        time.setTime(startTimeIncrease);
-        info += "Memory increase started at: " + time.toString() + "\n"; //@TODO Maybe Change to between (time between the Gc pre memleak and GC after memleak)
+        if (anomaly != Anomaly.EXCESSIVE_GC_SCAN) {
+            time.setTime(startTimeIncrease);
+            info += "Memory increase started at: " + time.toString() + "\n"; //@TODO Maybe Change to between (time between the Gc pre memleak and GC after memleak)
+        }
         info += "Memory has increased by: " + memIncreasePercentage + "% \n";
-        info += "Memory has increased by: " + memIncreaseBytes + " bytes \n";
+        info += "Memory has increased by: " + memIncreaseBytes / 1024 + " kb \n";
         return info;
     }
 
