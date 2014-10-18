@@ -1469,7 +1469,7 @@ public class Log implements  ILogging
         try {
             PreparedStatement stmt = DBConnection.prepareStatement(query);
             stmt.setString(1, connection.getHostName());
-            stmt.setInt(2, port);
+            stmt.setInt(2, connection.getPort());
             ResultSet rs = stmt.executeQuery();
             if (rs.next())
                 timeOfLastGc = rs.getLong("timeOfLastGc");
