@@ -145,6 +145,7 @@ public class Analyzer {
                 int percentage = (int) ((currentGc.getMemoryUsedAfter() - pReport.getUsageAfterFirstGc()) / pReport.getUsageAfterFirstGc()) * 100;
                 aReport.setMemIncreasePercentage(percentage);
                 aReport.setTimestamp(currentGc.getTimeStamp());
+                fireAnomalyEvent(aReport);
             }
         }
         timeLastGc = currentGc.getTimeStamp();

@@ -16,6 +16,7 @@ import java.util.Date;
 public class Log implements  ILogging
 {
     private static Log instance = new Log();
+    private static final Date PROGRAM_START = Calendar.getInstance().getTime();
     private long GCTime;
     private long GCTimeStamp;
     private long GCmemoryUsageAfter;
@@ -28,6 +29,10 @@ public class Log implements  ILogging
 
     public static Log getInstance(){
         return instance;
+    }
+
+    public static Date getProgramStart(){
+        return PROGRAM_START;
     }
 
     private Log()

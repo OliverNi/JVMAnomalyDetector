@@ -59,9 +59,9 @@ public class JMXAgent {
      * @param info Info about the Garbage Collection.
      */
     private void gcLog(GarbageCollectionNotificationInfo info){
-        MemoryUsage oldGenAfter = info.getGcInfo().getMemoryUsageAfterGc().get("PS Old Gen");
+        MemoryUsage oldGenAfter = info.getGcInfo().getMemoryUsageAfterGc().get("PS Old Gen"); //@TODO Linux
         MemoryUsage oldGenBefore = info.getGcInfo().getMemoryUsageBeforeGc().get("PS Old Gen");
-        long timeStamp = Calendar.getInstance().getTimeInMillis();
+        long timeStamp = info.getGcInfo().getStartTime() + Log.getProgramStart().getTime();
         long collectionTime = info.getGcInfo().getDuration();
         log.sendGarbageCollectionLog(oldGenAfter.getUsed(), oldGenBefore.getUsed(), timeStamp, collectionTime, hostName, port);
         log.sendUsageAfterLastGc(oldGenAfter.getUsed(), hostName, port);
