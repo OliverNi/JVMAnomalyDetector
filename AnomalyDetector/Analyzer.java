@@ -61,7 +61,7 @@ public class Analyzer {
     public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
     public static final double DEFAULT_CONSECUTIVE_MEM_INC = 1;
     public static final long DEFAULT_TIME_EXCESSIVE_SCAN_WARNING = 1000;
-    private static long timeLastGc = 0L;
+    private static long timeLastGc = 0L; //@TODO Needs to be replaced. Only supports one process at the moment.
     private AnomalyDetector ad;
     private ILogging log;
     Timer dailyTimer;
@@ -129,6 +129,12 @@ public class Analyzer {
         System.out.println("DEBUG: Timer created for: " + host + ":" + port);
     }
 
+    /**
+     * Looks for excessive Gc Scans. Creates an AnomalyReport if GC scans happen to often.
+     * @param host host
+     * @param port port
+     * @param currentGc The GcStats which will be analyzed.
+     */
     public void analyzeExcessiveGcScan(String host, int port, GcStats currentGc){
         if (timeLastGc != 0L) {
             ProcessReport pReport = log.getProcessReport(host, port);
