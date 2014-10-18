@@ -13,7 +13,6 @@ import java.util.*;
  * Created by Oliver on 2014-09-18.
  */
 public class Analyzer {
-    //@TODO Add timer to combine GcReports each day/week/month
     class HourlyTask extends TimerTask {
         HourlyTask(){
         }
@@ -61,6 +60,8 @@ public class Analyzer {
 
     public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
     public static final double DEFAULT_CONSECUTIVE_MEM_INC = 1;
+    public static final long DEFAULT_TIME_EXCESSIVE_SCAN_WARNING = 1000;
+    private static long timeLastGc = 0L;
     private AnomalyDetector ad;
     private ILogging log;
     Timer dailyTimer;
@@ -119,12 +120,32 @@ public class Analyzer {
         monthlyTimer.schedule(new MonthlyTask(), firstTime);
     }
 
+
     public void addIntervalTimer(String host, int port, int interval){
         long minute = 60000L;
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new IntervalTask(host, port, interval), interval * minute, interval * minute);
         intervalTimers.add(timer);
         System.out.println("DEBUG: Timer created for: " + host + ":" + port);
+    }
+
+    public void analyzeExcessiveGcScan(String host, int port, GcStats currentGc){
+        if (timeLastGc != 0L) {
+            ProcessReport pReport = log.getProcessReport(host, port);
+            long timeWarning = DEFAULT_TIME_EXCESSIVE_SCAN_WARNING;
+            if ((currentGc.getTimeStamp() - timeLastGc) < timeWarning) {
+                AnomalyReport aReport = new AnomalyReport();
+                aReport.setAnomaly(AnomalyReport.Anomaly.EXCESSIVE_GC_SCAN);
+                aReport.setErrorMsg("Time between Garbage Collections has gone under " + timeWarning + " seconds!");
+                aReport.setHost(host);
+                aReport.setPort(port);
+                aReport.setMemIncreaseBytes(currentGc.getMemoryUsedAfter() - pReport.getUsageAfterFirstGc());
+                int percentage = (int) ((currentGc.getMemoryUsedAfter() - pReport.getUsageAfterFirstGc()) / pReport.getUsageAfterFirstGc()) * 100;
+                aReport.setMemIncreasePercentage(percentage);
+                aReport.setTimestamp(currentGc.getTimeStamp());
+            }
+        }
+        timeLastGc = currentGc.getTimeStamp();
     }
 
     public void analyzeIntervalGc(String host, int port, int interval)
