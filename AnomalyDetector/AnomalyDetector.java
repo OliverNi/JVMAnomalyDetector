@@ -183,7 +183,6 @@ public class AnomalyDetector {
             }
 
             String cmdOutput = "";
-            String cmdInput = "";
             Scanner in = new Scanner(System.in);
             do
             {
@@ -208,34 +207,25 @@ public class AnomalyDetector {
         String cmdMain = "";
         String cmdParam = "";
 
-        System.out.print(cmd);
         if(cmd.contains("-"))
         {
-            String[] cmds = cmd.split("-");
-
+            String[] cmds = cmd.split(" -");
             cmdMain = cmds[0];
             cmdParam = "";
-            System.out.println("cmds length is: "+cmds.length);
             if (cmds.length > 1)
             {
                 cmdParam = cmds[1];
-                System.out.println("cmdParam  is: "+cmds[1]);
             }
-            System.out.println("cmdMain is:"+cmds[0]);
         }
         else if(cmd.contains(" ") && !cmd.contains("-"))
         {
             String[] cmds = cmd.split(" ");
-
             cmdMain = cmds[0];
             cmdParam = "";
-            System.out.println("cmds length is: "+cmds.length);
             if (cmds.length > 1)
             {
                 cmdParam = cmds[1];
-                System.out.println("cmdParam  is: "+cmds[1]);
             }
-            System.out.println("cmdMain is:"+cmds[0]);
         }
 
         switch (cmdMain){
@@ -255,7 +245,6 @@ public class AnomalyDetector {
                 }
                 else
                 {
-                    System.out.println("this is executed, else statement in clear case");
                     String[] connections = cmdParam.split(":");
                     for (int i = 0; i < connections.length; i++){
                         Log.getInstance().clearData(new ArrayList<>(Arrays.asList(connections)));
