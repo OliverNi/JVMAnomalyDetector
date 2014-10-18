@@ -24,11 +24,9 @@ public class ProcessReport
         consecMemIncCount = 0;
         startTime = Calendar.getInstance().getTimeInMillis();
         endTime = Calendar.getInstance().getTimeInMillis();
-        this.port = 0;
-        this.hostName = "";
+        this.port = port;
+        this.hostName = hostName;
         this.status = Status.OK;
-        TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
-        PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
     }
 
     //Create AnomalyReport if excessive GC scan
@@ -44,8 +42,8 @@ public class ProcessReport
     public static final long DEFAULT_TIME_BETWEEN_GC_WARNING = 1200000;
     //default value of a percentage increase corresponding to a warning
     public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
-    public static long TIME_BETWEEN_GC_WARNING;
-    public static double PERCENTAGE_INC_IN_MEM_USE_WARNING;
+    public static long TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
+    public static double PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
 
     //@TODO implement in addReport
     private long startTime;
