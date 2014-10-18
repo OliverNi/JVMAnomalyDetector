@@ -11,7 +11,7 @@ import java.util.Calendar;
  * Created by Oliver on 2014-10-16.
  */
 public class ProcessReportModel extends Model<ProcessReportResponse> {
-    Log log = new Log();
+    Log log = Log.getInstance();
     public void getListItem(String host, int port, String period){
         ProcessReport result = log.getProcessReport(host, port);
         if (result != null) {

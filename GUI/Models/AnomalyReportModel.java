@@ -12,7 +12,7 @@ import java.util.Date;
  * Created by Oliver on 2014-10-15.
  */
 public class AnomalyReportModel extends Model<AnomalyReportResponse> {
-    Log log = new Log(); //@TODO Singleton log?
+    Log log = Log.getInstance();
     public void getListItems(String host, int port, String period){
         ArrayList<AnomalyReport> result = new ArrayList<>();
         Calendar cal = Calendar.getInstance();

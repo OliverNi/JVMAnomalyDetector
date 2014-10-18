@@ -15,6 +15,7 @@ import java.util.Date;
  */
 public class Log implements  ILogging
 {
+    private static Log instance = new Log();
     private long GCTime;
     private long GCTimeStamp;
     private long GCmemoryUsageAfter;
@@ -25,7 +26,11 @@ public class Log implements  ILogging
     private int port;
     private Connection DBConnection;
 
-    public Log()
+    public static Log getInstance(){
+        return instance;
+    }
+
+    private Log()
     {
         DBConnection = null;
         GCTime = 0;
@@ -51,7 +56,7 @@ public class Log implements  ILogging
 
     public static final void main(String[] args) throws ClassNotFoundException
     {
-        Log test = new Log();
+        Log test = Log.getInstance();
         ProcessReport report = new ProcessReport();
         test.sendProcessReport(3555,"localhost",report);
 

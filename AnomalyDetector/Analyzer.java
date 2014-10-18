@@ -1,10 +1,7 @@
 package AnomalyDetector;
 
 import Listeners.AnomalyEvent;
-import Logs.AnalyzedGcReport;
-import Logs.GcReport;
-import Logs.GcStats;
-import Logs.ILogging;
+import Logs.*;
 import com.sun.org.apache.xpath.internal.SourceTree;
 
 import java.util.*;
@@ -69,10 +66,9 @@ public class Analyzer {
     Timer monthlyTimer;
     ArrayList<Timer> intervalTimers;
 
-
     public Analyzer(AnomalyDetector ad){
         this.ad = ad;
-        this.log = ad.getLog();
+        this.log = Log.getInstance();
         setTimers();
     }
 
@@ -546,7 +542,7 @@ public class Analyzer {
         if (ad.getListener() != null){
             System.out.println("fireAnomalyEvent is executed!");
             AnomalyEvent e = new AnomalyEvent(aReport);
-            ad.getLog().sendAnomalyReport(aReport);
+            Log.getInstance().sendAnomalyReport(aReport);
             ad.getListener().anomalyFound(e);
         }
     }

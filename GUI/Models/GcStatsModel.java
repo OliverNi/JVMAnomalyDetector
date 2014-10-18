@@ -12,7 +12,7 @@ import java.util.Date;
  * Created by Oliver on 2014-10-15.
  */
 public class GcStatsModel extends Model<GcStatsResponse>{
-    Log log = new Log();
+    Log log = Log.getInstance();
 
     public GcStatsModel(){
 

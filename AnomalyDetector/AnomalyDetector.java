@@ -5,6 +5,7 @@ package AnomalyDetector;
 import GUI.Controllers.FrontController;
 import Listeners.AnomalyListener;
 import Listeners.SimpleAnomalyListener;
+import Logs.GcReport;
 import Logs.Log;
 
 import javax.swing.*;
@@ -25,10 +26,6 @@ public class AnomalyDetector {
     public boolean ANALYZE_WEEKLY_STATISTICS = true;
     public boolean ANALYZE_MONTHLY_STATISTICS = true;
 
-    public Log getLog() {
-        return log;
-    }
-
     private Log log;
     private ArrayList<JMXAgent> agents;
     private ArrayList<ProcessConnection> connections;
@@ -41,8 +38,8 @@ public class AnomalyDetector {
     public AnomalyDetector(AnomalyListener listener){
         agents = new ArrayList<>();
         connections = new ArrayList<>();
-        log = new Log();
-        analyzer = new Analyzer(this);
+        log = Log.getInstance();
+        analyzer = Analyzer.getInstance();
         this.listener = listener;
 
 
@@ -217,12 +214,12 @@ public class AnomalyDetector {
             case "clear":
                 if (cmdParam.equals("all")){
                     output = "All rows in all tables cleared";
-                    ad.getLog().clearData();
+                    Log.getInstance().clearData();
                 }
                 else{
                     String[] connections = cmdParam.split(",");
                     for (int i = 0; i < connections.length; i++){
-                        ad.getLog().clearData(new ArrayList<>(Arrays.asList(connections)));
+                        Log.getInstance().clearData(new ArrayList<>(Arrays.asList(connections)));
                     }
                     output = "Clearing all rows in all tables for specified connections";
                 }

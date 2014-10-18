@@ -13,7 +13,7 @@ import java.util.Map;
  * Created by Oliver on 2014-10-14.
  */
 public class GcReportModel extends Model<GcReportResponse>{
-    Log log = new Log();
+    Log log = Log.getInstance();
 
     public GcReportModel(){
 
