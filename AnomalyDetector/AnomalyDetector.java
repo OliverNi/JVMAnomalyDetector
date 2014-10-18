@@ -183,12 +183,21 @@ public class AnomalyDetector {
             }
 
             String cmdOutput = "";
+            String cmdInput = "";
             Scanner in = new Scanner(System.in);
-            do{
-                if (in.hasNext()) {
-                    cmdOutput = command(in.next(), ad);
+            do
+            {
+                if(in.hasNext())
+                {
+                    cmdOutput = command(in.nextLine(), ad);
                     System.out.println(cmdOutput);
                 }
+
+//                if (in.hasNext())
+//                {
+//                    cmdOutput = command(in.next(), ad);
+//                    System.out.println(cmdOutput);
+//                }
             } while(!cmdOutput.equals("Shutting down"));
             in.close();
         }
@@ -196,27 +205,58 @@ public class AnomalyDetector {
 
     private static String command(String cmd, AnomalyDetector ad){
         String output = "";
-        String[] cmds = cmd.split(" -");
-        String cmdMain = cmds[0];
+        String cmdMain = "";
         String cmdParam = "";
-        if (cmds.length > 1)
-            cmdParam = cmds[1];
+
+        System.out.print(cmd);
+        if(cmd.contains("-"))
+        {
+            String[] cmds = cmd.split("-");
+
+            cmdMain = cmds[0];
+            cmdParam = "";
+            System.out.println("cmds length is: "+cmds.length);
+            if (cmds.length > 1)
+            {
+                cmdParam = cmds[1];
+                System.out.println("cmdParam  is: "+cmds[1]);
+            }
+            System.out.println("cmdMain is:"+cmds[0]);
+        }
+        else if(cmd.contains(" ") && !cmd.contains("-"))
+        {
+            String[] cmds = cmd.split(" ");
+
+            cmdMain = cmds[0];
+            cmdParam = "";
+            System.out.println("cmds length is: "+cmds.length);
+            if (cmds.length > 1)
+            {
+                cmdParam = cmds[1];
+                System.out.println("cmdParam  is: "+cmds[1]);
+            }
+            System.out.println("cmdMain is:"+cmds[0]);
+        }
+
         switch (cmdMain){
+
             case "help":{
-                output = "clear: Clears database of all log entries \n";
-                output += " Paramers: -HOST:PORT (clear -HOST:PORT)\n";
+                output = "clear all"+ "Clears database of all log entries \n";
+                output += "Paramers: -HOST:PORT (clear -HOST:PORT)\n";
                 output += "quit: Shuts down program \n";
                 break;
             }
-
             //@TODO "clear -host:port command doesn't work at all (maybe not implemented)
             case "clear":
-                if (cmdParam.equals("all")){
+                if (cmdParam.equals("all"))
+                {
                     output = "All rows in all tables cleared";
                     Log.getInstance().clearData();
                 }
-                else{
-                    String[] connections = cmdParam.split(",");
+                else
+                {
+                    System.out.println("this is executed, else statement in clear case");
+                    String[] connections = cmdParam.split(":");
                     for (int i = 0; i < connections.length; i++){
                         Log.getInstance().clearData(new ArrayList<>(Arrays.asList(connections)));
                     }
