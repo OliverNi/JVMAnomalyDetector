@@ -58,7 +58,6 @@ public class Analyzer {
     public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
     public static final double DEFAULT_CONSECUTIVE_MEM_INC = 1;
     public static final long DEFAULT_TIME_EXCESSIVE_SCAN_WARNING = 1000;
-    private static long timeLastGc = 0L; //@TODO Needs to be replaced. Only supports one process at the moment.
     private AnomalyDetector ad;
     private ILogging log;
     Timer dailyTimer;
@@ -132,10 +131,12 @@ public class Analyzer {
      * @param currentGc The GcStats which will be analyzed.
      */
     public void analyzeExcessiveGcScan(String host, int port, GcStats currentGc){
-        if (timeLastGc != 0L) {
+        ProcessConnection conn = new ProcessConnection(host, port);
+        long timeOfLastGc = Log.getInstance().getTimeOfLastGc(conn);
+        if (timeOfLastGc > 0L) {
             ProcessReport pReport = log.getProcessReport(host, port);
             long timeWarning = DEFAULT_TIME_EXCESSIVE_SCAN_WARNING;
-            if ((currentGc.getTimeStamp() - timeLastGc) < timeWarning) {
+            if ((currentGc.getTimeStamp() - timeOfLastGc) < timeWarning) {
                 AnomalyReport aReport = new AnomalyReport();
                 aReport.setAnomaly(AnomalyReport.Anomaly.EXCESSIVE_GC_SCAN);
                 aReport.setErrorMsg("Time between Garbage Collections has gone under " + timeWarning + " milliseconds!");
@@ -148,7 +149,7 @@ public class Analyzer {
                 fireAnomalyEvent(aReport);
             }
         }
-        timeLastGc = currentGc.getTimeStamp();
+        Log.getInstance().sendTimeOfLastGc(conn, currentGc.getTimeStamp());
     }
 
     public void analyzeIntervalGc(String host, int port, int interval)
