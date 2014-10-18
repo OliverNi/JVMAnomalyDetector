@@ -19,14 +19,7 @@ public class ProcessReport
     }
     public ProcessReport(String hostName, int port)
     {
-        usageAfterFirstGc = 0;
-        usageAfterLastGc = 0;
-        consecMemIncCount = 0;
-        startTime = Calendar.getInstance().getTimeInMillis();
-        endTime = Calendar.getInstance().getTimeInMillis();
-        this.port = port;
-        this.hostName = hostName;
-        this.status = Status.OK;
+        this(0L, 0L, hostName, port, Status.OK, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0);
 
     }
 
