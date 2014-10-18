@@ -10,6 +10,16 @@ public class GcStats {
     private long timeStamp;
     private long collectionTime;
 
+    public GcStats() {
+        this(0, 0, 0, 0);
+    }
+
+    public GcStats(long memoryUsedAfter, long memoryUsedBefore, long timeStamp, long collectionTime) {
+        this.memoryUsedAfter = memoryUsedAfter;
+        this.memoryUsedBefore = memoryUsedBefore;
+        this.timeStamp = timeStamp;
+        this.collectionTime = collectionTime;
+    }
 
     public long getAmountCollected(){
         return memoryUsedBefore - memoryUsedAfter;
