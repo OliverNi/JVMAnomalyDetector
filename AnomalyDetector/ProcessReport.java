@@ -15,7 +15,7 @@ public class ProcessReport
 {
     public ProcessReport()
     {
-        this("Unknown", 0);
+        this(0L, 0L, "Unknown", 0, Status.OK, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0);
     }
     public ProcessReport(String hostName, int port)
     {
@@ -27,6 +27,37 @@ public class ProcessReport
         this.port = port;
         this.hostName = hostName;
         this.status = Status.OK;
+
+    }
+
+    public ProcessReport(long startTime, long endTime, String hostName, int port, Status status, int consecMemIncCount, long usageAfterFirstGc, long usageAfterLastGc,
+                         double dailySumMemUsageDif, double weeklySumMemUsageDif, double monthlySumMemUsageDif, double dailyMinMemUsageDif, double monthlyMinMemUsageDif,
+                         double weeklyMinMemUsageDif, int dailyIncreaseCount, int weeklyIncreaseCount, int monthlyIncreaseCount, int dailyDecreaseCount, int weeklyDecreaseCount,
+                         int monthlyDecreaseCount, int dailyReportCount, int weeklyReportCount, int monthlyReportCount, long timeOfLastGc) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.hostName = hostName;
+        this.port = port;
+        this.status = status;
+        this.consecMemIncCount = consecMemIncCount;
+        this.usageAfterFirstGc = usageAfterFirstGc;
+        this.usageAfterLastGc = usageAfterLastGc;
+        this.dailySumMemUsageDif = dailySumMemUsageDif;
+        this.weeklySumMemUsageDif = weeklySumMemUsageDif;
+        this.monthlySumMemUsageDif = monthlySumMemUsageDif;
+        this.dailyMinMemUsageDif = dailyMinMemUsageDif;
+        this.monthlyMinMemUsageDif = monthlyMinMemUsageDif;
+        this.weeklyMinMemUsageDif = weeklyMinMemUsageDif;
+        this.dailyIncreaseCount = dailyIncreaseCount;
+        this.weeklyIncreaseCount = weeklyIncreaseCount;
+        this.monthlyIncreaseCount = monthlyIncreaseCount;
+        this.dailyDecreaseCount = dailyDecreaseCount;
+        this.weeklyDecreaseCount = weeklyDecreaseCount;
+        this.monthlyDecreaseCount = monthlyDecreaseCount;
+        this.dailyReportCount = dailyReportCount;
+        this.weeklyReportCount = weeklyReportCount;
+        this.monthlyReportCount = monthlyReportCount;
+        this.timeOfLastGc = timeOfLastGc;
     }
 
     //Create AnomalyReport if excessive GC scan
