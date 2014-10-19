@@ -222,7 +222,6 @@ public class AnomalyDetector {
                 output += "quit (Shuts down program (EXAMPLE: quit)) \n";
                 break;
             }
-            //@TODO "clear -host:port command doesn't work at all (maybe not implemented)
             case "clear":
                 if (cmdParam.equals("all"))
                 {
