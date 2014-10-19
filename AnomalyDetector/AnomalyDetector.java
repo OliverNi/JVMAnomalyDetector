@@ -186,17 +186,11 @@ public class AnomalyDetector {
             Scanner in = new Scanner(System.in);
             do
             {
-                if(in.hasNext())
-                {
-                    cmdOutput = command(in.nextLine(), ad);
+                if (in.hasNext()) {
+                    String cmdInput = in.nextLine();
+                    cmdOutput = command(cmdInput, ad);
                     System.out.println(cmdOutput);
                 }
-
-//                if (in.hasNext())
-//                {
-//                    cmdOutput = command(in.next(), ad);
-//                    System.out.println(cmdOutput);
-//                }
             } while(!cmdOutput.equals("Shutting down"));
             in.close();
         }
@@ -204,36 +198,28 @@ public class AnomalyDetector {
 
     private static String command(String cmd, AnomalyDetector ad){
         String output = "";
-        String cmdMain = "";
+        String[] cmds = cmd.split(" -");
+        String cmdMain = cmd.split(" -")[0];
         String cmdParam = "";
-
-        if(cmd.contains("-"))
+        if (cmds.length > 1)
         {
-            String[] cmds = cmd.split(" -");
-            cmdMain = cmds[0];
-            cmdParam = "";
-            if (cmds.length > 1)
-            {
-                cmdParam = cmds[1];
-            }
-        }
-        else if(cmd.contains(" ") && !cmd.contains("-"))
-        {
-            String[] cmds = cmd.split(" ");
-            cmdMain = cmds[0];
-            cmdParam = "";
-            if (cmds.length > 1)
-            {
-                cmdParam = cmds[1];
-            }
+            cmdParam = cmds[1];
         }
 
         switch (cmdMain){
 
             case "help":{
-                output = "clear all"+ "Clears database of all log entries \n";
-                output += "Paramers: -HOST:PORT (clear -HOST:PORT)\n";
-                output += "quit: Shuts down program \n";
+                output = "Examples use: \n";
+                output += "COMMAND or ";
+                output += "COMMAND -PARAMETER (Some commands require a parameter others do not have any parameters)\n \n";
+                output += "clear"+ " (Clears database of all log entries (EXAMPLE: clear -all)) \n";
+                output += "Paramers:\n -all \n" +
+                        "-HOST:PORT\n" +
+                        "-HOST:PORT, ...., HOST:PORT \n \n";
+
+                output += "browse (Opens LogBrowser (EXAMPLE: browse)) \n \n";
+
+                output += "quit (Shuts down program (EXAMPLE: quit)) \n";
                 break;
             }
             //@TODO "clear -host:port command doesn't work at all (maybe not implemented)
@@ -245,10 +231,9 @@ public class AnomalyDetector {
                 }
                 else
                 {
-                    String[] connections = cmdParam.split(":");
-                    for (int i = 0; i < connections.length; i++){
-                        Log.getInstance().clearData(new ArrayList<>(Arrays.asList(connections)));
-                    }
+                    //HOST:PORT
+                    String[] connections = cmdParam.split(", ");
+                    Log.getInstance().clearData(new ArrayList<>(Arrays.asList(connections)));
                     output = "Clearing all rows in all tables for specified connections";
                 }
                 break;
@@ -278,7 +263,6 @@ public class AnomalyDetector {
                 break;
 
             //@TODO Implement CLI commands for example show anomaly reports for a process.
-            //@TODO (Additional feature) Implement command for opening LogBrowser(GUI).
         }
         return output;
     }
