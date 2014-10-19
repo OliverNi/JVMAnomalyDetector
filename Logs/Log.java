@@ -18,14 +18,9 @@ public class Log implements  ILogging
 {
     private static Log instance = new Log();
     private static final Date PROGRAM_START = Calendar.getInstance().getTime();
-    private long GCTime;
-    private long GCTimeStamp;
-    private long GCmemoryUsageAfter;
-    private long GCmemoryUsageBefore;
-    private long memoryUsed;
-    private long timeStamp;
-    private String ip;
-    private int port;
+
+    private final String updateSingleColumnHP = "UPDATE %s SET %s = ? WHERE hostname = ? AND port = ?;";
+
     private Connection DBConnection;
     public static Log getInstance(){
         return instance;
@@ -38,14 +33,6 @@ public class Log implements  ILogging
     private Log()
     {
         DBConnection = null;
-        GCTime = 0;
-        GCTimeStamp = 0;
-        GCmemoryUsageAfter = 0;
-        GCmemoryUsageBefore = 0;
-        memoryUsed = 0;
-        timeStamp = 0;
-        ip = "";
-        port = 0;
 
         try
         {
@@ -180,48 +167,6 @@ public class Log implements  ILogging
 
     }
 
-    public long getGCTimeStamp()
-    {
-        return GCTimeStamp;
-    }
-
-    public long getGCmemoryUsageAfter()
-    {
-        return GCmemoryUsageAfter;
-    }
-
-    public long getGCmemoryUsageBefore()
-    {
-        return GCmemoryUsageBefore;
-    }
-
-    public long getMemoryUsed()
-    {
-        return memoryUsed;
-    }
-
-    public long getTimeStamp()
-    {
-        return timeStamp;
-    }
-
-    public String getIp()
-    {
-        return ip;
-    }
-
-    public int getPort()
-    {
-        return port;
-    }
-
-    public long getGCTime()
-    {
-        return GCTime;
-    }
-
-
-
     public void initDatabaseConnection() throws ClassNotFoundException
     {
 
@@ -302,46 +247,6 @@ public class Log implements  ILogging
         return fetchTime;
     }
 
-    public void setGCTime(long GCTime)
-    {
-        this.GCTime = GCTime;
-    }
-
-    public void setGCTimeStamp(long GCTimeStamp)
-    {
-        this.GCTimeStamp = GCTimeStamp;
-    }
-
-    public void setGCmemoryUsageAfter(long GCmemoryUsageAfter)
-    {
-        this.GCmemoryUsageAfter = GCmemoryUsageAfter;
-    }
-
-    public void setGCmemoryUsageBefore(long GCmemoryUsageBefore)
-    {
-        this.GCmemoryUsageBefore = GCmemoryUsageBefore;
-    }
-
-    public void setMemoryUsed(long memoryUsed)
-    {
-        this.memoryUsed = memoryUsed;
-    }
-
-    public void setTimeStamp(long timeStamp)
-    {
-        this.timeStamp = timeStamp;
-    }
-
-    public void setIp(String ip)
-    {
-        this.ip = ip;
-    }
-
-    public void setPort(int port)
-    {
-        this.port = port;
-    }
-
     //basic input values works
     @Override
     public void sendGarbageCollectionLog(long memoryUsedAfter, long memoryUsedBefore, long timestamp, long collectionTime, String hostname, int port)
@@ -379,7 +284,6 @@ public class Log implements  ILogging
             e.printStackTrace();
         }
     }
-
 
     //fetch all GCLog rows between starttime and endtime
     @Override
@@ -1703,4 +1607,16 @@ public class Log implements  ILogging
         return count;
     }
 
+    @Override
+    public void setProcessReportStatus(String host, int port, ProcessReport.Status status) {
+        try {
+            PreparedStatement stmt = DBConnection.prepareStatement(String.format(updateSingleColumnHP, "ProcessReport", "status"));
+            stmt.setString(1, status.toString());
+            stmt.setString(2, host);
+            stmt.setInt(3, port);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

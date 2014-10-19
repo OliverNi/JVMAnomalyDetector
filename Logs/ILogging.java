@@ -183,4 +183,6 @@ public interface ILogging {
      */
     public int clearPossibleMemoryLeaks(String hostname, int port);
 
+    public void setProcessReportStatus(String host, int port, ProcessReport.Status status);
+
 }
