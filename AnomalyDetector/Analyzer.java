@@ -527,14 +527,6 @@ public class Analyzer {
         pr.addReport(report);
     }
 
-    private void analyzeProcessReport(ProcessReport pReport){
-        //@TODO Implement analysis of pReport
-
-        //If Anomaly Found - Create AnomalyReport
-
-
-    }
-
     private void fireAnomalyEvent(AnomalyReport aReport){
         if (ad.getListener() != null){
             System.out.println("fireAnomalyEvent is executed!");
