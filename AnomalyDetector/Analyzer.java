@@ -10,13 +10,6 @@ import java.util.*;
  * Created by Oliver on 2014-09-18.
  */
 public class Analyzer {
-    class HourlyTask extends TimerTask {
-        HourlyTask(){
-        }
-        public void run(){
-
-        }
-    }
     class DailyTask extends TimerTask {
         DailyTask(){
         }
