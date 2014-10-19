@@ -139,6 +139,7 @@ public class Analyzer {
                 int percentage = (int) ((((double)currentGc.getMemoryUsedAfter() - pReport.getUsageAfterFirstGc()) / pReport.getUsageAfterFirstGc()) * 100);
                 aReport.setMemIncreasePercentage(percentage);
                 aReport.setTimestamp(currentGc.getTimeStamp());
+                Log.getInstance().setProcessReportStatus(host, port, ProcessReport.Status.EXCESSIVE_GC_SCAN);
                 fireAnomalyEvent(aReport);
             }
         }
