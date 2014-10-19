@@ -54,6 +54,7 @@ public class ProcessReportView extends ListView implements ProcessReportResponse
         Vector<String> columnNames = new Vector<>();
         columnNames.add("First GC");
         columnNames.add("Last GC");
+        columnNames.add("Current Status");
 
         columnNames.add("Consecutive increase");
 
@@ -71,6 +72,8 @@ public class ProcessReportView extends ListView implements ProcessReportResponse
 
         row.add(report.getUsageAfterFirstGc() / 1024);
         row.add(report.getUsageAfterLastGc() / 1024);
+        row.add(report.getStatus());
+
         switch (period){
             case "Daily stats":
                 row.add(report.getDailyAvgMemUsageDif() + "%");
