@@ -563,7 +563,9 @@ public class Analyzer {
         }
     }
 
-    public void removeTimer(int host, int port){
-
+    public void removeTimer(String host, int port){
+        for (Timer t : intervalTimers){
+           // if (t.)
+        }
     }
 }
