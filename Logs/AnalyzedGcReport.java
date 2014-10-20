@@ -73,7 +73,7 @@ public class AnalyzedGcReport {
         long daily = 90000000;
         //Under one week + 2 hours = WEEKLY (2 hour margin)
         long weekly = 612000000;
-        //Under One month + 4 hours = MONTHLY (4 hour margin) //@TODO FIX 4 days margin 28-31 +1
+        //Under One month + 4 hours = MONTHLY (4 hour margin)
         long monthly = (long)2433600000L;
         if (gcReports[0].getDuration() <= hourly){
             type = Type.HOURLY;
