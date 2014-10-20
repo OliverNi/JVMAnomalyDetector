@@ -159,4 +159,9 @@ public interface ILogging {
 
     public void setProcessReportStatus(String host, int port, ProcessReport.Status status);
 
+    /**
+     * clears old data for GCStats (2months), GCReport(daily(2month),weekly(4months),monthly(1year)) and AnomalyReport(6months)
+     */
+    public void clearOldData();
+
 }
