@@ -139,6 +139,7 @@ public class Analyzer {
                 int percentage = (int) ((((double)currentGc.getMemoryUsedAfter() - pReport.getUsageAfterFirstGc()) / pReport.getUsageAfterFirstGc()) * 100);
                 aReport.setMemIncreasePercentage(percentage);
                 aReport.setTimestamp(currentGc.getTimeStamp());
+
                 Log.getInstance().setProcessReportStatus(host, port, ProcessReport.Status.EXCESSIVE_GC_SCAN);
                 fireAnomalyEvent(aReport);
             }
@@ -268,7 +269,7 @@ public class Analyzer {
                         }
                         //if no earlier  GCReport is found, then it is set to 0, Maybe set it to IntervalStartTimeOnSuspectedMemLeak?
                         else {
-                            aReport.setStartTimeIncrease(0);
+                            aReport.setStartTimeIncrease(tempReport.getStartTime());
                         }
 
                         aReport.setTimestamp(Calendar.getInstance().getTimeInMillis());
