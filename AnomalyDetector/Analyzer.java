@@ -68,10 +68,10 @@ public class Analyzer {
     private HashMap<String, Boolean> cooldown = new HashMap<>();
     private AnomalyDetector ad;
     private ILogging log;
-    Timer dailyTimer;
-    Timer weeklyTimer;
-    Timer monthlyTimer;
-    ArrayList<Timer> intervalTimers;
+    private Timer dailyTimer;
+    private Timer weeklyTimer;
+    private Timer monthlyTimer;
+    private ArrayList<Timer> intervalTimers;
 
     public Analyzer(AnomalyDetector ad){
         this.ad = ad;
@@ -561,5 +561,9 @@ public class Analyzer {
             Log.getInstance().sendAnomalyReport(aReport);
             ad.getListener().anomalyFound(e);
         }
+    }
+
+    public void removeTimer(int host, int port){
+
     }
 }
