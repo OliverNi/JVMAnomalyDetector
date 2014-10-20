@@ -7,8 +7,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 
 /**
  * Created by Oliver on 2014-10-15.
@@ -24,15 +22,9 @@ public abstract class ListView extends View<ListViewListener>{
     protected JLabel labelPeriod = new JLabel("Period:");
     protected JComboBox<String> cboxPeriod = new JComboBox<>();
 
-    protected JPanel panelTime = new JPanel();
+    protected JPanel panelButtons = new JPanel();
     protected JButton buttonSearch = new JButton("Search");
     protected JButton buttonBack = new JButton("Back");
-    protected JLabel labelStartDate = new JLabel("Start date (yyyy-MM-dd):");
-    protected JLabel labelEndDate = new JLabel("End date (yyyy-MM-dd):");
-    protected DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    protected JFormattedTextField txtStartTime = new JFormattedTextField(dateFormat);
-    protected JFormattedTextField txtEndTime = new JFormattedTextField(dateFormat);
-
     protected JPanel panelCenter = new JPanel();
     protected JTable tableLogs = new JTable();
     protected JScrollPane scrollTableLogs = new JScrollPane();
@@ -43,9 +35,9 @@ public abstract class ListView extends View<ListViewListener>{
     }
 
     private void build(){
-        buildTimePanel();
+        buildPanelButtons();
         buildTopPanel();
-        buildCenterPanel();
+        buildPanelCenter();
     }
 
     private void buildTopPanel(){
@@ -62,26 +54,15 @@ public abstract class ListView extends View<ListViewListener>{
         panelSettings.add(cboxPeriod);
 
         panelTop.add(panelSettings, BorderLayout.NORTH);
-        panelTop.add(panelTime, BorderLayout.SOUTH);
+        panelTop.add(panelButtons, BorderLayout.SOUTH);
 
         this.add(panelTop, BorderLayout.NORTH);
-
-
     }
 
-    private void buildTimePanel(){
-        txtStartTime.setPreferredSize(new Dimension(80, 20));
-        txtEndTime.setPreferredSize(new Dimension(80, 20));
+    private void buildPanelButtons(){
+        panelButtons.add(buttonBack);
 
-        panelTime.add(buttonBack);
-
-        panelTime.add(labelStartDate);
-        panelTime.add(txtStartTime);
-
-        panelTime.add(labelEndDate);
-        panelTime.add(txtEndTime);
-
-        panelTime.add(buttonSearch);
+        panelButtons.add(buttonSearch);
 
         buttonBack.addActionListener(new ActionListener() {
             @Override
@@ -98,7 +79,7 @@ public abstract class ListView extends View<ListViewListener>{
         });
     }
 
-    private void buildCenterPanel(){
+    private void buildPanelCenter(){
         tableLogs.setPreferredScrollableViewportSize(new Dimension(this.getWidth(), this.getHeight() /2));
         tableLogs.setFillsViewportHeight(true);
         scrollTableLogs.getViewport().add(tableLogs);

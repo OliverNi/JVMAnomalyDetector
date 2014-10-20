@@ -49,7 +49,10 @@ public class AnomalyReportView extends ListView implements AnomalyReportResponse
 
             row.add(r.getAnomaly().toString());
             Date dateTime = new Date(r.getStartTimeIncrease());
-            row.add(dateTime.toString());
+            if (dateTime.getTime() > 0L)
+                row.add(dateTime.toString());
+            else
+                row.add("");
             row.add(r.getMemIncreasePercentage());
             row.add(r.getMemIncreaseBytes());
             row.add(r.getErrorMsg());
