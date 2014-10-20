@@ -16,6 +16,7 @@ public class Analyzer {
         public void run(){
             createDailyGcReports();
             analyzeDailyGC();
+            log.clearOldData();
         }
     }
     class WeeklyTask extends TimerTask {
