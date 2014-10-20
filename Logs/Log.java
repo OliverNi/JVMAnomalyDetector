@@ -268,23 +268,6 @@ public class Log implements  ILogging
         }
     }
 
-    //basic input values  works,
-    //@TODO something fishy  here, SQLException disk I/O error pointed to this method.
-    @Override
-    public void sendMemoryLog(long memoryUsed, long timestamp, String hostname, int port)
-    {
-        try
-        {
-            Statement DB = null;
-            DB = DBConnection.createStatement();
-            DB.executeUpdate("INSERT INTO  MemLog(timestamp,usedMemory,hostname,port) VALUES("+timestamp +","+memoryUsed+","+"'"+hostname+"'"+","+port+")");
-            DB.close();
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-    }
-
     //fetch all GCLog rows between starttime and endtime
     @Override
     public Map<String, ArrayList<GcStats>> getGarbageCollectionStats(long startTime, long endTime)
@@ -435,106 +418,6 @@ public class Log implements  ILogging
             e.printStackTrace();
         }
         return gcStats;
-    }
-
-    //@TODO is it really the right table it fetches data from? or is it supposed to be fetching data from a new table called MemReport ?
-    @Override
-    public Map<String, ArrayList<MemoryStats>> getMemoryStats(long startTime, long endTime)
-    {
-        String key = "";
-        HashMap<String, ArrayList<MemoryStats>> reportsMap = new HashMap<>();
-        String query = "SELECT timestamp,usedMemory,hostname,port FROM MemLog " +
-                "WHERE timestamp >= ? AND timestamp <= ? ORDER BY timestamp";
-
-        try
-        {
-            PreparedStatement stmt = DBConnection.prepareStatement(query);
-            stmt.setLong(1, startTime);
-            stmt.setLong(2, endTime);
-            ResultSet rs = stmt.executeQuery();
-            while(rs.next())
-            {
-                MemoryStats memStats = new MemoryStats();
-                key = rs.getString("hostname")+":"+rs.getString("port");
-
-                long timestamp = Long.parseLong(rs.getString("timestamp"));
-                memStats.setTimeStamp(timestamp);
-
-                long  usedMemory = Long.parseLong(rs.getString("usedMemory"));
-                memStats.setMemoryUsed(usedMemory);
-
-                if (!reportsMap.containsKey(key))
-                    reportsMap.put(key, new ArrayList<MemoryStats>());
-                reportsMap.get(key).add(memStats);
-            }
-            stmt.close();
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        catch (NumberFormatException nfe)
-        {
-            System.out.println("NumberFormatException: " + nfe.getMessage());
-        }
-
-        return reportsMap;
-    }
-
-    @Override
-    public Map<String, ArrayList<MemoryStats>> getMemoryStats(long startTime, long endTime, ArrayList<String> processes)
-    {
-        String query = "SELECT timestamp,usedMemory,hostname,port FROM MemLog " +
-                "WHERE timestamp >= ? AND timestamp <= ? AND hostname = ? AND port = ? ORDER BY timestamp";
-        String key = "";
-        int processesCounter = 0;
-        HashMap<String, ArrayList<MemoryStats>> reportsMap = new HashMap<>();
-
-        if (processes.toString().contains(":"))
-        {
-            try
-            {
-                PreparedStatement stmt = DBConnection.prepareStatement(query);
-                while(processesCounter < processes.size())
-                {
-                    String getPortHostname = processes.get(processesCounter);
-                    processesCounter++;
-                    String theSplit[] = getPortHostname.split("\\:");
-                    int port = Integer.parseInt(theSplit[1]);
-                    stmt.setLong(1, startTime);
-                    stmt.setLong(2, endTime);
-                    stmt.setString(3, theSplit[0]);
-                    ResultSet rs = stmt.executeQuery();
-                    while(rs.next())
-                    {
-                        MemoryStats memStats = new MemoryStats();
-                        key = rs.getString("hostname")+":"+rs.getString("port");
-
-                        long timestamp = Long.parseLong(rs.getString("timestamp"));
-                        memStats.setTimeStamp(timestamp);
-
-                        long  usedMemory = Long.parseLong(rs.getString("usedMemory"));
-                        memStats.setMemoryUsed(usedMemory);
-
-                        if (!reportsMap.containsKey(key))
-                            reportsMap.put(key, new ArrayList<MemoryStats>());
-                        reportsMap.get(key).add(memStats);
-                    }
-                }
-                stmt.close();
-            } catch (SQLException e)
-            {
-                e.printStackTrace();
-            }
-            catch (NumberFormatException nfe)
-            {
-                System.out.println("NumberFormatException: " + nfe.getMessage());
-            }
-        } else
-        {
-            throw new IllegalArgumentException("String " + processes.toString() + " does not contain :");
-        }
-
-        return reportsMap;
     }
 
     //input values works, however an update is needed for the trend column, what value to implement when project member is finished with his new concept
