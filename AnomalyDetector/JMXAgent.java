@@ -7,6 +7,7 @@ import com.sun.management.GarbageCollectionNotificationInfo;
 
 import javax.management.*;
 import javax.management.openmbean.CompositeData;
+import javax.management.remote.JMXConnectionNotification;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
@@ -19,7 +20,16 @@ import java.util.TimerTask;
 /**
  * Created by Oliver on 2014-09-12.
  */
-public class JMXAgent {
+public class JMXAgent implements Runnable{
+    @Override
+    public void run() {
+        try {
+            connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Class which handles the notifications
      */
@@ -32,9 +42,13 @@ public class JMXAgent {
         public void handleNotification(Notification notification, Object handback){
             //GarbageCollection has occurred.
             if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)){
-                System.out.println("GARBAGECOLLECTION NOTIFICIATION!"); // Test
+                System.out.println(agent.hostName + ":" + agent.port + ": GARBAGECOLLECTION NOTIFICIATION!"); // Test
                 GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
                 agent.gcLog(info);
+            }
+            else if (notification.getType().equals(JMXConnectionNotification.CLOSED)){
+                System.out.println("Connection closed: " + agent.hostName + ":" + agent.port);
+                agent.ad.disconnect(agent.hostName, agent.port);
             }
         }
     }
@@ -73,11 +87,8 @@ public class JMXAgent {
     private JMXConnector jmxc;
     private MBeanServerConnection mbsc;
     private AgentListener listener;
-    MemoryPoolMXBean oldGenProxy;
-    GarbageCollectorMXBean markSweepProxy;
     private AnomalyDetector ad;
     ILogging log;
-    Timer timer;
 
     private boolean connected = false;
 
@@ -101,19 +112,6 @@ public class JMXAgent {
         this.ad = ad;
         log = Log.getInstance();
         this.listener = new AgentListener(this);
-        this.timer = new Timer();
-        try {
-            connect();
-        } catch (IOException e) {
-            connected = false;
-            e.printStackTrace();
-        }
-
-        try {
-            createProxies();
-        } catch (MalformedObjectNameException e) {
-            e.printStackTrace();
-        }
     }
 
     private void connect() throws IOException {
@@ -121,6 +119,7 @@ public class JMXAgent {
                 ":" + port + "/jmxrmi");
         this.jmxc = JMXConnectorFactory.connect(url, null);
         this.mbsc = jmxc.getMBeanServerConnection();
+
         connected = true;
         try{
             addListeners();
@@ -145,14 +144,6 @@ public class JMXAgent {
         //Add listener to MXBean
         ObjectName name = new ObjectName(gcPath);
         mbsc.addNotificationListener(name, listener, null, null);
-    }
-
-    private void createProxies() throws MalformedObjectNameException{
-        //Old Gen
-        oldGenProxy= JMX.newMXBeanProxy(mbsc, new ObjectName(heapPath),
-                MemoryPoolMXBean.class);
-        //GarbageCollector MarkSweep
-        markSweepProxy = JMX.newMBeanProxy(mbsc, new ObjectName(gcPath),
-                GarbageCollectorMXBean.class);
+        jmxc.addConnectionNotificationListener(listener, null, null);
     }
 }
