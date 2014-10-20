@@ -1502,4 +1502,65 @@ public class Log implements  ILogging
             e.printStackTrace();
         }
     }
+
+    /**
+     * clears old data for GCLog (2months), GCReport(daily(2month),weekly(4months),monthly(1year)) and AnomalyReport(6months)
+     */
+    @Override
+    public void clearOldData()
+    {
+        long week = 8640000 * 7;
+        long month = week * 4;
+        Calendar cal = Calendar.getInstance();
+        long currentTime = cal.getTimeInMillis();
+        long removalTime = 0;
+        try
+        {
+            Statement DB = null;
+            DB = DBConnection.createStatement();
+
+            removalTime = month*2;
+            removalTime = currentTime - removalTime;
+            String input = "DELETE FROM GCLog WHERE timestamp <= "+removalTime;
+            DB.executeUpdate(input);
+
+            GcReport temp = new GcReport();
+
+            //sets timeperiod to 1, which is DAILY and removes logs which are 2months or older.
+            temp.setPeriod(GcReport.Period.DAILY);
+            int timePeriod = temp.getPeriod().getValue();
+            input = "DELETE FROM GCReport WHERE endTime <= "+removalTime+" AND period = "+timePeriod;
+            DB.executeUpdate(input);
+
+            //sets timePeriod to 2, which is weekly and removes logs which are 4months or older
+            temp.setPeriod(GcReport.Period.WEEKLY);
+            timePeriod = temp.getPeriod().getValue();
+            removalTime = month*4;
+            removalTime = currentTime-removalTime;
+            input = "DELETE FROM GCReport WHERE endTime <= "+removalTime+" AND period = "+timePeriod;
+            DB.executeUpdate(input);
+
+            //sets timePeriod to 3 which is MONTHLY and removes logs which are 1year or older.
+            temp.setPeriod(GcReport.Period.MONTHLY);
+            timePeriod = temp.getPeriod().getValue();
+            removalTime = month*12;
+            removalTime = currentTime - removalTime;
+            input = "DELETE FROM GCReport WHERE endTime <= "+removalTime+" AND PERIOD = "+timePeriod;
+            DB.executeUpdate(input);
+
+            //removes AnomalyReport logs which are 6months or older.
+            removalTime = month*6;
+            removalTime = currentTime-removalTime;
+            input =  "DELETE FROM AnomalyReport WHERE timestamp <= "+removalTime;
+            DB.executeUpdate(input);
+
+            DB.close();
+        }catch(SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+
+
+    }
 }
