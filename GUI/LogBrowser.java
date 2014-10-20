@@ -36,7 +36,6 @@ public class LogBrowser{
 
         this.panel.setLayout(this.cl);
         frame.getContentPane().add(this.panel);
-        System.out.println("DEBUG: LogBrowser created");
     }
 
     public JFrame getFrame(){
@@ -45,11 +44,9 @@ public class LogBrowser{
 
     public void add (Component component){
         this.panel.add(component, component.getClass().getSimpleName());
-        System.out.println("DEBUG: Something added");
     }
 
     public void show(Component component){
         this.cl.show(this.panel, component.getClass().getSimpleName());
-        System.out.println("DEBUG: Show comp");
     }
 }
