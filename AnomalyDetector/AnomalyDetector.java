@@ -72,7 +72,8 @@ public class AnomalyDetector {
     //@TODO Disconnect if process shuts down?
     public boolean disconnect(String hostName, int port){
         boolean disconnected = false;
-        for (JMXAgent a : agents) {
+        for (JMXAgent a : agents)
+        {
             if (a.getHostName().equals(hostName) && a.getPort() == port) {
                 agents.remove(a);
                 for (ProcessConnection p : connections){
@@ -80,7 +81,12 @@ public class AnomalyDetector {
                         connections.remove(p);
                 }
                 disconnected = true;
+
             }
+        }
+        if(disconnected == true)
+        {
+            analyzer.removeTimer(hostName, port);
         }
         return disconnected;
     }
