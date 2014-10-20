@@ -1199,6 +1199,7 @@ public class Log implements  ILogging
     @Override
     public void sendProcessReport(int port, String hostname, ProcessReport report)
     {
+        //If ProcessReport with hostname = hostname AND port = port does not exist
         try
         {
             Statement DB = null;
@@ -1217,6 +1218,8 @@ public class Log implements  ILogging
         {
             e.printStackTrace();
         }
+        //else
+        //Update values for ProcessReport
     }
 
     @Override
