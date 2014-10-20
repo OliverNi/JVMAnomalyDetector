@@ -23,11 +23,7 @@ import java.util.TimerTask;
 public class JMXAgent implements Runnable{
     @Override
     public void run() {
-        try {
-            connect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
     /**
@@ -112,6 +108,11 @@ public class JMXAgent implements Runnable{
         this.ad = ad;
         log = Log.getInstance();
         this.listener = new AgentListener(this);
+        try {
+            connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void connect() throws IOException {

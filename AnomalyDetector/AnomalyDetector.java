@@ -60,8 +60,8 @@ public class AnomalyDetector {
     public boolean connect(String hostName, int port, int interval){
         boolean success = false;
         agents.add(new JMXAgent(hostName, port, this));
-        (new Thread(agents.get(agents.size()-1))).start();
-        //(new Thread(agents.get(agents.size()-1))).start();
+        Thread thread = new Thread(agents.get(agents.size()-1));
+        thread.start();
         if (agents.get(agents.size()-1).isConnected()) {
             connections.add(new ProcessConnection(hostName, port, interval));
             analyzer.addIntervalTimer(hostName, port, interval);
