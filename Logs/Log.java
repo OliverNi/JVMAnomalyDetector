@@ -1142,7 +1142,6 @@ public class Log implements  ILogging
                 "memIncreasePercentage, memIncreaseBytes FROM AnomalyReport WHERE hostname = ? AND port = ? AND timestamp >= ? AND timestamp <= ?;";
         try
         {
-            AnomalyReport tempReport = new AnomalyReport();
             PreparedStatement stmt = DBConnection.prepareStatement(query);
             stmt.setString(1, hostName);
             stmt.setInt(2, port);
@@ -1153,6 +1152,7 @@ public class Log implements  ILogging
             {
                 try
                 {
+                    AnomalyReport tempReport = new AnomalyReport();
                     tempReport.setHost(rs.getString("hostname"));
                     tempReport.setPort(Integer.parseInt(rs.getString("port")));
                     tempReport.setTimestamp(Long.parseLong(rs.getString("timestamp")));
