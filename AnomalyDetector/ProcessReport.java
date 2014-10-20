@@ -69,7 +69,6 @@ public class ProcessReport
     public static long TIME_BETWEEN_GC_WARNING = DEFAULT_TIME_BETWEEN_GC_WARNING;
     public static double PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
 
-    //@TODO implement in addReport
     private long startTime;
     private long endTime;
     private String hostName;
