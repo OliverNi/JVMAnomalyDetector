@@ -71,7 +71,7 @@ public class Analyzer {
     private Timer dailyTimer;
     private Timer weeklyTimer;
     private Timer monthlyTimer;
-    private ArrayList<Timer> intervalTimers;
+    private Map<String, Timer> intervalTimers;
 
     public Analyzer(AnomalyDetector ad){
         this.ad = ad;
@@ -83,7 +83,7 @@ public class Analyzer {
         dailyTimer = new Timer();
         weeklyTimer = new Timer();
         monthlyTimer = new Timer();
-        intervalTimers = new ArrayList<>();
+        intervalTimers = new HashMap<>();
 
         long hour = 3600000L;
         long day = hour * 24;
@@ -128,7 +128,7 @@ public class Analyzer {
         long minute = 60000L;
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new IntervalTask(host, port, interval), interval * minute, interval * minute);
-        intervalTimers.add(timer);
+        intervalTimers.put(host + ":" + port, timer);
         System.out.println("DEBUG: Timer created for: " + host + ":" + port);
     }
 
@@ -564,8 +564,8 @@ public class Analyzer {
     }
 
     public void removeTimer(String host, int port){
-        for (Timer t : intervalTimers){
-           // if (t.)
-        }
+        Timer timer = intervalTimers.get(host + ":" + port);
+        timer.cancel();
+        timer.purge();
     }
 }
