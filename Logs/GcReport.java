@@ -73,7 +73,7 @@ public class GcReport {
     private Status status;
     //keeps a track on if the minimumMemvalue after each GC has increased, and counts how many times in a row it has increased.
     private int consec_mem_inc_count;
-    private Period period; //@TODO Implement Log
+    private Period period;
 
     /**
      * Constructor
