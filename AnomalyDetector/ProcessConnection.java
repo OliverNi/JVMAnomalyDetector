@@ -50,4 +50,9 @@ public class ProcessConnection {
     public int getInterval() {
         return interval;
     }
+
+    @Override
+    public String toString(){
+        return hostName + ":" + port;
+    }
 }
