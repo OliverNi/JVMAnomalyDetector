@@ -38,6 +38,7 @@ public class AnomalyReportView extends ListView implements AnomalyReportResponse
     private DefaultTableModel createTableModel(ArrayList<AnomalyReport> result){
         Vector<String> columnNames = new Vector<>();
         columnNames.add("Anomaly");
+        columnNames.add("Timestamp");
         columnNames.add("Time increase");
         columnNames.add("Memory increase(percentage)");
         columnNames.add("Memory increase(bytes)");
@@ -48,7 +49,9 @@ public class AnomalyReportView extends ListView implements AnomalyReportResponse
             Vector<Object> row = new Vector<>();
 
             row.add(r.getAnomaly().toString());
-            Date dateTime = new Date(r.getStartTimeIncrease());
+            Date dateTime = new Date(r.getTimestamp());
+            row.add(dateTime.toString());
+            dateTime = new Date(r.getStartTimeIncrease());
             if (dateTime.getTime() > 0L)
                 row.add(dateTime.toString());
             else
@@ -72,7 +75,6 @@ public class AnomalyReportView extends ListView implements AnomalyReportResponse
     @Override
     public void searchResult(ArrayList<AnomalyReport> result) {
         if (result == null){
-            System.out.println("DEBUG: No results");
         }
         else{
             populateTable(result);
