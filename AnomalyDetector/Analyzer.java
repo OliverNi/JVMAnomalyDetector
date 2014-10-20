@@ -96,9 +96,10 @@ public class Analyzer {
 
     private void scheduleDailyTask(long day){
         Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.AM_PM, Calendar.PM);
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
-        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.SECOND, 59);
         Date firstTime = cal.getTime();
         dailyTimer.scheduleAtFixedRate(new DailyTask(), firstTime.getTime(), day);
     }
@@ -106,15 +107,17 @@ public class Analyzer {
     private void scheduleWeeklyTask(long week){
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        cal.set(Calendar.AM_PM, Calendar.PM);
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
-        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.SECOND, 59);
         Date firstTime = cal.getTime();
         weeklyTimer.scheduleAtFixedRate(new WeeklyTask(), firstTime.getTime(), week);
     }
 
     private void scheduleMonthlyTask(){
         Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.AM_PM, Calendar.PM);
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
@@ -361,11 +364,13 @@ public class Analyzer {
     public void analyzeDailyGC(){
         //Set startTime (today 00:01:00)
         Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.AM_PM, Calendar.AM);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.HOUR, 0);
         cal.set(Calendar.SECOND, 0);
         Date todayStartTime = cal.getTime();
         //Set endTime (today 23:59:59)
+        cal.set(Calendar.AM_PM, Calendar.PM);
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
@@ -394,12 +399,14 @@ public class Analyzer {
     public void analyzeWeeklyGC(){
         //Set startTime (Monday 00:01:00)
         Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.AM_PM, Calendar.AM);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.HOUR, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         Date weekStartTime = cal.getTime();
         //Set endTime (Sunday 23:59:59)
+        cal.set(Calendar.AM_PM, Calendar.PM);
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
@@ -429,12 +436,14 @@ public class Analyzer {
     public void analyzeMonthlyGC(){
         //Set startTime (First day of the month 00:01:00)
         Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.AM_PM, Calendar.AM);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.HOUR, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.DATE, 1);
         Date monthStartTime = cal.getTime();
         //Set endTime (Last day of the month 23:59:59)
+        cal.set(Calendar.AM_PM, Calendar.PM);
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
@@ -477,11 +486,13 @@ public class Analyzer {
     public void createDailyGcReports(){
         //Set startTime (today 00:01:00)
         Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.AM_PM, Calendar.AM);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.HOUR, 0);
         cal.set(Calendar.SECOND, 0);
         Date todayStartTime = cal.getTime();
         //Set endTime (today 23:59:59)
+        cal.set(Calendar.AM_PM, Calendar.PM);
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
@@ -502,12 +513,14 @@ public class Analyzer {
     public void createWeeklyGcReports(){
         //Set startTime (Monday 00:01:00)
         Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.AM_PM, Calendar.AM);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.HOUR, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
         Date weekStartTime = cal.getTime();
         //Set endTime (Sunday 23:59:59)
+        cal.set(Calendar.AM_PM, Calendar.PM);
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
@@ -527,12 +540,14 @@ public class Analyzer {
     public void createMonthlyGcReports(){
         //Set startTime (First day of the month 00:01:00)
         Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.AM_PM, Calendar.AM);
         cal.set(Calendar.MINUTE, 1);
         cal.set(Calendar.HOUR, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.DATE, 1);
         Date monthStartTime = cal.getTime();
         //Set endTime (Last day of the month 23:59:59)
+        cal.set(Calendar.AM_PM, Calendar.PM);
         cal.set(Calendar.HOUR, 23);
         cal.set(Calendar.MINUTE, 59);
         cal.set(Calendar.SECOND, 59);
