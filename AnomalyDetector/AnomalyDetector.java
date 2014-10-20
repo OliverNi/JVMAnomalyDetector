@@ -40,8 +40,6 @@ public class AnomalyDetector {
         log = Log.getInstance();
         analyzer = new Analyzer(this);
         this.listener = listener;
-
-
     }
 
     /**
@@ -63,7 +61,6 @@ public class AnomalyDetector {
         boolean success = false;
         //@TODO Use threads?
         agents.add(new JMXAgent(hostName, port, this));
-        agents.get(agents.size()-1).setInterval(interval);
         if (agents.get(agents.size()-1).isConnected()) {
             connections.add(new ProcessConnection(hostName, port, interval));
             analyzer.addIntervalTimer(hostName, port, interval);

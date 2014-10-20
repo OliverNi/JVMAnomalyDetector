@@ -39,17 +39,6 @@ public class JMXAgent {
         }
     }
 
-    class PollTimer extends TimerTask{
-        JMXAgent agent;
-        PollTimer(JMXAgent agent){
-            this.agent = agent;
-        }
-        public void run(){
-            agent.gatherMemoryStatistics();
-            System.out.println("BOOP");
-        }
-    }
-
     /**
      * Sends GarbageCollection statistics to log.
      * @param info Info about the Garbage Collection.
@@ -64,31 +53,6 @@ public class JMXAgent {
         ad.getAnalyzer().analyzeExcessiveGcScan(hostName, port, new GcStats(oldGenAfter.getUsed(), oldGenBefore.getUsed(), timeStamp, collectionTime));
     }
 
-    /**
-     * Sends memory statistics to log
-     * @param memoryUsed Current memory usage in bytes
-     * @param timeStamp Timestamp
-     */
-    private void memoryLog(long memoryUsed, long timeStamp){
-        log.sendMemoryLog(memoryUsed, timeStamp, hostName, port);
-    }
-
-    /**
-     * Gather statistics about Old Gen which will be sent to log
-     */
-    private void gatherMemoryStatistics(){
-        //Get memory usage in old gen
-        long memoryUsed = oldGenProxy.getUsage().getUsed();
-        //Get timestamp
-        Calendar calendar = Calendar.getInstance();
-        java.util.Date date = calendar.getTime();
-        long timeStamp = date.getTime();
-        //Handle logging
-        memoryLog(memoryUsed, timeStamp);
-
-    }
-
-
     public String getHostName() {
         return hostName;
     }
@@ -97,22 +61,12 @@ public class JMXAgent {
         return port;
     }
 
-    public double getInterval() {
-        return interval;
-    }
-
-    public void setInterval(double interval) {
-        this.interval = interval;
-    }
-
     //Settings
     private String gcPath;
     private String heapPath;
     private String heapName;
     private String hostName;
     private int port;
-    private double interval;
-    public static int DEFAULT_INTERVAL_MINUTES = 5;
 
     //Resources
     private JMXServiceURL url;
@@ -147,9 +101,7 @@ public class JMXAgent {
         this.ad = ad;
         log = Log.getInstance();
         this.listener = new AgentListener(this);
-        this.interval=DEFAULT_INTERVAL_MINUTES;
         this.timer = new Timer();
-        scheduleGathering();
         try {
             connect();
         } catch (IOException e) {
@@ -181,13 +133,6 @@ public class JMXAgent {
 
     public boolean isConnected(){
         return connected;
-    }
-
-    /**
-     * Schedule how often memory-statistics will be gathered and logged, based on set interval.
-     */
-    private void scheduleGathering() {
-        timer.scheduleAtFixedRate(new PollTimer(this), 1000, (long)interval * 60 * 1000);
     }
 
     /**
