@@ -1194,8 +1194,6 @@ public class Log implements  ILogging
         }
     }
 
-    //@TODO not sure if this is still used, if so, then it needs to be modified to either to create a processreport,
-    // and a check if exists to modify an existing one
     @Override
     public void sendProcessReport(int port, String hostname, ProcessReport report)
     {
@@ -1204,22 +1202,35 @@ public class Log implements  ILogging
         {
             Statement DB = null;
             DB = DBConnection.createStatement();
-            DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, hostname, port, status, consecMemIncCount, usageAfterFirstGc, usageAfterLastGc, dailySumMemUsageDif, weeklySumMemUsageDif, " +
-                            "monthlySumMemUsageDif, dailyMinMemUsageDif, weeklyMinMemUsageDif, monthlyMinMemUsageDif, dailyIncreaseCount, weeklyIncreaseCount, monthlyIncreaseCount, dailyDecreaseCount, " +
-                            "weeklyDecreaseCount, monthlyDecreaseCount, dailyReportCount, weeklyReportCount, monthlyReportCount, timeOfLastGc)"+
-                            " VALUES("+report.getStartTime()+","+report.getEndTime()+",'"+hostname+"',"+port+",'"+report.getStatus()+"',"
-                            +report.getConsecMemIncCount()+","+report.getUsageAfterFirstGc()+","
-                            +report.getUsageAfterLastGc()+","+report.getDailySumMemUsageDif()+","+report.getWeeklySumMemUsageDif()+","+report.getMonthlySumMemUsageDif()+","+report.getDailyMinMemUsageDif()+","
-                            +report.getWeeklyMinMemUsageDif()+","+report.getMonthlyMinMemUsageDif()+","+report.getDailyIncreaseCount()+","+report.getWeeklyIncreaseCount()+","+report.getMonthlyIncreaseCount()+","
-                            +report.getDailyDecreaseCount()+","+report.getWeeklyDecreaseCount()+","+report.getMonthlyDecreaseCount()+","+report.getDailyReportCount()+","+report.getWeeklyReportCount()+","
-                            +report.getMonthlyReportCount()+","+report.getTimeOfLastGc()+")");
+            if(countRows("ProcessReport", hostname, port) == 1)
+            {
+                DB.executeUpdate("UPDATE ProcessReport SET "+report.getStartTime()+","+report.getEndTime()+",'"+hostname+"',"+port+",'"+report.getStatus()+"',"
+                        +report.getConsecMemIncCount()+","+report.getUsageAfterFirstGc()+","
+                        +report.getUsageAfterLastGc()+","+report.getDailySumMemUsageDif()+","+report.getWeeklySumMemUsageDif()+","+report.getMonthlySumMemUsageDif()+","+report.getDailyMinMemUsageDif()+","
+                        +report.getWeeklyMinMemUsageDif()+","+report.getMonthlyMinMemUsageDif()+","+report.getDailyIncreaseCount()+","+report.getWeeklyIncreaseCount()+","+report.getMonthlyIncreaseCount()+","
+                        +report.getDailyDecreaseCount()+","+report.getWeeklyDecreaseCount()+","+report.getMonthlyDecreaseCount()+","+report.getDailyReportCount()+","+report.getWeeklyReportCount()+","
+                        +report.getMonthlyReportCount()+","+report.getTimeOfLastGc()+" WHERE hostname = "+hostname+" AND port = "+port+";");
+            }
+            //else
+            //Update values for ProcessReport
+            else
+            {
+                DB.executeUpdate("INSERT INTO ProcessReport(startTime, endTime, hostname, port, status, consecMemIncCount, usageAfterFirstGc, usageAfterLastGc, dailySumMemUsageDif, weeklySumMemUsageDif, " +
+                        "monthlySumMemUsageDif, dailyMinMemUsageDif, weeklyMinMemUsageDif, monthlyMinMemUsageDif, dailyIncreaseCount, weeklyIncreaseCount, monthlyIncreaseCount, dailyDecreaseCount, " +
+                        "weeklyDecreaseCount, monthlyDecreaseCount, dailyReportCount, weeklyReportCount, monthlyReportCount, timeOfLastGc)"+
+                        " VALUES("+report.getStartTime()+","+report.getEndTime()+",'"+hostname+"',"+port+",'"+report.getStatus()+"',"
+                        +report.getConsecMemIncCount()+","+report.getUsageAfterFirstGc()+","
+                        +report.getUsageAfterLastGc()+","+report.getDailySumMemUsageDif()+","+report.getWeeklySumMemUsageDif()+","+report.getMonthlySumMemUsageDif()+","+report.getDailyMinMemUsageDif()+","
+                        +report.getWeeklyMinMemUsageDif()+","+report.getMonthlyMinMemUsageDif()+","+report.getDailyIncreaseCount()+","+report.getWeeklyIncreaseCount()+","+report.getMonthlyIncreaseCount()+","
+                        +report.getDailyDecreaseCount()+","+report.getWeeklyDecreaseCount()+","+report.getMonthlyDecreaseCount()+","+report.getDailyReportCount()+","+report.getWeeklyReportCount()+","
+                        +report.getMonthlyReportCount()+","+report.getTimeOfLastGc()+")");
+            }
             DB.close();
         }catch (SQLException e)
         {
             e.printStackTrace();
         }
-        //else
-        //Update values for ProcessReport
+
     }
 
     @Override
