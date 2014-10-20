@@ -261,7 +261,7 @@ public class AnomalyDetector {
                 output = "Shutting down";
                 break;
 
-            //@TODO Implement CLI commands for example show anomaly reports for a process.
+            //@TODO Implement CLI commands
         }
         return output;
     }
