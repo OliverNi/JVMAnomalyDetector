@@ -26,10 +26,12 @@ public class GcStatsModel extends Model<GcStatsResponse>{
                 result = log.getGarbageCollectionStats(0L, Calendar.getInstance().getTimeInMillis(), host, port);
                 break;
             case "Today": {
+                cal.set(Calendar.AM_PM, Calendar.AM);
                 cal.set(Calendar.HOUR, 0);
                 cal.set(Calendar.SECOND, 0);
                 cal.set(Calendar.MINUTE, 0);
                 Date todayStart = cal.getTime();
+                cal.set(Calendar.AM_PM, Calendar.PM);
                 cal.set(Calendar.HOUR, 23);
                 cal.set(Calendar.SECOND, 59);
                 cal.set(Calendar.MINUTE, 59);
@@ -39,11 +41,13 @@ public class GcStatsModel extends Model<GcStatsResponse>{
                 break;
             }
             case "This week": {
+                cal.set(Calendar.AM_PM, Calendar.AM);
                 cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                 cal.set(Calendar.HOUR, 0);
                 cal.set(Calendar.SECOND, 0);
                 cal.set(Calendar.MINUTE, 0);
                 Date weekStart = cal.getTime();
+                cal.set(Calendar.AM_PM, Calendar.PM);
                 cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
                 cal.set(Calendar.HOUR, 23);
                 cal.set(Calendar.SECOND, 59);
@@ -54,12 +58,14 @@ public class GcStatsModel extends Model<GcStatsResponse>{
                 break;
             }
             case "This month": {
+                cal.set(Calendar.AM_PM, Calendar.AM);
                 cal.set(Calendar.DAY_OF_MONTH, 1);
                 cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                 cal.set(Calendar.HOUR, 0);
                 cal.set(Calendar.SECOND, 0);
                 cal.set(Calendar.MINUTE, 0);
                 Date monthStart = cal.getTime();
+                cal.set(Calendar.AM_PM, Calendar.PM);
                 cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
                 cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
                 cal.set(Calendar.HOUR, 23);
