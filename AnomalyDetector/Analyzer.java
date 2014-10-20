@@ -47,10 +47,24 @@ public class Analyzer {
             analyzeIntervalGc(host, port, interval);
         }
     }
+    class CooldownTask extends TimerTask{
+        String host;
+        int port;
+        CooldownTask(String host, int port){
+            this.host = host;
+            this.port = port;
+        }
+        public void run(){
+            String process = host + ":" + port;
+            cooldown.put(process, false);
+        }
+    }
 
     public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
     public static final double DEFAULT_CONSECUTIVE_MEM_INC = 1;
     public static final long DEFAULT_TIME_EXCESSIVE_SCAN_WARNING = 1000;
+    public static final long EXCESSIVE_GC_COOLDOWN = 3600000L; //One hour
+    private HashMap<String, Boolean> cooldown = new HashMap<>();
     private AnomalyDetector ad;
     private ILogging log;
     Timer dailyTimer;
@@ -140,8 +154,18 @@ public class Analyzer {
                 aReport.setMemIncreasePercentage(percentage);
                 aReport.setTimestamp(currentGc.getTimeStamp());
 
-                Log.getInstance().setProcessReportStatus(host, port, ProcessReport.Status.EXCESSIVE_GC_SCAN);
-                fireAnomalyEvent(aReport);
+                //Cooldown check
+                if (!cooldown.containsKey(conn.toString())){
+                    cooldown.put(conn.toString(), true);
+                    new Timer().schedule(new CooldownTask(conn.getHostName(), conn.getPort()), EXCESSIVE_GC_COOLDOWN);
+                    fireAnomalyEvent(aReport);
+                    Log.getInstance().setProcessReportStatus(host, port, ProcessReport.Status.EXCESSIVE_GC_SCAN);
+                } else if (!cooldown.get(conn.toString())) {
+                    cooldown.put(conn.toString(), true);
+                    new Timer().schedule(new CooldownTask(conn.getHostName(), conn.getPort()), EXCESSIVE_GC_COOLDOWN);
+                    fireAnomalyEvent(aReport);
+                    Log.getInstance().setProcessReportStatus(host, port, ProcessReport.Status.EXCESSIVE_GC_SCAN);
+                }
             }
         }
         Log.getInstance().sendTimeOfLastGc(conn, currentGc.getTimeStamp());
