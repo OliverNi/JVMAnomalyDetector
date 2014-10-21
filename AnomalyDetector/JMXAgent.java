@@ -7,13 +7,13 @@ import com.sun.management.GarbageCollectionNotificationInfo;
 
 import javax.management.*;
 import javax.management.openmbean.CompositeData;
-import javax.management.remote.JMXConnectionNotification;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
+import javax.management.remote.*;
+import javax.security.auth.Subject;
 import java.io.IOException;
 import java.lang.management.*;
+import java.net.MalformedURLException;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,6 +24,13 @@ public class JMXAgent implements Runnable{
     @Override
     public void run() {
 
+    }
+
+    class ReconnectTask extends TimerTask{
+        @Override
+        public void run() {
+            connect();
+        }
     }
 
     /**
@@ -41,10 +48,33 @@ public class JMXAgent implements Runnable{
                 GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
                 agent.gcLog(info);
             }
+            else if (notification.getType().equals(JMXConnectionNotification.OPENED)){
+                System.out.println("OPENED");
+                agent.connected = true;
+                try {
+                    agent.mbsc = agent.jmxc.getMBeanServerConnection();
+                    agent.addListeners();
+                }catch (IOException e){
+                    e.printStackTrace();
+                } catch (MalformedObjectNameException e) {
+                    e.printStackTrace();
+                } catch (InstanceNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
             else if (notification.getType().equals(JMXConnectionNotification.CLOSED)){
                 System.out.println("Connection closed: " + agent.hostName + ":" + agent.port);
                 agent.ad.disconnect(agent.hostName, agent.port);
             }
+            else if (notification.getType().equals(JMXConnectionNotification.FAILED)){
+                System.out.println("FAILED");
+                //Does not work?
+            }
+            else if (notification.getType().equals(JMXConnectionNotification.NOTIFS_LOST)){
+                System.out.println("LOST");
+            }
+            else
+                System.out.println("DON'T KNOW");
         }
     }
 
@@ -71,6 +101,7 @@ public class JMXAgent implements Runnable{
     }
 
     //Settings
+    public static long RECONNECT_TIME = 1000 * 60; //One minute
     private String gcPath;
     private String heapPath;
     private String heapName;
@@ -80,10 +111,11 @@ public class JMXAgent implements Runnable{
     //Resources
     private JMXServiceURL url;
     private JMXConnector jmxc;
-    private MBeanServerConnection mbsc;
+    private MBeanServerConnection mbsc = null;
     private AgentListener listener;
     private AnomalyDetector ad;
-    ILogging log;
+    private ILogging log;
+    private Timer reconnectTimer = new Timer();
 
     private boolean connected = false;
 
@@ -107,29 +139,39 @@ public class JMXAgent implements Runnable{
         this.ad = ad;
         log = Log.getInstance();
         this.listener = new AgentListener(this);
+
+        connect();
+    }
+
+    private void connect() {
+        //@TODO try again if process is down
         try {
-            connect();
+            this.url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName +
+                    ":" + port + "/jmxrmi");
+            this.jmxc = JMXConnectorFactory.newJMXConnector(url, null);
+            jmxc.addConnectionNotificationListener(listener, null, null);
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        try {
+            jmxc.connect();
+        }
+        catch (IOException e){
+            System.out.println("Connection failed");
+        }
+
+        if (!connected)
+            reconnect(RECONNECT_TIME);
+        System.out.println("Connected: " + connected);
     }
 
-    private void connect() throws IOException {
-
-        //@TODO try again if process is down
-        this.url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName +
-                ":" + port + "/jmxrmi");
-        this.jmxc = JMXConnectorFactory.connect(url, null);
-        this.mbsc = jmxc.getMBeanServerConnection();
-
-        connected = true;
-        try{
-            addListeners();
-        } catch (MalformedObjectNameException e) {
-            e.printStackTrace();
-        } catch (InstanceNotFoundException e) {
-            e.printStackTrace();
-        }
+    private void reconnect(long delay){
+        Timer timer = new Timer();
+        timer.schedule(new ReconnectTask(), delay);
     }
 
     public boolean isConnected(){
@@ -146,6 +188,5 @@ public class JMXAgent implements Runnable{
         //Add listener to MXBean
         ObjectName name = new ObjectName(gcPath);
         mbsc.addNotificationListener(name, listener, null, null);
-        jmxc.addConnectionNotificationListener(listener, null, null);
     }
 }
