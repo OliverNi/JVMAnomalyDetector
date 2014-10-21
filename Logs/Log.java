@@ -17,17 +17,12 @@ import java.util.Date;
 public class Log implements  ILogging
 {
     private static Log instance = new Log();
-    private static final Date PROGRAM_START = Calendar.getInstance().getTime();
 
     private final String updateSingleColumnHP = "UPDATE %s SET %s = ? WHERE hostname = ? AND port = ?;";
 
     private Connection DBConnection;
     public static Log getInstance(){
         return instance;
-    }
-
-    public static Date getProgramStart(){
-        return PROGRAM_START;
     }
 
     private Log()
