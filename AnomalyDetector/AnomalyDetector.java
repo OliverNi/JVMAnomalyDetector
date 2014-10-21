@@ -193,6 +193,7 @@ public class AnomalyDetector {
                 }
             } while(!cmdOutput.equals("Shutting down"));
             in.close();
+            //@TODO Listen on socket?
         }
     }
 
@@ -262,6 +263,8 @@ public class AnomalyDetector {
                 break;
 
             //@TODO Implement CLI commands
+            //@TODO Current settings
+            //Java 7 autoclose
         }
         return output;
     }

@@ -239,7 +239,7 @@ public class Analyzer {
                     {
                         if (IntervalStartTimeOnSuspectedMemLeak == 0)
                         {
-                            IntervalStartTimeOnSuspectedMemLeak = cal.getTimeInMillis();
+                            IntervalStartTimeOnSuspectedMemLeak = cal.getTimeInMillis(); //Change to currentReports.get(j).getTimeStamp
                         }
                         memConsecutiveIncCounter++;
                     }
