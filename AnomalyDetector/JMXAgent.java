@@ -68,7 +68,7 @@ public class JMXAgent implements Runnable{
             }
             else if (notification.getType().equals(JMXConnectionNotification.FAILED)){
                 System.out.println("FAILED");
-                //Does not work?
+                agent.reconnect(RECONNECT_TIME);
             }
             else if (notification.getType().equals(JMXConnectionNotification.NOTIFS_LOST)){
                 System.out.println("LOST");
