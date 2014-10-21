@@ -177,12 +177,12 @@ public class Analyzer {
 
     public void analyzeIntervalGc(String host, int port, int interval)
     {
-        System.out.println("DEBUG: Entered interval analysis");
+       // System.out.println("DEBUG: Entered interval analysis");
         Calendar cal = Calendar.getInstance();
 
         long intervalInMs = 0;
 
-        System.out.println("DEBUG: interval analysis: Connection: " + host + ":" + port);
+       // System.out.println("DEBUG: interval analysis: Connection: " + host + ":" + port);
 
         //converts interval value in minutes to milliseconds
         try
@@ -214,14 +214,14 @@ public class Analyzer {
 
 
         if (currentReports != null) {
-            System.out.println("DEBUG: currentReports not null");
+        //    System.out.println("DEBUG: currentReports not null");
             long minimumMemValue = 0;
             long originalMinimumMemValue = log.firstGcValue(host+":"+port);
 
             GcReport tempReport = new GcReport();
             for (GcStats g : currentReports) {
                 tempReport.addGcStats(g);
-                System.out.println("DEBUG: Adding gcStats");
+           //     System.out.println("DEBUG: Adding gcStats");
             }
 
             long IntervalStartTimeOnSuspectedMemLeak = 0;
@@ -252,8 +252,8 @@ public class Analyzer {
                     minimumMemValue = currentReports.get(j).getMemoryUsedAfter();
 
                     //Debugging
-                    System.out.println("DEBUG: original first GCMinMemValue = "+originalMinimumMemValue);
-                    System.out.println("DEBUG: current GcMinMemValue = "+minimumMemValue);
+                //    System.out.println("DEBUG: original first GCMinMemValue = "+originalMinimumMemValue);
+                //    System.out.println("DEBUG: current GcMinMemValue = "+minimumMemValue);
 
                     //if the value equals or is above 10% threshhold of firstGCMinMemValue then the intervalStartTime is set to this timeframe,
                     // that is if the intervalStartTime has not already been set on another timeframe of a start of a slow increase for example.
@@ -272,7 +272,7 @@ public class Analyzer {
                         tempReport.setConsec_mem_inc_count(memConsecutiveIncCounter);
 
                         tempReport.setStatus(GcReport.Status.SUSPECTED_MEMORY_LEAK);
-                        System.out.println("DEBUG: Suspected Memory Leak");
+                     //   System.out.println("DEBUG: Suspected Memory Leak");
                         if (IntervalStartTimeOnSuspectedMemLeak != 0)
                         {
                             tempReport.setStartTime(IntervalStartTimeOnSuspectedMemLeak);
@@ -315,13 +315,13 @@ public class Analyzer {
                         aReport.setMemIncreasePercentage(memIncPercTest);
 
                         //debug for getEndMemoryUsage which is used to calculated MemIncreasePercentage
-                        System.out.println("DEBUG: EndMemoryUsage: "+tempReport.getEndMemoryUsage());
+               //         System.out.println("DEBUG: EndMemoryUsage: "+tempReport.getEndMemoryUsage());
 
                         //debug for mem increase percentage
-                        System.out.println("DEBUG: Mem increase percentage: "+aReport.getMemIncreasePercentage());
+                 //       System.out.println("DEBUG: Mem increase percentage: "+aReport.getMemIncreasePercentage());
 
                         //Debugging for anomalyReport
-                        System.out.println("DEBUG: AnomalyReport created with status: "+aReport.toString());
+                //        System.out.println("DEBUG: AnomalyReport created with status: "+aReport.toString());
                         fireAnomalyEvent(aReport);
 
 
@@ -334,7 +334,7 @@ public class Analyzer {
                         //if there has been 5 or more consecutive minMemoryIncreases in a row, then a processreport is created with a "LIKELY_MEMORY_LEAK"
                         if (memConsecutiveIncCounter >= DEFAULT_CONSECUTIVE_MEM_INC) {
                             tempReport.setStatus(GcReport.Status.POSSIBLE_MEMORY_LEAK);
-                            System.out.println("DEBUG: Possible memory leak");
+                  //          System.out.println("DEBUG: Possible memory leak");
                             if (IntervalStartTimeOnSuspectedMemLeak != 0) {
                                 tempReport.setStartTime(IntervalStartTimeOnSuspectedMemLeak);
                             }
