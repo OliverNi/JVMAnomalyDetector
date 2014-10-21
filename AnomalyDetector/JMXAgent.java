@@ -38,7 +38,6 @@ public class JMXAgent implements Runnable{
         public void handleNotification(Notification notification, Object handback){
             //GarbageCollection has occurred.
             if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)){
-                System.out.println(agent.hostName + ":" + agent.port + ": GARBAGECOLLECTION NOTIFICIATION!"); // Test
                 GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
                 agent.gcLog(info);
             }
