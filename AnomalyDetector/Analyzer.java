@@ -211,7 +211,7 @@ public class Analyzer {
 
         //Creates an arraylist of GcStats and fetches all GCstats entries for the current process through the set starttime and endtime above
         ArrayList<GcStats> currentReports = intervalReportsMap.get(host + ":" + port);
-
+        System.out.println("DEBUG: currentReports gathered");
 
         if (currentReports != null) {
         //    System.out.println("DEBUG: currentReports not null");
@@ -239,7 +239,7 @@ public class Analyzer {
                     {
                         if (IntervalStartTimeOnSuspectedMemLeak == 0)
                         {
-                            IntervalStartTimeOnSuspectedMemLeak = cal.getTimeInMillis(); //Change to currentReports.get(j).getTimeStamp
+                            IntervalStartTimeOnSuspectedMemLeak = currentReports.get(j).getTimeStamp();
                         }
                         memConsecutiveIncCounter++;
                     }
@@ -254,16 +254,6 @@ public class Analyzer {
                     //Debugging
                 //    System.out.println("DEBUG: original first GCMinMemValue = "+originalMinimumMemValue);
                 //    System.out.println("DEBUG: current GcMinMemValue = "+minimumMemValue);
-
-                    //if the value equals or is above 10% threshhold of firstGCMinMemValue then the intervalStartTime is set to this timeframe,
-                    // that is if the intervalStartTime has not already been set on another timeframe of a start of a slow increase for example.
-                    if (minimumMemValue >= (originalMinimumMemValue * DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING) && minimumMemValue != 0)
-                    {
-                        if (IntervalStartTimeOnSuspectedMemLeak == 0)
-                        {
-                            IntervalStartTimeOnSuspectedMemLeak = cal.getTimeInMillis();
-                        }
-                    }
 
                     //if we are on the last lap and the minimumGCMemUsage is above or equal the 10% threshhold of firstGCMemMinValue of this process
                     // then it's time to create a process report with a "SUSPECTED_MEMORY_LEAK" warning
