@@ -40,6 +40,9 @@ public class AnomalyDetector {
         log = Log.getInstance();
         analyzer = new Analyzer(this);
         this.listener = listener;
+        SocketListener socketListener = new SocketListener();
+        Thread thread = new Thread(socketListener);
+        thread.start();
     }
 
     /**
