@@ -3,6 +3,8 @@ package AnomalyDetector;
 import Logs.GcStats;
 import Logs.ILogging;
 import Logs.Log;
+import com.sun.jmx.mbeanserver.MXBeanLookup;
+import com.sun.jmx.mbeanserver.MXBeanMappingFactory;
 import com.sun.management.GarbageCollectionNotificationInfo;
 
 import javax.management.*;
@@ -54,6 +56,7 @@ public class JMXAgent implements Runnable{
                 try {
                     agent.mbsc = agent.jmxc.getMBeanServerConnection();
                     agent.addListeners();
+                    agent.createProxies();
                 }catch (IOException e){
                     e.printStackTrace();
                 } catch (MalformedObjectNameException e) {
@@ -85,7 +88,7 @@ public class JMXAgent implements Runnable{
     private void gcLog(GarbageCollectionNotificationInfo info){
         MemoryUsage oldGenAfter = info.getGcInfo().getMemoryUsageAfterGc().get(heapName);
         MemoryUsage oldGenBefore = info.getGcInfo().getMemoryUsageBeforeGc().get(heapName);
-        long timeStamp = info.getGcInfo().getStartTime() + Log.getProgramStart().getTime();
+        long timeStamp = info.getGcInfo().getStartTime() + runtimeMXBean.getStartTime();
         long collectionTime = info.getGcInfo().getDuration();
         log.sendGarbageCollectionLog(oldGenAfter.getUsed(), oldGenBefore.getUsed(), timeStamp, collectionTime, hostName, port);
         log.sendUsageAfterLastGc(oldGenAfter.getUsed(), hostName, port);
@@ -106,6 +109,7 @@ public class JMXAgent implements Runnable{
     private String heapPath;
     private String heapName;
     private String hostName;
+    private String runtimePath;
     private int port;
 
     //Resources
@@ -115,6 +119,7 @@ public class JMXAgent implements Runnable{
     private AgentListener listener;
     private AnomalyDetector ad;
     private ILogging log;
+    private RuntimeMXBean runtimeMXBean;
     private Timer reconnectTimer = new Timer();
 
     private boolean connected = false;
@@ -128,6 +133,7 @@ public class JMXAgent implements Runnable{
             gcPath = "java.lang:type=GarbageCollector,name=PS MarkSweep";
             heapPath = "java.lang:type=MemoryPool,name=PS Old Gen";
             heapName = "PS Old Gen";
+            //runtimePath = "java.lang:type=Runtime,name="
         }
         else if (System.getProperty("os.name").startsWith("Linux")){
             gcPath = "java.lang:type=GarbageCollector,name=MarkSweepCompact";
@@ -139,7 +145,6 @@ public class JMXAgent implements Runnable{
         this.ad = ad;
         log = Log.getInstance();
         this.listener = new AgentListener(this);
-
         connect();
     }
 
@@ -188,5 +193,9 @@ public class JMXAgent implements Runnable{
         //Add listener to MXBean
         ObjectName name = new ObjectName(gcPath);
         mbsc.addNotificationListener(name, listener, null, null);
+    }
+
+    private void createProxies() throws IOException{
+        runtimeMXBean = ManagementFactory.getPlatformMXBean(mbsc, RuntimeMXBean.class);
     }
 }
