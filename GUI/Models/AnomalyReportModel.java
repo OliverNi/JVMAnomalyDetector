@@ -55,14 +55,12 @@ public class AnomalyReportModel extends Model<AnomalyReportResponse> {
             }
             case "This month": {
                 cal.set(Calendar.DAY_OF_MONTH, 1);
-                cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                 cal.set(Calendar.AM_PM, Calendar.AM);
                 cal.set(Calendar.HOUR, 0);
                 cal.set(Calendar.SECOND, 0);
                 cal.set(Calendar.MINUTE, 0);
                 Date start = cal.getTime();
                 cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-                cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
                 cal.set(Calendar.AM_PM, Calendar.PM);
                 cal.set(Calendar.HOUR, 23);
                 cal.set(Calendar.SECOND, 59);
