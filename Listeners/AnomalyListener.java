@@ -8,5 +8,5 @@ import java.util.EventListener;
  * Created by Oliver on 2014-10-06.
  */
 public interface AnomalyListener extends EventListener {
-    public void anomalyFound(AnomalyEvent e);
+    void anomalyFound(AnomalyEvent e);
 }
