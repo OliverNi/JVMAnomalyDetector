@@ -25,7 +25,7 @@ public class AnomalyDetector {
     private ArrayList<ProcessConnection> connections;
     private Analyzer analyzer;
     private AnomalyListener listener;
-
+    private SocketListener socketListener;
     public Analyzer getAnalyzer() {
         return analyzer;
     }
@@ -40,7 +40,7 @@ public class AnomalyDetector {
         log = Log.getInstance();
         analyzer = new Analyzer(this);
         this.listener = listener;
-        SocketListener socketListener = new SocketListener();
+        socketListener = new SocketListener(this);
         Thread thread = new Thread(socketListener);
         thread.start();
     }
@@ -73,6 +73,9 @@ public class AnomalyDetector {
 
         connections.add(new ProcessConnection(hostName, port, interval));
         analyzer.addIntervalTimer(hostName, port, interval);
+
+        if (agents.get(agents.size()-1).isConnected())
+            sendViaSocket("Connected to: " + hostName + ":" + port + " ...");
 
         return agents.get(agents.size()-1).isConnected();
     }
@@ -149,8 +152,8 @@ public class AnomalyDetector {
 
     public static void main(String args[]){
         //java AnomalyDetector hostname:port, hostname:port 20, hostname:port
+        ArrayList<ProcessConnection> pConnections = new ArrayList<>();
         if (args.length != 0) {
-            ArrayList<ProcessConnection> pConnections = new ArrayList<>();
             int count = 0;
             while (count < args.length) {
                 String hostNPort[] = args[count].split(":");
@@ -175,8 +178,8 @@ public class AnomalyDetector {
                     int port = Integer.parseInt(hostNPort[1]);
                     pConnections.add(new ProcessConnection(hostName, port));
                 }
-
             }
+        }
             SimpleAnomalyListener listener = new SimpleAnomalyListener();
             AnomalyDetector ad = new AnomalyDetector(listener);
             for (ProcessConnection p : pConnections) {
@@ -195,16 +198,15 @@ public class AnomalyDetector {
             {
                 if (in.hasNext()) {
                     String cmdInput = in.nextLine();
-                    cmdOutput = command(cmdInput, ad);
+                    cmdOutput = ad.command(cmdInput);
                     System.out.println(cmdOutput);
                 }
             } while(!cmdOutput.equals("Shutting down"));
             in.close();
             //@TODO Listen on socket?
-        }
     }
 
-    private static String command(String cmd, AnomalyDetector ad){
+    public String command(String cmd){
         String output = "";
         String[] cmds = cmd.split(" -");
         String cmdMain = cmd.split(" -")[0];
@@ -226,6 +228,12 @@ public class AnomalyDetector {
                         "-HOST:PORT, ...., HOST:PORT \n \n";
 
                 output += "browse (Opens LogBrowser (EXAMPLE: browse)) \n \n";
+
+                output += "connect (Connects to a JVM process (EXAMPLE connect -localhost:1111, locahlhost:1212, localhost:1313)) \n";
+                output += "Parameters: \n";
+                output += "-HOST:PORT \n";
+                output += "-HOST:PORT, ...., HOST:PORT \n \n";
+
 
                 output += "quit (Shuts down program (EXAMPLE: quit)) \n";
                 break;
@@ -249,7 +257,7 @@ public class AnomalyDetector {
                     double t = Double.parseDouble(cmdParam);
                     if (t > 0) {
                         output = "Threshold set to: " + t + "\n";
-                        ad.setThreshold(t);
+                        setThreshold(t);
                     }
                     else
                         output = "Format error when trying to set threshold.";
@@ -265,8 +273,28 @@ public class AnomalyDetector {
                     }
                 }.run();
                 break;
+            case "connect":
+                //HOST:PORT
+                String[] connections = cmdParam.split(", ");
+                for (String s : connections){
+                    if (s.contains(":")) {
+                        String[] hostNPort = s.split(":");
+                        String host = hostNPort[0];
+                        int port = Integer.parseInt(hostNPort[1]);
+                        connect(host, port);
+                    }
+                    else
+                        System.out.println("Format error when trying to connect");
+                        //@TODO send "Wrong format connection"
+
+                }
+                output = "Connecting...";
+                break;
             case "quit":
                 output = "Shutting down";
+                break;
+            default:
+                output = "Wrong command";
                 break;
 
             //@TODO Implement CLI commands
@@ -276,5 +304,8 @@ public class AnomalyDetector {
         return output;
     }
 
+    public void sendViaSocket(String text){
+        this.socketListener.send(text);
+    }
 
 }

@@ -17,8 +17,10 @@ class SocketListenerClientThread extends Thread
     private final SocketListenerClientThread[] threads;
     private int nrOfUsers;
     private static int nrOfConnectedUsers;
-    public SocketListenerClientThread(Socket clientSocket, SocketListenerClientThread[] threads)
+    private AnomalyDetector ad;
+    public SocketListenerClientThread(Socket clientSocket, SocketListenerClientThread[] threads, AnomalyDetector ad)
     {
+        this.ad = ad;
         this.clientSocket = clientSocket;
         this.threads = threads;
         nrOfUsers = threads.length;
@@ -77,49 +79,17 @@ class SocketListenerClientThread extends Thread
 
                 //checks if the current input has been used
                 //@TODO add further set commands for excessive GC scan /  mem leak threshhold / etc in this IF statement
-                if( line.contains("clear -") || line.contains("help"))
+                //for the current connected user
+                synchronized (this)
                 {
-                    //for the current connected user
-                    synchronized (this)
+                    for (int i = 0; i < nrOfUsers; i++)
                     {
-                        for (int i = 0; i < nrOfUsers; i++)
-                        {
-
-                            if (threads[i] != null && threads[i] == this && threads[i].clientName != null)
-                            {
-                                //this.os.println("AnomalyReport notification for current connected user");
-
-                                if(line.contains("clear -all"))
-                                {
-                                    //call for clearing of the database tables
-                                    this.os.println("Input successful!");
-                                }
-                                else if(line.contains(":") && line.contains("-"))
-                                {
-                                    //call for clearing of specific process in database tables
-                                    this.os.println("Input successful!");
-                                }
-                                else if(line.contains("help"))
-                                {
-                                    this.os.println("Input successful!");
-                                    String availableCommands = "Examples use: \n";
-                                    availableCommands += "COMMAND or ";
-                                    availableCommands += "COMMAND -PARAMETER (Some commands require a parameter others do not have any parameters)\n \n";
-                                    availableCommands += "clear"+ " (Clears database of all log entries (EXAMPLE: clear -all)) \n";
-                                    availableCommands += "Paramers:\n -all \n" +
-                                            "-HOST:PORT\n" +
-                                            "-HOST:PORT, ...., HOST:PORT \n \n";
-                                    availableCommands += "quit (Shuts down program (EXAMPLE: quit)) \n";
-                                    this.os.println(availableCommands);
-                                }
-
-                                break;
-                            }
-                        }
+                        this.os.println(ad.command(line));
                     }
+                }
 
-                    //probably not needed
-                    //for any other connected users - maybe useful if AnomalyReports shall be sent to all connected users.
+                //probably not needed
+                //for any other connected users - maybe useful if AnomalyReports shall be sent to all connected users.
 //                    synchronized (this)
 //                    {
 //
@@ -130,12 +100,7 @@ class SocketListenerClientThread extends Thread
 //                               // threads[i].os.println("AnomalyReport notification");
 //                            }
 //                        }
-                   // }
-                }
-                else
-                {
-                    this.os.println("Error! wrong input! input: help \n for valid commands!");
-                }
+               // }
             }
             nrOfConnectedUsers--;
 
@@ -159,6 +124,10 @@ class SocketListenerClientThread extends Thread
         } catch (IOException e)
         {
         }
+    }
+
+    public void send(String text){
+        this.os.println(text);
     }
 
 }
