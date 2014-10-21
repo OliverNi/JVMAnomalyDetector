@@ -8,7 +8,7 @@ import java.net.Socket;
 /**
  * Created by Martin on 2014-10-21.
  */
-public class SocketListener
+public class SocketListener implements Runnable
 {
     //Receive commands - give callback
     //
@@ -27,7 +27,6 @@ public class SocketListener
 
         public SocketListener()
         {
-            runListener();
         }
 
         public static void main(String args[])
@@ -81,9 +80,9 @@ public class SocketListener
         }
 
 
-
-
-
-
+    @Override
+    public void run() {
+        runListener();
+    }
 }
 
