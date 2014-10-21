@@ -23,7 +23,7 @@ public class GcStatsModel extends Model<GcStatsResponse>{
         Calendar cal = Calendar.getInstance();
         switch(period){
             case "All":
-                result = log.getGarbageCollectionStats(0L, Calendar.getInstance().getTimeInMillis(), host, port);
+                result = log.getGarbageCollectionStats(0L, Long.MAX_VALUE, host, port);
                 break;
             case "Today": {
                 cal.set(Calendar.AM_PM, Calendar.AM);
