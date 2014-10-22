@@ -77,8 +77,10 @@ public class SocketListener implements Runnable
     }
 
     public void send(String text){
-        for (SocketListenerClientThread t : threads)
-            t.send(text);
+        for (SocketListenerClientThread t : threads) {
+            if (t != null)
+                t.send(text);
+        }
     }
 
     @Override
