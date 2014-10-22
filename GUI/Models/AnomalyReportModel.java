@@ -31,7 +31,6 @@ public class AnomalyReportModel extends Model<AnomalyReportResponse> {
                 cal.set(Calendar.SECOND, 59);
                 cal.set(Calendar.MINUTE, 59);
                 Date end = cal.getTime();
-                System.out.println(start.toString());
                 result = log.getAnomalyReports(start.getTime(), end.getTime(), host, port);
                 break;
             }
@@ -42,7 +41,6 @@ public class AnomalyReportModel extends Model<AnomalyReportResponse> {
                 cal.set(Calendar.SECOND, 1);
                 cal.set(Calendar.MINUTE, 0);
                 Date start = cal.getTime();
-                System.out.println(start.toString());
                 cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
                 cal.set(Calendar.AM_PM, Calendar.PM);
                 cal.set(Calendar.HOUR, 23);
