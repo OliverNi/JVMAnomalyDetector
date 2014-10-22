@@ -211,7 +211,7 @@ public class Analyzer {
 
         //Creates an arraylist of GcStats and fetches all GCstats entries for the current process through the set starttime and endtime above
         ArrayList<GcStats> currentReports = intervalReportsMap.get(host + ":" + port);
-        System.out.println("DEBUG: currentReports gathered");
+      //  System.out.println("DEBUG: currentReports gathered");
 
         if (currentReports != null) {
         //    System.out.println("DEBUG: currentReports not null");
