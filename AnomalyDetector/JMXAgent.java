@@ -131,7 +131,6 @@ public class JMXAgent implements Runnable{
             gcPath = "java.lang:type=GarbageCollector,name=PS MarkSweep";
             heapPath = "java.lang:type=MemoryPool,name=PS Old Gen";
             heapName = "PS Old Gen";
-            //runtimePath = "java.lang:type=Runtime,name="
         }
         else if (System.getProperty("os.name").startsWith("Linux")){
             gcPath = "java.lang:type=GarbageCollector,name=MarkSweepCompact";
