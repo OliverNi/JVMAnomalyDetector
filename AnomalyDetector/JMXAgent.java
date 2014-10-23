@@ -66,18 +66,16 @@ public class JMXAgent implements Runnable{
                 }
             }
             else if (notification.getType().equals(JMXConnectionNotification.CLOSED)){
-                System.out.println("Connection closed: " + agent.hostName + ":" + agent.port);
-                agent.ad.disconnect(agent.hostName, agent.port);
-            }
-            else if (notification.getType().equals(JMXConnectionNotification.FAILED)){
-                System.out.println("FAILED");
+                agent.ad.print("Connection to " + agent.hostName + ":" + agent.port + " closed. Attempting to reconnect in " + RECONNECT_TIME / 1000 + " seconds.");
+                agent.connected = false;
                 agent.reconnect(RECONNECT_TIME);
             }
-            else if (notification.getType().equals(JMXConnectionNotification.NOTIFS_LOST)){
-                System.out.println("LOST");
+            else if (notification.getType().equals(JMXConnectionNotification.FAILED)){
+                agent.ad.print("Error with connection to " + agent.hostName + ":" + agent.port);
             }
-            else
-                System.out.println("DON'T KNOW");
+            else if (notification.getType().equals(JMXConnectionNotification.NOTIFS_LOST)){
+                agent.ad.print("NOTIFS Lost for connection: " + agent.hostName + ":" + agent.port);
+            }
         }
     }
 
