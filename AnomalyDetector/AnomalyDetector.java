@@ -1,16 +1,10 @@
 package AnomalyDetector;
 
-//import GUI.Controllers.FrontController;
-//import GUI.LogBrowser;
 import GUI.Controllers.FrontController;
 import Listeners.AnomalyListener;
 import Listeners.SimpleAnomalyListener;
-import Logs.GcReport;
 import Logs.Log;
 
-import javax.swing.*;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
 
