@@ -1,5 +1,7 @@
 package AnomalyDetector;
 
+import Listeners.RemoteAnomalyListener;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
@@ -57,6 +59,7 @@ public class SocketListener implements Runnable
                     if (threads[i] == null)
                     {
                         (threads[i] = new SocketListenerClientThread(clientSocket, threads, ad)).start();
+                        ad.addListener(new RemoteAnomalyListener(threads[i]));
                         break;
                     }
                 }

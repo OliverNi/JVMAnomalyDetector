@@ -8,7 +8,7 @@ import java.net.Socket;
 /**
  * Created by Martin on 2014-10-21.
  */
-class SocketListenerClientThread extends Thread
+public class SocketListenerClientThread extends Thread
 {
     private String clientName = null;
     private DataInputStream is = null;

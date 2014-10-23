@@ -1,6 +1,7 @@
 package AnomalyDetector;
 
 import Listeners.AnomalyEvent;
+import Listeners.AnomalyListener;
 import Logs.*;
 import com.sun.org.apache.xpath.internal.SourceTree;
 
@@ -560,11 +561,9 @@ public class Analyzer {
     }
 
     private void fireAnomalyEvent(AnomalyReport aReport){
-        if (ad.getListener() != null){
-            System.out.println("fireAnomalyEvent is executed!");
-            AnomalyEvent e = new AnomalyEvent(aReport);
+        for (AnomalyListener l : ad.getListeners()){
             Log.getInstance().sendAnomalyReport(aReport);
-            ad.getListener().anomalyFound(e);
+            l.anomalyFound(new AnomalyEvent(aReport));
         }
     }
 

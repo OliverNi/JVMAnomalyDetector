@@ -24,7 +24,7 @@ public class AnomalyDetector {
     private ArrayList<JMXAgent> agents;
     private ArrayList<ProcessConnection> connections;
     private Analyzer analyzer;
-    private AnomalyListener listener;
+    private ArrayList<AnomalyListener> listeners = new ArrayList<>();
     private SocketListener socketListener;
     public Analyzer getAnalyzer() {
         return analyzer;
@@ -40,7 +40,7 @@ public class AnomalyDetector {
         log = Log.getInstance();
         log.clearData(); //@TODO remove later (used for presentation)
         analyzer = new Analyzer(this);
-        this.listener = listener;
+        this.listeners.add(listener);
         socketListener = new SocketListener(this);
         Thread thread = new Thread(socketListener);
         thread.start();
@@ -143,8 +143,12 @@ public class AnomalyDetector {
         return -1;
     }
 
-    public AnomalyListener getListener(){
-        return listener;
+    public ArrayList<AnomalyListener> getListeners(){
+        return listeners;
+    }
+
+    public void addListener(AnomalyListener listener){
+        listeners.add(listener);
     }
 
     public void setThreshold(double threshold){
