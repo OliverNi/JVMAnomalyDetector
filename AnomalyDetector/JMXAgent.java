@@ -167,7 +167,7 @@ public class JMXAgent implements Runnable{
         }
 
         if (!connected) {
-            ad.print("Connection failed...");
+            ad.print(hostName + ":" + port + ": Connection failed...");
             reconnect(RECONNECT_TIME);
         }
     }
