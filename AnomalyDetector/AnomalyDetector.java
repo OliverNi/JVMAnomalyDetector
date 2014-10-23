@@ -191,12 +191,6 @@ public class AnomalyDetector {
                 ad.connect(p.getHostName(), p.getPort(), p.getInterval());
             }
 
-            ArrayList<String> sConnections = ad.getConnections();
-
-            for (String s : sConnections) {
-                System.out.println("Connected to: " + s);
-            }
-
             String cmdOutput = "";
             Scanner in = new Scanner(System.in);
             do
@@ -208,7 +202,6 @@ public class AnomalyDetector {
                 }
             } while(!cmdOutput.equals("Shutting down"));
             in.close();
-            //@TODO Listen on socket?
     }
 
     public String command(String cmd){
@@ -307,6 +300,15 @@ public class AnomalyDetector {
             //Java 7 autoclose
         }
         return output;
+    }
+
+    /**
+     * Prints to both local command line and connections
+     * @param text text to be printed
+     */
+    public void print(String text){
+        System.out.println(text);
+        sendViaSocket(text);
     }
 
     public void sendViaSocket(String text){
