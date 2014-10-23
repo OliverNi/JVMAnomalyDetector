@@ -82,7 +82,7 @@ public class AnomalyDetector {
         analyzer.addIntervalTimer(hostName, port, interval);
 
         if (agents.get(agents.size()-1).isConnected())
-            sendViaSocket("Connected to: " + hostName + ":" + port + " ...");
+            print("Connected to: " + hostName + ":" + port + " ...");
 
         return agents.get(agents.size()-1).isConnected();
     }
@@ -104,6 +104,7 @@ public class AnomalyDetector {
                     if (p.getPort() == port && p.getHostName().equals(hostName))
                         connections.remove(p);
                 }
+                print("Disconnected from: " + a.getHostName() + ":" + a.getPort());
                 disconnected = true;
             }
         }
@@ -311,8 +312,7 @@ public class AnomalyDetector {
                         connect(host, port);
                     }
                     else
-                        System.out.println("Format error when trying to connect");
-                        //@TODO send "Wrong format connection"
+                        print("Wrong format for connection. Use HOST:PORT");
 
                 }
                 output = "Connecting...";
