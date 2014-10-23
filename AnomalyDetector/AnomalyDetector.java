@@ -174,7 +174,7 @@ public class AnomalyDetector {
     }
 
     public void setThreshold(double threshold){
-        //@TODO Implement
+        Analyzer.setPERCENTAGE_INC_IN_MEM_USE_WARNING(threshold);
     }
 
     public void setExcessiveGcTime(long threshold){
