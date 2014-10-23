@@ -51,7 +51,7 @@ public class JMXAgent implements Runnable{
                 agent.gcLog(info);
             }
             else if (notification.getType().equals(JMXConnectionNotification.OPENED)){
-                System.out.println("OPENED");
+                agent.ad.print("Connected to: " + agent.hostName + ":" + agent.port + " ...");
                 agent.connected = true;
                 try {
                     agent.mbsc = agent.jmxc.getMBeanServerConnection();
@@ -66,7 +66,7 @@ public class JMXAgent implements Runnable{
                 }
             }
             else if (notification.getType().equals(JMXConnectionNotification.CLOSED)){
-                agent.ad.print("Connection to " + agent.hostName + ":" + agent.port + " closed. Attempting to reconnect in " + RECONNECT_TIME / 1000 + " seconds.");
+                agent.ad.print("Connection to " + agent.hostName + ":" + agent.port + " closed");
                 agent.connected = false;
                 agent.reconnect(RECONNECT_TIME);
             }
@@ -172,6 +172,7 @@ public class JMXAgent implements Runnable{
     }
 
     private void reconnect(long delay){
+        ad.print("Reconnecting in " + RECONNECT_TIME / 1000 + " seconds.");
         Timer timer = new Timer();
         timer.schedule(new ReconnectTask(), delay);
     }
