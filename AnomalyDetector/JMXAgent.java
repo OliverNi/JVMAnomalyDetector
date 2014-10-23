@@ -163,7 +163,7 @@ public class JMXAgent implements Runnable{
             jmxc.connect();
         }
         catch (IOException e){
-            System.out.println("Connection failed");
+            e.printStackTrace();
         }
 
         if (!connected) {
