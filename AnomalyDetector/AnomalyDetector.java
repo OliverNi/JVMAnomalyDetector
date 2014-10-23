@@ -177,6 +177,10 @@ public class AnomalyDetector {
         //@TODO Implement
     }
 
+    public void setExcessiveGcTime(long threshold){
+        Analyzer.setTIME_EXCESSIVE_SCAN_WARNING(threshold);
+    }
+
     public static void main(String args[]){
         //java AnomalyDetector hostname:port, hostname:port 20, hostname:port
         ArrayList<ProcessConnection> pConnections = new ArrayList<>();
@@ -265,6 +269,15 @@ public class AnomalyDetector {
                 output += "-HOST:PORT, ...., HOST:PORT \n \n";
 
                 output += "settings (Displays settings (EXAMPLE: settings))\n\n";
+
+                output += "excessivegc (Sets Excessive GC Time Warning in milliseconds (EXAMPLE: excessivegc -1000)\n";
+                output += "Parameters: \n";
+                output += "-MILLISECONDS \n \n";
+
+                output += "threshold (Sets memory increase warning threshold in percent (EXAMPLE: threshold -10))";
+                output += "Parameters: \n";
+                output += "-DOUBLE \n \n";
+
                 output += "quit (Shuts down program (EXAMPLE: quit)) \n";
                 break;
             }
@@ -339,6 +352,20 @@ public class AnomalyDetector {
                     output += "Analyzer interval: " + c.getInterval() + "\n";
                 }
                 break;
+            case "excessivegc": {
+                long time = -1;
+                try {
+                    time = Long.parseLong(cmdParam);
+                    setExcessiveGcTime(time);
+                    output = "Excessive GC Time Warning set to " + time + " ms";
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                    output = "Format error";
+                }
+
+                break;
+            }
             case "quit":
                 output = "Shutting down";
                 break;
