@@ -166,9 +166,10 @@ public class JMXAgent implements Runnable{
             System.out.println("Connection failed");
         }
 
-        if (!connected)
+        if (!connected) {
+            ad.print("Connection failed...");
             reconnect(RECONNECT_TIME);
-        System.out.println("Connected: " + connected);
+        }
     }
 
     private void reconnect(long delay){
