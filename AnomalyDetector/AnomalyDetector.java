@@ -254,11 +254,15 @@ public class AnomalyDetector {
 
                 output += "browse (Opens LogBrowser (EXAMPLE: browse)) \n \n";
 
-                output += "connect (Connects to a JVM process (EXAMPLE connect -localhost:1111, locahlhost:1212, localhost:1313)) \n";
+                output += "connect (Connects to a JVM process (EXAMPLE: connect -localhost:1111, locahlhost:1212, localhost:1313)) \n";
                 output += "Parameters: \n";
                 output += "-HOST:PORT \n";
                 output += "-HOST:PORT, ...., HOST:PORT \n \n";
 
+                output += "disconnect (Disconnects from a monitored process (EXAMPLE: disconnect -localhost:1111, locahlhost:1212, localhost:1313))";
+                output += "Parameters: \n";
+                output += "-HOST:PORT \n";
+                output += "-HOST:PORT, ...., HOST:PORT \n \n";
 
                 output += "quit (Shuts down program (EXAMPLE: quit)) \n";
                 break;
@@ -290,6 +294,20 @@ public class AnomalyDetector {
                 else
                     output = "Format error when trying to set threshold.";
                 break;
+            case "disconnect": {
+                //HOST:PORT
+                String[] connections = cmdParam.split(", ");
+                for (String s : connections) {
+                    if (s.contains(":")) {
+                        String[] hostNPort = s.split(":");
+                        String host = hostNPort[0];
+                        int port = Integer.parseInt(hostNPort[1]);
+                        disconnect(host, port);
+                    } else
+                        print("Wrong format for connection. Use HOST:PORT");
+                }
+                break;
+            }
             case "browse":
                 new Runnable(){
                     @Override
@@ -298,20 +316,20 @@ public class AnomalyDetector {
                     }
                 }.run();
                 break;
-            case "connect":
+            case "connect": {
                 //HOST:PORT
                 String[] connections = cmdParam.split(", ");
-                for (String s : connections){
+                for (String s : connections) {
                     if (s.contains(":")) {
                         String[] hostNPort = s.split(":");
                         String host = hostNPort[0];
                         int port = Integer.parseInt(hostNPort[1]);
                         connect(host, port);
-                    }
-                    else
+                    } else
                         print("Wrong format for connection. Use HOST:PORT");
                 }
                 break;
+            }
             case "quit":
                 output = "Shutting down";
                 break;
