@@ -133,7 +133,6 @@ public class Analyzer {
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new IntervalTask(host, port, interval), interval * minute, interval * minute);
         intervalTimers.put(host + ":" + port, timer);
-        System.out.println("DEBUG: Timer created for: " + host + ":" + port);
     }
 
     /**
