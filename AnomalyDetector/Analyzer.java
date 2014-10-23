@@ -65,6 +65,7 @@ public class Analyzer {
     public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
     public static final double DEFAULT_CONSECUTIVE_MEM_INC = 1;
     public static final long DEFAULT_TIME_EXCESSIVE_SCAN_WARNING = 1000;
+    private static long TIME_EXCESSIVE_SCAN_WARNING = DEFAULT_TIME_EXCESSIVE_SCAN_WARNING;
     public static final long EXCESSIVE_GC_COOLDOWN = 3600000L; //One hour
     private HashMap<String, Boolean> cooldown = new HashMap<>();
     private AnomalyDetector ad;
@@ -570,5 +571,13 @@ public class Analyzer {
         Timer timer = intervalTimers.get(host + ":" + port);
         timer.cancel();
         timer.purge();
+    }
+
+    public static long getTIME_EXCESSIVE_SCAN_WARNING() {
+        return TIME_EXCESSIVE_SCAN_WARNING;
+    }
+
+    public static void setTIME_EXCESSIVE_SCAN_WARNING(long TIME_EXCESSIVE_SCAN_WARNING) {
+        Analyzer.TIME_EXCESSIVE_SCAN_WARNING = TIME_EXCESSIVE_SCAN_WARNING;
     }
 }
