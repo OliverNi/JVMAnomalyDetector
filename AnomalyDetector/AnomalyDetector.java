@@ -26,14 +26,26 @@ public class AnomalyDetector {
     private Analyzer analyzer;
     private ArrayList<AnomalyListener> listeners = new ArrayList<>();
     private SocketListener socketListener;
+
+    /**
+     * Get the AnomalyDetector's Analyzer object
+     * @return the Analyzer object used by the AnomalyDetector
+     */
     public Analyzer getAnalyzer() {
         return analyzer;
     }
 
+    /**
+     * Create an AnomalyDetector which can monitor several processes. It will gather and analyze memory statistics.
+     */
     public AnomalyDetector(){
         this(null);
     }
 
+    /**
+     * Create an AnomalyDetector which can monitor several processes. It will gather and analyze memory statistics.
+     * @param listener an AnomalyListener which will receive notifications if an Anomaly is found.
+     */
     public AnomalyDetector(AnomalyListener listener){
         agents = new ArrayList<>();
         connections = new ArrayList<>();
@@ -81,6 +93,12 @@ public class AnomalyDetector {
         return agents.get(agents.size()-1).isConnected();
     }
 
+    /**
+     * Disconnects connection to a monitored process.
+     * @param hostName hostname for the process
+     * @param port port for the process
+     * @return IF PROCESS WAS DISCONNECTED: TRUE ELSE: FALSE
+     */
     public boolean disconnect(String hostName, int port){
         boolean disconnected = false;
         for (JMXAgent a : agents)
@@ -110,6 +128,10 @@ public class AnomalyDetector {
         return connStrings;
     }
 
+    /**
+     * Get information for all active monitored program connections.
+     * @return a list of ProcessConnections containing information about connections
+     */
     public ArrayList<ProcessConnection> getProcessConnections(){
         return connections;
     }
@@ -143,10 +165,18 @@ public class AnomalyDetector {
         return -1;
     }
 
+    /**
+     * Get a list of listeners
+     * @return a list of listeners
+     */
     public ArrayList<AnomalyListener> getListeners(){
         return listeners;
     }
 
+    /**
+     * Add a listener which will receive Anomaly reports.
+     * @param listener the listener
+     */
     public void addListener(AnomalyListener listener){
         listeners.add(listener);
     }
@@ -204,6 +234,11 @@ public class AnomalyDetector {
             in.close();
     }
 
+    /**
+     * Commands for the program to do something
+     * @param cmd the command
+     * @return Output text
+     */
     public String command(String cmd){
         String output = "";
         String[] cmds = cmd.split(" -");
@@ -311,6 +346,10 @@ public class AnomalyDetector {
         sendViaSocket(text);
     }
 
+    /**
+     * Sends a text to all socket-connections
+     * @param text text to be sent.
+     */
     public void sendViaSocket(String text){
         this.socketListener.send(text);
     }
