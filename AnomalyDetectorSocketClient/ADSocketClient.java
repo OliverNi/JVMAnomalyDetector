@@ -67,7 +67,7 @@ public class ADSocketClient implements Runnable
             {
                 //creates a thread to read from the server
                 new Thread(new ADSocketClient()).start();
-                while (!closed)
+                while (!closed && os != null)
                 {
                     os.println(inputLine.readLine().trim());
                 }
