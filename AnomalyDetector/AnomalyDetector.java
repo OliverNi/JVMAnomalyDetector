@@ -349,7 +349,7 @@ public class AnomalyDetector {
                 output += "Memory increase threshold: " + Analyzer.DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING + "\n";
                 for (ProcessConnection c : connections){
                     output += c.getHostName() + ":" + c.getPort() + ":\n";
-                    output += "Analyzer interval: " + c.getInterval() + "\n";
+                    output += "Analyzer interval: " + c.getInterval() + "min \n";
                 }
                 break;
             case "excessivegc": {
