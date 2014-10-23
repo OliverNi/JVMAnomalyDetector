@@ -264,6 +264,7 @@ public class AnomalyDetector {
                 output += "-HOST:PORT \n";
                 output += "-HOST:PORT, ...., HOST:PORT \n \n";
 
+                output += "settings (Displays settings (EXAMPLE: settings))\n\n";
                 output += "quit (Shuts down program (EXAMPLE: quit)) \n";
                 break;
             }
@@ -330,6 +331,14 @@ public class AnomalyDetector {
                 }
                 break;
             }
+            case "settings":
+                output += "Excessive GC Scan threshold: " + Analyzer.getTIME_EXCESSIVE_SCAN_WARNING() + "\n";
+                output += "Memory increase threshold: " + Analyzer.DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING + "\n";
+                for (ProcessConnection c : connections){
+                    output += c.getHostName() + ":" + c.getPort() + ":\n";
+                    output += "Analyzer interval: " + c.getInterval() + "\n";
+                }
+                break;
             case "quit":
                 output = "Shutting down";
                 break;
@@ -338,7 +347,6 @@ public class AnomalyDetector {
                 break;
 
             //@TODO Implement CLI commands
-            //@TODO Current settings
             //Java 7 autoclose
         }
         return output;
