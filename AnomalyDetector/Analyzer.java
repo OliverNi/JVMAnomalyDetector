@@ -63,6 +63,7 @@ public class Analyzer {
     }
 
     public static final double DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING = 1.1;
+    private static double PERCENTAGE_INC_IN_MEM_USE_WARNING = DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING;
     public static final double DEFAULT_CONSECUTIVE_MEM_INC = 1;
     public static final long DEFAULT_TIME_EXCESSIVE_SCAN_WARNING = 1000;
     private static long TIME_EXCESSIVE_SCAN_WARNING = DEFAULT_TIME_EXCESSIVE_SCAN_WARNING;
@@ -147,7 +148,7 @@ public class Analyzer {
         long timeOfLastGc = Log.getInstance().getTimeOfLastGc(conn);
         if (timeOfLastGc > 0L) {
             ProcessReport pReport = log.getProcessReport(host, port);
-            long timeWarning = DEFAULT_TIME_EXCESSIVE_SCAN_WARNING;
+            long timeWarning = TIME_EXCESSIVE_SCAN_WARNING;
             if ((currentGc.getTimeStamp() - timeOfLastGc) < timeWarning) {
                 AnomalyReport aReport = new AnomalyReport();
                 aReport.setAnomaly(AnomalyReport.Anomaly.EXCESSIVE_GC_SCAN);
@@ -258,7 +259,7 @@ public class Analyzer {
 
                     //if we are on the last lap and the minimumGCMemUsage is above or equal the 10% threshhold of firstGCMemMinValue of this process
                     // then it's time to create a process report with a "SUSPECTED_MEMORY_LEAK" warning
-                    if (j == currentReports.size() - 1 && minimumMemValue >= (originalMinimumMemValue * DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING))
+                    if (j == currentReports.size() - 1 && minimumMemValue >= (originalMinimumMemValue * PERCENTAGE_INC_IN_MEM_USE_WARNING))
                     {
                         tempReport.setConsec_mem_inc_count(memConsecutiveIncCounter);
 
@@ -318,7 +319,7 @@ public class Analyzer {
 
                     }
                     // if the last gcMinMemvalue is below the 10% threshold of the firstGcMinMemValue
-                    else if (j == currentReports.size() - 1 && minimumMemValue < (originalMinimumMemValue * DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING))
+                    else if (j == currentReports.size() - 1 && minimumMemValue < (originalMinimumMemValue * PERCENTAGE_INC_IN_MEM_USE_WARNING))
                     {
                         tempReport.setConsec_mem_inc_count(memConsecutiveIncCounter);
                         tempReport.setStatus(GcReport.Status.OK);
@@ -579,5 +580,13 @@ public class Analyzer {
 
     public static void setTIME_EXCESSIVE_SCAN_WARNING(long TIME_EXCESSIVE_SCAN_WARNING) {
         Analyzer.TIME_EXCESSIVE_SCAN_WARNING = TIME_EXCESSIVE_SCAN_WARNING;
+    }
+
+    public static double getPERCENTAGE_INC_IN_MEM_USE_WARNING() {
+        return PERCENTAGE_INC_IN_MEM_USE_WARNING;
+    }
+
+    public static void setPERCENTAGE_INC_IN_MEM_USE_WARNING(double PERCENTAGE_INC_IN_MEM_USE_WARNING) {
+        Analyzer.PERCENTAGE_INC_IN_MEM_USE_WARNING = PERCENTAGE_INC_IN_MEM_USE_WARNING;
     }
 }
