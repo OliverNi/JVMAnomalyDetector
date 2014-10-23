@@ -81,9 +81,6 @@ public class AnomalyDetector {
         connections.add(new ProcessConnection(hostName, port, interval));
         analyzer.addIntervalTimer(hostName, port, interval);
 
-        if (agents.get(agents.size()-1).isConnected())
-            print("Connected to: " + hostName + ":" + port + " ...");
-
         return agents.get(agents.size()-1).isConnected();
     }
 
@@ -313,9 +310,7 @@ public class AnomalyDetector {
                     }
                     else
                         print("Wrong format for connection. Use HOST:PORT");
-
                 }
-                output = "Connecting...";
                 break;
             case "quit":
                 output = "Shutting down";
