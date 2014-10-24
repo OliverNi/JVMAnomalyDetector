@@ -14,24 +14,17 @@ public class SocketListenerClientThread extends Thread
     private DataInputStream is = null;
     private PrintStream os = null;
     private Socket clientSocket = null;
-    private final SocketListenerClientThread[] threads;
-    private int nrOfUsers;
     private static int nrOfConnectedUsers;
     private AnomalyDetector ad;
-    public SocketListenerClientThread(Socket clientSocket, SocketListenerClientThread[] threads, AnomalyDetector ad)
+    public SocketListenerClientThread(Socket clientSocket, AnomalyDetector ad)
     {
         this.ad = ad;
         this.clientSocket = clientSocket;
-        this.threads = threads;
-        nrOfUsers = threads.length;
     }
 
     @SuppressWarnings("deprecation")
     public void run()
     {
-        int nrOfUsers = this.nrOfUsers;
-        SocketListenerClientThread[] threads = this.threads;
-
         try
         {
             //creates input and output streams for the current connected users
@@ -57,15 +50,7 @@ public class SocketListenerClientThread extends Thread
             //inputs connected user name into a name variable for the specific thread that has been assigned to him/her
             synchronized (this)
             {
-                for (int i = 0; i < nrOfUsers; i++)
-                {
-                    if (threads[i] != null && threads[i] == this)
-                    {
-                        clientName = name;
-                        break;
-                    }
-                }
-
+                clientName = name;
             }
 
             //starts Command interface listener
@@ -77,29 +62,17 @@ public class SocketListenerClientThread extends Thread
                     break;
                 }
 
+                //checks if the current input has been used
                 //for the current connected user
                 synchronized (this)
                 {
-                    for (int i = 0; i < nrOfUsers; i++)
-                    {
-                        this.os.println(ad.command(line));
-                    }
+                    this.os.println(ad.command(line));
                 }
             }
             nrOfConnectedUsers--;
 
             os.println(">>> Good bye " + name + " >>>");
             //sets the current thread to null once the user is disconnected so another user can connect
-            synchronized (this)
-            {
-                for (int i = 0; i < nrOfUsers; i++)
-                {
-                    if (threads[i] == this)
-                    {
-                        threads[i] = null;
-                    }
-                }
-            }
 
             //closes the output, input stream and the socket
             is.close();
@@ -112,6 +85,10 @@ public class SocketListenerClientThread extends Thread
 
     public void send(String text){
         this.os.println(text);
+    }
+
+    public boolean isConnected(){
+        return clientSocket.isConnected();
     }
 
 }

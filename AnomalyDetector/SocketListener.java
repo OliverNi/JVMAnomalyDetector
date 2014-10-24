@@ -6,26 +6,23 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * Created by Martin on 2014-10-21.
  */
 public class SocketListener implements Runnable
 {
-    //Receive commands - give callback
-    //
-
     // The server socket.
     private static ServerSocket serverSocket = null;
     // The client socket.
     private static Socket clientSocket = null;
 
     // Sets a limit on the number of connected users
-    private static final int nrOfUsers = 1;
-    //creates a SocketListenerClientThread with a max amount based on nrOfUsers set
-    private static final SocketListenerClientThread[] threads = new SocketListenerClientThread[nrOfUsers];
+    private static final int nrOfUsers = 2;
+    private static ArrayList<SocketListenerClientThread> threads = new ArrayList<>();
     // The default port number.
-    private static final int portNumber = 27016;
+    private static final int portNumber = 27015;
     private AnomalyDetector ad;
 
     public SocketListener(AnomalyDetector ad)
@@ -52,25 +49,11 @@ public class SocketListener implements Runnable
             try
             {
                 clientSocket = serverSocket.accept();
-                int i = 0;
-                for (i = 0; i < nrOfUsers; i++)
-                {
-                    //if a thread is empty then it can be assigned a new connection
-                    if (threads[i] == null)
-                    {
-                        (threads[i] = new SocketListenerClientThread(clientSocket, threads, ad)).start();
-                        ad.addListener(new RemoteAnomalyListener(threads[i]));
-                        break;
-                    }
-                }
-                //if more than the set amount for variable nrOfUsers connects then an error message is displayed
-                if (i == nrOfUsers)
-                {
-                    PrintStream os = new PrintStream(clientSocket.getOutputStream());
-                    os.println("Max number of users have been reached, please try again later");
-                    os.close();
-                    clientSocket.close();
-                }
+                SocketListenerClientThread listenerThread = new SocketListenerClientThread(clientSocket, ad);
+                threads.add(listenerThread);
+                ad.addListener(new RemoteAnomalyListener(listenerThread));
+                listenerThread.start();
+
             } catch (IOException e)
             {
                 System.out.println(e);
@@ -80,11 +63,23 @@ public class SocketListener implements Runnable
     }
 
     public void send(String text){
-        for (SocketListenerClientThread t : threads) {
-            if (t != null)
-                t.send(text);
+        int count = 0;
+
+        while (count < threads.size()){
+            if (threads.get(count).isConnected())
+                threads.get(count).send(text);
+            else {
+                removeListenerThread(threads.get(count));
+                count--;
+            }
+            count++;
         }
     }
+
+    public void removeListenerThread(SocketListenerClientThread t){
+        threads.remove(t);
+    }
+
 
     @Override
     public void run() {
