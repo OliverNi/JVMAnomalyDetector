@@ -288,13 +288,23 @@ public class AnomalyDetector {
      */
     public String command(String cmd){
         String output = "";
-        String[] cmds = cmd.split(" -");
-        String cmdMain = cmd.split(" -")[0];
+        String cmdMain = "";
         String cmdParam = "";
-        if (cmds.length > 1)
+        if(cmd.contains("-"))
         {
-            cmdParam = cmds[1];
+            String[] cmds = cmd.split(" -");
+            cmdMain = cmd.split(" -")[0];
+            cmdParam = "";
+            if (cmds.length > 1)
+            {
+                cmdParam = cmds[1];
+            }
         }
+        else
+        {
+            cmdMain = cmd;
+        }
+
 
         switch (cmdMain){
 
@@ -351,35 +361,112 @@ public class AnomalyDetector {
                 else
                 {
                     //HOST:PORT
-                    String[] connections = cmdParam.split(", ");
-                    Log.getInstance().clearData(new ArrayList<>(Arrays.asList(connections)));
-                    output = "Clearing all rows in all tables for specified connections";
+                    if(cmdParam.contains(", "))
+                    {
+                        String[] connections = cmdParam.split(", ");
+                        String[] splitcheck =  new String[connections.length];
+                        try
+                        {
+                            for(int i=0; i<connections.length; i++)
+                            {
+                                splitcheck = connections[i].split(":");
+                                Integer.parseInt(splitcheck[1]);
+                            }
+                        }catch (NumberFormatException e)
+                        {
+                            output = "Format error of clear request for supplied connection!";
+                            break;
+                        }
+
+                        Log.getInstance().clearData(new ArrayList<>(Arrays.asList(connections)));
+                        output = "Clearing all rows in all tables for specified connections";
+                    }
+                    else if(cmdParam.contains(":") && !cmdParam.contains(", "))
+                    {
+                        try
+                        {
+                            String[] splitcheck = cmdParam.split(":");
+                            Integer.parseInt(splitcheck[1]);
+
+                        }catch (NumberFormatException e)
+                        {
+                            output = "Format error of clear request for supplied connection!";
+                            break;
+                        }
+                        String connection = cmdParam;
+                        Log.getInstance().clearData(new ArrayList<>(Arrays.asList(connection)));
+                        output = "Clearing all rows in all tables for specified connections";
+                    }
+                    else
+                    {
+                        output = "Format error of clear request for supplied connection!";
+                    }
                 }
                 break;
             case "threshold":
-                if (!cmdParam.equals("")) {
-                    double t = Double.parseDouble(cmdParam);
-                    if (t > 0) {
-                        output = "Threshold set to: " + t + "\n";
-                        setThreshold(t);
-                    }
-                    else
+                if (!cmdParam.equals(""))
+                {
+                    try
+                    {
+                        double t = Double.parseDouble(cmdParam);
+                        if (t > 0)
+                        {
+                            output = "Threshold set to: " + t + "\n";
+                            setThreshold(t);
+                        }
+                        else
+                            output = "Format error when trying to set threshold.";
+
+                    }catch (NumberFormatException e)
+                    {
                         output = "Format error when trying to set threshold.";
+                    }
                 }
                 else
                     output = "Format error when trying to set threshold.";
                 break;
-            case "disconnect": {
+            case "disconnect":
+            {
                 //HOST:PORT
-                String[] connections = cmdParam.split(", ");
-                for (String s : connections) {
-                    if (s.contains(":")) {
-                        String[] hostNPort = s.split(":");
-                        String host = hostNPort[0];
+                if(cmdParam.contains(", "))
+                {
+                    String[] connections = cmdParam.split(", ");
+                    for (String s : connections)
+                    {
+                        if (s.contains(":"))
+                        {
+                            String[] hostNPort = s.split(":");
+                            String host = hostNPort[0];
+                            try
+                            {
+                                int port = Integer.parseInt(hostNPort[1]);
+                                disconnect(host, port);
+                            }catch (NumberFormatException e)
+                            {
+                                print("Wrong format for connection. Use HOST:PORT");
+                            }
+
+                        }
+                        else
+                            print("Wrong format for connection. Use HOST:PORT");
+                    }
+                }
+                else if(cmdParam.contains(":") && !cmdParam.contains(", "))
+                {
+                    String[] hostNPort = cmdParam.split(":");
+                    String host = hostNPort[0];
+                    try
+                    {
                         int port = Integer.parseInt(hostNPort[1]);
                         disconnect(host, port);
-                    } else
+                    }catch (NumberFormatException e)
+                    {
                         print("Wrong format for connection. Use HOST:PORT");
+                    }
+                }
+                else
+                {
+                    print("Wrong format for connection. Use HOST:PORT");
                 }
                 break;
             }
@@ -391,18 +478,51 @@ public class AnomalyDetector {
                     }
                 }.run();
                 break;
-            case "connect": {
+            case "connect":
+            {
+
                 //HOST:PORT
-                String[] connections = cmdParam.split(", ");
-                for (String s : connections) {
-                    if (s.contains(":")) {
-                        String[] hostNPort = s.split(":");
-                        String host = hostNPort[0];
+                if(cmdParam.contains(", "))
+                {
+                    String[] connections = cmdParam.split(", ");
+                    for (String s : connections)
+                    {
+                        if (s.contains(":"))
+                        {
+                            String[] hostNPort = s.split(":");
+                            String host = hostNPort[0];
+                            try
+                            {
+                                int port = Integer.parseInt(hostNPort[1]);
+                                connect(host, port);
+                            }catch (NumberFormatException e)
+                            {
+                                print("Wrong format for connection. Use HOST:PORT");
+                            }
+
+                        }
+                        else
+                        {
+                            output = "Wrong format for connection. Use HOST:PORT";
+                        }
+
+                    }
+                }
+                else if(cmdParam.contains(":") && !cmdParam.contains(", "))
+                {
+                    String[] hostNPort = cmdParam.split(":");
+                    String host = hostNPort[0];
+                    try
+                    {
                         int port = Integer.parseInt(hostNPort[1]);
                         connect(host, port);
-                    } else
+                    }catch (NumberFormatException e)
+                    {
                         print("Wrong format for connection. Use HOST:PORT");
+                    }
+
                 }
+
                 break;
             }
             case "settings":
@@ -413,15 +533,17 @@ public class AnomalyDetector {
                     output += "Analyzer interval: " + c.getInterval() + "min \n";
                 }
                 break;
-            case "excessivegc": {
+            case "excessivegc":
+            {
                 long time = -1;
-                try {
+                try
+                {
                     time = Long.parseLong(cmdParam);
                     setExcessiveGcTime(time);
                     output = "Excessive GC Time Warning set to " + time + " ms";
                 }
-                catch (Exception e){
-                    e.printStackTrace();
+                catch (NumberFormatException e)
+                {
                     output = "Format error";
                 }
 
@@ -433,28 +555,63 @@ public class AnomalyDetector {
                     output += getConnectionStatus(c.getHostName(), c.getPort()) + "\n";
                 }
                 break;
-            case "setinterval": {
-                String[] params = cmdParam.split(":");
-                String host = params[0];
-                int port = Integer.parseInt(params[1]);
-                int interval = Integer.parseInt(params[2]);
-                setInterval(host, port, interval);
+            case "setinterval":
+            {
+                if(cmdParam.contains(":"))
+                {
+                    try
+                    {
+                        String[] params = cmdParam.split(":");
+                        String host = params[0];
+                        int port = Integer.parseInt(params[1]);
+                        int interval = Integer.parseInt(params[2]);
+                        setInterval(host, port, interval);
+                    }catch (NumberFormatException e)
+                    {
+                        output = "Format error";
+                    }
+                }
+                else
+                {
+                    output = "Format error";
+                }
                 break;
             }
-            case "anomaly":{
-                String[] params = cmdParam.split(":");
-                String host = params[0];
-                int port = Integer.parseInt(params[1]);
-                ArrayList<AnomalyReport> aReports = log.getAnomalyReports(host, port);
-                for (AnomalyReport a : aReports)
-                    output += a.toString();
+            case "anomaly":
+            {
+                if(cmdParam.contains(":"))
+                {
+                    try
+                    {
+                        String[] params = cmdParam.split(":");
+                        String host = params[0];
+                        int port = Integer.parseInt(params[1]);
+                        ArrayList<AnomalyReport> aReports = log.getAnomalyReports(host, port);
+                        for (AnomalyReport a : aReports)
+                        {
+                            output += a.toString();
+                        }
+                        if(output.length() == 0)
+                        {
+                            print("no AnomalyReports found for connection: "+cmdParam);
+                        }
+                    }catch(NumberFormatException e)
+                    {
+                        output = "Format error";
+                    }
+                }
+                else
+                {
+                    output = "Format error";
+                }
+
             }
             break;
             case "quit":
                 output = "Shutting down";
                 break;
             default:
-                output = "Wrong command";
+                output = "Wrong command!";
                 break;
         }
         return output;
