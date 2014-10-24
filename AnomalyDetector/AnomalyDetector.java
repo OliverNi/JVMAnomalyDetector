@@ -81,9 +81,7 @@ public class AnomalyDetector {
         }
         if (!found) {
             agents.add(new JMXAgent(hostName, port, this));
-
-            Thread thread = new Thread(agents.get(agents.size() - 1));
-            thread.start();
+            agents.get(agents.size()-1).start();
 
             connections.add(new ProcessConnection(hostName, port, interval));
             analyzer.addIntervalTimer(hostName, port, interval);
@@ -108,7 +106,9 @@ public class AnomalyDetector {
         if (agentIndex != -1){
             print("Disconnected from: " + agents.get(agentIndex).getHostName() + ":" + agents.get(agentIndex).getPort());
             disconnected = true;
-            agents.remove(agentIndex);
+            JMXAgent agent = agents.remove(agentIndex);
+            agent.cancelTimer();
+            agent.interrupt();
         }
 
         if (connectionIndex != -1){

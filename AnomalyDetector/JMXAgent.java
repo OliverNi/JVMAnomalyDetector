@@ -22,12 +22,7 @@ import java.util.TimerTask;
 /**
  * Created by Oliver on 2014-09-12.
  */
-public class JMXAgent implements Runnable{
-    @Override
-    public void run() {
-
-    }
-
+public class JMXAgent extends Thread{
     class ReconnectTask extends TimerTask{
         @Override
         public void run() {
@@ -174,8 +169,8 @@ public class JMXAgent implements Runnable{
 
     private void reconnect(long delay){
         ad.print("Reconnecting in " + RECONNECT_TIME / 1000 + " seconds.");
-        Timer timer = new Timer();
-        timer.schedule(new ReconnectTask(), delay);
+        reconnectTimer = new Timer();
+        reconnectTimer.schedule(new ReconnectTask(), delay);
     }
 
     public boolean isConnected(){
@@ -196,5 +191,10 @@ public class JMXAgent implements Runnable{
 
     private void createProxies() throws IOException{
         runtimeMXBean = ManagementFactory.getPlatformMXBean(mbsc, RuntimeMXBean.class);
+    }
+
+    public void cancelTimer(){
+        reconnectTimer.cancel();
+        reconnectTimer.purge();
     }
 }
