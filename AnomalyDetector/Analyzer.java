@@ -179,12 +179,9 @@ public class Analyzer {
 
     public void analyzeIntervalGc(String host, int port, int interval)
     {
-       // System.out.println("DEBUG: Entered interval analysis");
         Calendar cal = Calendar.getInstance();
 
         long intervalInMs = 0;
-
-       // System.out.println("DEBUG: interval analysis: Connection: " + host + ":" + port);
 
         //converts interval value in minutes to milliseconds
         try
@@ -213,17 +210,14 @@ public class Analyzer {
 
         //Creates an arraylist of GcStats and fetches all GCstats entries for the current process through the set starttime and endtime above
         ArrayList<GcStats> currentReports = intervalReportsMap.get(host + ":" + port);
-      //  System.out.println("DEBUG: currentReports gathered");
 
         if (currentReports != null) {
-        //    System.out.println("DEBUG: currentReports not null");
             long minimumMemValue = 0;
             long originalMinimumMemValue = log.firstGcValue(host+":"+port);
 
             GcReport tempReport = new GcReport();
             for (GcStats g : currentReports) {
                 tempReport.addGcStats(g);
-           //     System.out.println("DEBUG: Adding gcStats");
             }
 
             long IntervalStartTimeOnSuspectedMemLeak = 0;
@@ -253,10 +247,6 @@ public class Analyzer {
                     }
                     minimumMemValue = currentReports.get(j).getMemoryUsedAfter();
 
-                    //Debugging
-                //    System.out.println("DEBUG: original first GCMinMemValue = "+originalMinimumMemValue);
-                //    System.out.println("DEBUG: current GcMinMemValue = "+minimumMemValue);
-
                     //if we are on the last lap and the minimumGCMemUsage is above or equal the 10% threshhold of firstGCMemMinValue of this process
                     // then it's time to create a process report with a "SUSPECTED_MEMORY_LEAK" warning
                     if (j == currentReports.size() - 1 && minimumMemValue >= (originalMinimumMemValue * PERCENTAGE_INC_IN_MEM_USE_WARNING))
@@ -264,7 +254,6 @@ public class Analyzer {
                         tempReport.setConsec_mem_inc_count(memConsecutiveIncCounter);
 
                         tempReport.setStatus(GcReport.Status.SUSPECTED_MEMORY_LEAK);
-                     //   System.out.println("DEBUG: Suspected Memory Leak");
                         if (IntervalStartTimeOnSuspectedMemLeak != 0)
                         {
                             tempReport.setStartTime(IntervalStartTimeOnSuspectedMemLeak);
@@ -305,17 +294,8 @@ public class Analyzer {
 
                         int memIncPercTest = (int) calculateMemIncreasePercentage;
                         aReport.setMemIncreasePercentage(memIncPercTest);
-
-                        //debug for getEndMemoryUsage which is used to calculated MemIncreasePercentage
-               //         System.out.println("DEBUG: EndMemoryUsage: "+tempReport.getEndMemoryUsage());
-
-                        //debug for mem increase percentage
-                 //       System.out.println("DEBUG: Mem increase percentage: "+aReport.getMemIncreasePercentage());
-
-                        //Debugging for anomalyReport
-                //        System.out.println("DEBUG: AnomalyReport created with status: "+aReport.toString());
                         fireAnomalyEvent(aReport);
-
+                        log.setProcessReportStatus(host, port, ProcessReport.Status.SUSPECTED_MEMORY_LEAK);
 
                     }
                     // if the last gcMinMemvalue is below the 10% threshold of the firstGcMinMemValue
@@ -323,14 +303,12 @@ public class Analyzer {
                     {
                         tempReport.setConsec_mem_inc_count(memConsecutiveIncCounter);
                         tempReport.setStatus(GcReport.Status.OK);
-                        //if there has been 5 or more consecutive minMemoryIncreases in a row, then a processreport is created with a "LIKELY_MEMORY_LEAK"
+                        //if there has been DEFAULT_CONSECUTIVE_MEM_INC or more consecutive minMemoryIncreases in a row, then a processreport is created with a "LIKELY_MEMORY_LEAK"
                         if (memConsecutiveIncCounter >= DEFAULT_CONSECUTIVE_MEM_INC) {
                             tempReport.setStatus(GcReport.Status.POSSIBLE_MEMORY_LEAK);
-                  //          System.out.println("DEBUG: Possible memory leak");
                             if (IntervalStartTimeOnSuspectedMemLeak != 0) {
                                 tempReport.setStartTime(IntervalStartTimeOnSuspectedMemLeak);
                             }
-                            //creates a GCReport log entry for every Possible memory leak.
                             if (minimumMemValue > originalMinimumMemValue)
                             {
                                 log.sendGcReport(host, port, tempReport);
