@@ -317,6 +317,10 @@ public class AnomalyDetector {
                 output += "Parameters: \n";
                 output += "-HOST:PORT:INTEGER \n \n";
 
+                output += "anomaly (Get all anomalies for one process (EXAMPLE: anomaly -localhost:3500))";
+                output += "Parameters: \n";
+                output += "-HOST:PORT \n\n";
+
                 output += "quit (Shuts down program (EXAMPLE: quit)) \n";
                 break;
             }
@@ -419,15 +423,21 @@ public class AnomalyDetector {
                 setInterval(host, port, interval);
                 break;
             }
+            case "anomaly":{
+                String[] params = cmdParam.split(":");
+                String host = params[0];
+                int port = Integer.parseInt(params[1]);
+                ArrayList<AnomalyReport> aReports = log.getAnomalyReports(host, port);
+                for (AnomalyReport a : aReports)
+                    output += a.toString();
+            }
+            break;
             case "quit":
                 output = "Shutting down";
                 break;
             default:
                 output = "Wrong command";
                 break;
-
-            //@TODO Implement CLI commands
-            //Java 7 autoclose
         }
         return output;
     }
