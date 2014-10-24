@@ -311,7 +311,7 @@ public class AnomalyDetector {
                 output += "Parameters: \n";
                 output += "-DOUBLE \n \n";
 
-                output += "connection (Displays all connections and their status (EXAMPLE: connections))";
+                output += "connections (Displays all connections and their status (EXAMPLE: connections))";
 
                 output += "setinterval (Set analysis interval in minutes for spec. process (EXAMPLE: setinterval -localhost:3500:5))";
                 output += "Parameters: \n";
