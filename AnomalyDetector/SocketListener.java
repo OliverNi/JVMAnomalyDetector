@@ -63,7 +63,7 @@ public class SocketListener implements Runnable
                         break;
                     }
                 }
-                //if more than 5 users connects then an error message is displayed
+                //if more than the set amount for variable nrOfUsers connects then an error message is displayed
                 if (i == nrOfUsers)
                 {
                     PrintStream os = new PrintStream(clientSocket.getOutputStream());
