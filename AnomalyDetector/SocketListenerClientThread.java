@@ -66,7 +66,10 @@ public class SocketListenerClientThread extends Thread
                 //for the current connected user
                 synchronized (this)
                 {
-                    this.os.println(ad.command(line));
+                    if (!line.startsWith("browse"))
+                        this.os.println(ad.command(line));
+                    else
+                        this.os.println("browse command does not work via socket connection.");
                 }
             }
             nrOfConnectedUsers--;
