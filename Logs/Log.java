@@ -53,11 +53,6 @@ public class Log implements  ILogging
             Statement DB = null;
             DB = DBConnection.createStatement();
 
-//            DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
-//            DB.executeUpdate("DROP TABLE IF EXISTS GCLog");
-//            DB.executeUpdate("DROP TABLE IF EXISTS GCReport");
-//            DB.executeUpdate("DROP TABLE IF EXISTS ProcessReport");
-
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS MemLog(MemId INTEGER PRIMARY KEY AUTOINCREMENT, timestamp BIGINT, usedMemory BIGINT, hostname VARCHAR(25), port INTEGER)");
 
             DB.executeUpdate("CREATE TABLE IF NOT EXISTS ProcessReport(prId INTEGER PRIMARY KEY AUTOINCREMENT, startTime BIGINT, endTime BIGINT, hostname VARCHAR(25), port INT, status VARCHAR(25), " +
@@ -170,42 +165,11 @@ public class Log implements  ILogging
 
         try
         {
-            //possibly secure the tables with a UNIQUE constraint to prevent duplicate rows.
-            // EXAMPLE:    CREATE TABLE a (i INT, j INT, UNIQUE(i, j) ON CONFLICT REPLACE);
-
-
-//            // create a database connection
+//          // create a database connection
             Statement DB = null;
             DBConnection = DriverManager.getConnection("jdbc:sqlite:test19.db");
             DB = DBConnection.createStatement();
             DB.setQueryTimeout(30);  // set timeout to 30 sec.
-
-
-
-
-            // DB.executeUpdate("DROP TABLE IF EXISTS AnalyzedGCData");
-            //   statement.executeUpdate("INSERT INTO MemLog(timestamp, usedMemory, hostname, port) VALUES(13371337, 10241024, '127.0.0.1', 3500)");
-
-            //  System.out.println(test.createMemLogEntry(10001000,1337669,"localhost",3800));
-            //statement.executeUpdate(test.createMemLogEntry(10001000,1337669,"localhost",3800));
-            //statement.executeUpdate("DELETE  FROM MemLog WHERE MemID = 12342145");
-            //statement.executeUpdate("DROP TABLE IF EXISTS MemLog");
-//            statement.executeUpdate("create table person (id integer, name string)");
-//            statement.executeUpdate("insert into person values(1, 'leo')");
-//            statement.executeUpdate("insert into person values(2, 'yui')");
-
-            // AnalyzedGcStats temp = new AnalyzedGcStats();
-            //   test.sendAnalyzedGCData("127.0.0.1",3800,temp);
-
-            //this one gives duplicate rows when performed
-            //  test.sendMemoryLog(1337,2233222, "127.0.0.1",3800);
-            //
-            //test.sendGarbageCollectionLog(0,0,0,0, "127.0.0.1", 3800);
-            // DB.executeUpdate("DELETE FROM MemLog WHERE MemId = 4" );
-            // ResultSet rs = DB.executeQuery("select * from AnalyzedGCData");
-            //DB.executeUpdate("DROP TABLE IF EXISTS MemLog");
-             // DBTableCreation();
-            //printSpecifiedTable("MemLog");
             DB.close();
 
         }
@@ -215,31 +179,7 @@ public class Log implements  ILogging
             // it probably means no database file is found
             System.err.println(e.getMessage());
         }
-//        finally {
-//            try {
-//                if (DBConnection != null)
-//                    DBConnection.close();
-//            } catch (SQLException e) {
-//                // connection close failed.
-//                System.err.println(e);
-//            }
-//
-//        }
 
-    }
-
-    public String getCurrentDate()
-    {
-        //Set date format
-        DateFormat theFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-
-        //fetch time in milliseconds
-        Date today = Calendar.getInstance().getTime();
-
-        //convert time into a string with the above format
-        String fetchTime = theFormat.format(today);
-
-        return fetchTime;
     }
 
     //basic input values works
