@@ -97,10 +97,13 @@ public class AnomalyDetector {
             if (a.getHostName().equals(hostName) && a.getPort() == port) {
                 agents.remove(a);
                 analyzer.removeTimer(hostName, port);
+                ProcessConnection remove = null;
                 for (ProcessConnection p : connections){
                     if (p.getPort() == port && p.getHostName().equals(hostName))
-                        connections.remove(p);
+                        remove = p;
                 }
+                connections.remove(remove);
+
                 print("Disconnected from: " + a.getHostName() + ":" + a.getPort());
                 disconnected = true;
             }
