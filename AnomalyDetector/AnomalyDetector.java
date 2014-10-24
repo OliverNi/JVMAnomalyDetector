@@ -346,7 +346,7 @@ public class AnomalyDetector {
             }
             case "settings":
                 output += "Excessive GC Scan threshold: " + Analyzer.getTIME_EXCESSIVE_SCAN_WARNING() + "\n";
-                output += "Memory increase threshold: " + Analyzer.DEFAULT_PERCENTAGE_INC_IN_MEM_USE_WARNING + "\n";
+                output += "Memory increase threshold: " + Analyzer.getPERCENTAGE_INC_IN_MEM_USE_WARNING() + "\n";
                 for (ProcessConnection c : connections){
                     output += c.getHostName() + ":" + c.getPort() + ":\n";
                     output += "Analyzer interval: " + c.getInterval() + "min \n";
