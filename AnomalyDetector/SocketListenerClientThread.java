@@ -87,20 +87,6 @@ public class SocketListenerClientThread extends Thread
                         this.os.println(ad.command(line));
                     }
                 }
-
-                //probably not needed
-                //for any other connected users - maybe useful if AnomalyReports shall be sent to all connected users.
-//                    synchronized (this)
-//                    {
-//
-//                        for (int i = 0; i < nrOfUsers; i++)
-//                        {
-//                            if (threads[i] != null && threads[i] != this && threads[i].clientName != null )
-//                            {
-//                               // threads[i].os.println("AnomalyReport notification");
-//                            }
-//                        }
-               // }
             }
             nrOfConnectedUsers--;
 
