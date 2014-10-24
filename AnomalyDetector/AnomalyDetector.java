@@ -309,12 +309,12 @@ public class AnomalyDetector {
 
                 output += "browse (Opens LogBrowser (EXAMPLE: browse)) \n \n";
 
-                output += "connect (Connects to a JVM process (EXAMPLE: connect -localhost:1111, locahlhost:1212, localhost:1313)) \n";
+                output += "connect (Connects to a JVM process (EXAMPLE: connect -localhost:1111, localhost:1212, localhost:1313)) \n";
                 output += "Parameters: \n";
                 output += "-HOST:PORT \n";
                 output += "-HOST:PORT, ...., HOST:PORT \n \n";
 
-                output += "disconnect (Disconnects from a monitored process (EXAMPLE: disconnect -localhost:1111, locahlhost:1212, localhost:1313))";
+                output += "disconnect (Disconnects from a monitored process (EXAMPLE: disconnect -localhost:1111, localhost:1212, localhost:1313))";
                 output += "Parameters: \n";
                 output += "-HOST:PORT \n";
                 output += "-HOST:PORT, ...., HOST:PORT \n \n";
