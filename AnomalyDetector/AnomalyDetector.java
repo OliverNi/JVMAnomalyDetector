@@ -190,6 +190,15 @@ public class AnomalyDetector {
         Analyzer.setTIME_EXCESSIVE_SCAN_WARNING(threshold);
     }
 
+    public void setInterval(String host, int port, int interval){
+        for (ProcessConnection c : connections){
+            if (c.getHostName().equals(host) && c.getPort() == port)
+                c.setInterval(interval);
+        }
+        analyzer.removeTimer(host, port);
+        analyzer.addIntervalTimer(host, port, interval);
+    }
+
     private String getConnectionStatus(String host, int port){
         String status = "No connection";
         for (JMXAgent a : agents){
@@ -304,6 +313,10 @@ public class AnomalyDetector {
 
                 output += "connection (Displays all connections and their status (EXAMPLE: connections))";
 
+                output += "setinterval (Set analysis interval in minutes for spec. process (EXAMPLE: setinterval -localhost:3500:5))";
+                output += "Parameters: \n";
+                output += "-HOST:PORT:INTEGER \n \n";
+
                 output += "quit (Shuts down program (EXAMPLE: quit)) \n";
                 break;
             }
@@ -398,6 +411,14 @@ public class AnomalyDetector {
                     output += getConnectionStatus(c.getHostName(), c.getPort());
                 }
                 break;
+            case "setinterval": {
+                String[] params = cmdParam.split(":");
+                String host = params[0];
+                int port = Integer.parseInt(params[1]);
+                int interval = Integer.parseInt(params[2]);
+                setInterval(host, port, interval);
+                break;
+            }
             case "quit":
                 output = "Shutting down";
                 break;
