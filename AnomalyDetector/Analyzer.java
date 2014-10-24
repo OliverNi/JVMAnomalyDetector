@@ -10,6 +10,10 @@ import java.util.*;
 /**
  * Created by Oliver on 2014-09-18.
  */
+
+/**
+ * Class used for analyzing logs and creating an AnomalyReport if an anomaly is detected. Also combines logs into summed up information.
+ */
 public class Analyzer {
     class DailyTask extends TimerTask {
         DailyTask(){
