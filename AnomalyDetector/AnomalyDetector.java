@@ -101,13 +101,12 @@ public class AnomalyDetector {
      */
     public boolean disconnect(String hostName, int port){
         boolean disconnected = false;
-        int index = 0;
         int agentIndex = findAgentIndex(hostName, port);
         int connectionIndex = findConnectionIndex(hostName, port);
 
         analyzer.removeTimer(hostName, port);
         if (agentIndex != -1){
-            print("Disconnected from: " + agents.get(index).getHostName() + ":" + agents.get(index).getPort());
+            print("Disconnected from: " + agents.get(agentIndex).getHostName() + ":" + agents.get(agentIndex).getPort());
             disconnected = true;
             agents.remove(agentIndex);
         }
