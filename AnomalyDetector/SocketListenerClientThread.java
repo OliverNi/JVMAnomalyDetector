@@ -77,8 +77,6 @@ public class SocketListenerClientThread extends Thread
                     break;
                 }
 
-                //checks if the current input has been used
-                //@TODO add further set commands for excessive GC scan /  mem leak threshhold / etc in this IF statement
                 //for the current connected user
                 synchronized (this)
                 {
