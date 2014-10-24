@@ -552,8 +552,10 @@ public class Analyzer {
 
     public void removeTimer(String host, int port){
         Timer timer = intervalTimers.get(host + ":" + port);
-        timer.cancel();
-        timer.purge();
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
     }
 
     public static long getTIME_EXCESSIVE_SCAN_WARNING() {

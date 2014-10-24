@@ -102,25 +102,18 @@ public class AnomalyDetector {
     public boolean disconnect(String hostName, int port){
         boolean disconnected = false;
         int index = 0;
-        int agentIndex = -1;
+        int agentIndex = findAgentIndex(hostName, port);
+        int connectionIndex = findConnectionIndex(hostName, port);
 
-        while (index < agents.size() && agentIndex == -1){
-            if (agents.get(index).getHostName().equals(hostName) && agents.get(index).getPort() == port) {
-                agentIndex = index;
-                analyzer.removeTimer(hostName, port);
-                ProcessConnection remove = null;
-                for (ProcessConnection p : connections){
-                    if (p.getPort() == port && p.getHostName().equals(hostName))
-                        remove = p;
-                }
-                connections.remove(remove);
-            }
-        }
-
+        analyzer.removeTimer(hostName, port);
         if (agentIndex != -1){
             print("Disconnected from: " + agents.get(index).getHostName() + ":" + agents.get(index).getPort());
             disconnected = true;
             agents.remove(agentIndex);
+        }
+
+        if (connectionIndex != -1){
+            connections.remove(connectionIndex);
         }
 
         return disconnected;
@@ -222,6 +215,23 @@ public class AnomalyDetector {
         return status;
     }
 
+    private int findAgentIndex(String hostName, int port){
+        int index = -1;
+        for (int i = 0; i < agents.size() && index == -1; i++){
+            if (agents.get(i).getHostName().equals(hostName) && agents.get(i).getPort() == port)
+                index = i;
+        }
+        return index;
+    }
+
+    private int findConnectionIndex(String hostName, int port){
+        int index = -1;
+        for (int i = 0; i < connections.size() && index == -1; i++){
+            if (connections.get(i).getHostName().equals(hostName) && connections.get(i).getPort() == port)
+                index = i;
+        }
+        return index;
+    }
 
     public static void main(String args[]){
         //java AnomalyDetector hostname:port, hostname:port 20, hostname:port
