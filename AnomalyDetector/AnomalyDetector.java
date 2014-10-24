@@ -68,20 +68,29 @@ public class AnomalyDetector {
      * @param interval interval in milliseconds decides how often memory statistics are gathered.
      */
     public boolean connect(String hostName, int port, int interval){
+        boolean connected = false;
+        boolean found = false;
         for (JMXAgent a : agents){
-            //Replace agent if there already exists an agent for this connection
-            if (a.getHostName().equals(hostName) && a.getPort() == port)
-                a = new JMXAgent(hostName, port, this);
+            //Reconnects if connection already exists
+            if (a.getHostName().equals(hostName) && a.getPort() == port && !found) {
+                a.connect();
+                found = true;
+                connected = a.isConnected();
+                setInterval(hostName, port, interval);
+            }
         }
-        agents.add(new JMXAgent(hostName, port, this));
+        if (!found) {
+            agents.add(new JMXAgent(hostName, port, this));
 
-        Thread thread = new Thread(agents.get(agents.size()-1));
-        thread.start();
+            Thread thread = new Thread(agents.get(agents.size() - 1));
+            thread.start();
 
-        connections.add(new ProcessConnection(hostName, port, interval));
-        analyzer.addIntervalTimer(hostName, port, interval);
+            connections.add(new ProcessConnection(hostName, port, interval));
+            analyzer.addIntervalTimer(hostName, port, interval);
 
-        return agents.get(agents.size()-1).isConnected();
+            connected = agents.get(agents.size()-1).isConnected();
+        }
+        return connected;
     }
 
     /**

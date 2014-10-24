@@ -145,7 +145,8 @@ public class JMXAgent implements Runnable{
         connect();
     }
 
-    private void connect() {
+    public void connect() {
+        reconnectTimer.cancel();
         try {
             this.url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName +
                     ":" + port + "/jmxrmi");
