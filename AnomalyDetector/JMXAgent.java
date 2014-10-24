@@ -162,7 +162,7 @@ public class JMXAgent implements Runnable{
             jmxc.connect();
         }
         catch (IOException e){
-            e.printStackTrace();
+            System.out.println(hostName + ":" + port + ": Connection error...");
         }
 
         if (!connected) {
