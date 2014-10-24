@@ -146,7 +146,6 @@ public class JMXAgent implements Runnable{
     }
 
     private void connect() {
-        //@TODO try again if process is down
         try {
             this.url = new JMXServiceURL("service:jmx:rmi:///jndi/rmi://" + hostName +
                     ":" + port + "/jmxrmi");
