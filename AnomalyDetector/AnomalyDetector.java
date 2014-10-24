@@ -92,10 +92,12 @@ public class AnomalyDetector {
      */
     public boolean disconnect(String hostName, int port){
         boolean disconnected = false;
-        for (JMXAgent a : agents)
-        {
-            if (a.getHostName().equals(hostName) && a.getPort() == port) {
-                agents.remove(a);
+        int index = 0;
+        int agentIndex = -1;
+
+        while (index < agents.size() && agentIndex == -1){
+            if (agents.get(index).getHostName().equals(hostName) && agents.get(index).getPort() == port) {
+                agentIndex = index;
                 analyzer.removeTimer(hostName, port);
                 ProcessConnection remove = null;
                 for (ProcessConnection p : connections){
@@ -103,11 +105,15 @@ public class AnomalyDetector {
                         remove = p;
                 }
                 connections.remove(remove);
-
-                print("Disconnected from: " + a.getHostName() + ":" + a.getPort());
-                disconnected = true;
             }
         }
+
+        if (agentIndex != -1){
+            print("Disconnected from: " + agents.get(index).getHostName() + ":" + agents.get(index).getPort());
+            disconnected = true;
+            agents.remove(agentIndex);
+        }
+
         return disconnected;
     }
 
