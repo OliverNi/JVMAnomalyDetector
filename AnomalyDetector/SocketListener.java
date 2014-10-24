@@ -22,10 +22,10 @@ public class SocketListener implements Runnable
 
     // Sets a limit on the number of connected users
     private static final int nrOfUsers = 1;
-    //creates a SocketListenerClientThread with a max amount of 5 simultaneous users
+    //creates a SocketListenerClientThread with a max amount based on nrOfUsers set
     private static final SocketListenerClientThread[] threads = new SocketListenerClientThread[nrOfUsers];
     // The default port number.
-    private static final int portNumber = 27015;
+    private static final int portNumber = 27016;
     private AnomalyDetector ad;
 
     public SocketListener(AnomalyDetector ad)
