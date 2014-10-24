@@ -190,6 +190,21 @@ public class AnomalyDetector {
         Analyzer.setTIME_EXCESSIVE_SCAN_WARNING(threshold);
     }
 
+    private String getConnectionStatus(String host, int port){
+        String status = "No connection";
+        for (JMXAgent a : agents){
+            if (a.getHostName().equals(host) && a.getPort() == port){
+                if (a.isConnected())
+                    status = "Connected";
+                else
+                    status = "Connection failure";
+            }
+        }
+
+        return status;
+    }
+
+
     public static void main(String args[]){
         //java AnomalyDetector hostname:port, hostname:port 20, hostname:port
         ArrayList<ProcessConnection> pConnections = new ArrayList<>();
@@ -287,6 +302,8 @@ public class AnomalyDetector {
                 output += "Parameters: \n";
                 output += "-DOUBLE \n \n";
 
+                output += "connection (Displays all connections and their status (EXAMPLE: connections))";
+
                 output += "quit (Shuts down program (EXAMPLE: quit)) \n";
                 break;
             }
@@ -375,6 +392,12 @@ public class AnomalyDetector {
 
                 break;
             }
+            case "connections":
+                for (ProcessConnection c : connections) {
+                    output += c.getHostName() + ":" + c.getPort() + ": ";
+                    output += getConnectionStatus(c.getHostName(), c.getPort());
+                }
+                break;
             case "quit":
                 output = "Shutting down";
                 break;
