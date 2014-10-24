@@ -412,7 +412,7 @@ public class AnomalyDetector {
             case "connections":
                 for (ProcessConnection c : connections) {
                     output += c.getHostName() + ":" + c.getPort() + ": ";
-                    output += getConnectionStatus(c.getHostName(), c.getPort());
+                    output += getConnectionStatus(c.getHostName(), c.getPort()) + "\n";
                 }
                 break;
             case "setinterval": {
