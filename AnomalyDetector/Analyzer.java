@@ -566,4 +566,13 @@ public class Analyzer {
     public static void setPERCENTAGE_INC_IN_MEM_USE_WARNING(double PERCENTAGE_INC_IN_MEM_USE_WARNING) {
         Analyzer.PERCENTAGE_INC_IN_MEM_USE_WARNING = PERCENTAGE_INC_IN_MEM_USE_WARNING;
     }
+
+    public void cancel(){
+        dailyTimer.cancel();
+        weeklyTimer.cancel();
+        monthlyTimer.cancel();
+        for (int i = 0; i < intervalTimers.size(); i++){
+            intervalTimers.entrySet().iterator().next().getValue().cancel();
+        }
+    }
 }

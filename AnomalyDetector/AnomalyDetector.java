@@ -4,6 +4,7 @@ import GUI.Controllers.FrontController;
 import Listeners.AnomalyListener;
 import Listeners.SimpleAnomalyListener;
 import Logs.Log;
+import com.sun.org.apache.xalan.internal.xsltc.dom.ArrayNodeListIterator;
 
 import java.util.*;
 
@@ -48,8 +49,8 @@ public class AnomalyDetector {
         analyzer = new Analyzer(this);
         this.listeners.add(listener);
         socketListener = new SocketListener(this);
-        Thread thread = new Thread(socketListener);
-        thread.start();
+        socketListener.start();
+
     }
 
     /**
@@ -284,6 +285,17 @@ public class AnomalyDetector {
                 }
             } while(!cmdOutput.equals("Shutting down"));
             in.close();
+        ad.exit();
+    }
+
+    public void exit(){
+        while(connections.iterator().hasNext()) {
+            ProcessConnection c = connections.iterator().next();
+            disconnect(c.getHostName(), c.getPort());
+        }
+        analyzer.cancel();
+        socketListener.cancel();
+        socketListener.interrupt();
     }
 
     /**

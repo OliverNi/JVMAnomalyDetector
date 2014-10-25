@@ -11,7 +11,7 @@ import java.util.ArrayList;
 /**
  * Created by Martin on 2014-10-21.
  */
-public class SocketListener implements Runnable
+public class SocketListener extends Thread
 {
     // The server socket.
     private static ServerSocket serverSocket = null;
@@ -24,7 +24,7 @@ public class SocketListener implements Runnable
     // The default port number.
     private static final int portNumber = 27015;
     private AnomalyDetector ad;
-
+    private boolean listening = true;
     public SocketListener(AnomalyDetector ad)
     {
         this.ad = ad;
@@ -44,7 +44,7 @@ public class SocketListener implements Runnable
         }
 
         //creates a client socket for each new connection and passes it to a client thread.
-        while (true)
+        while (listening)
         {
             try
             {
@@ -61,6 +61,7 @@ public class SocketListener implements Runnable
             }
 
         }
+        System.out.println("DEBUG");
     }
 
     public void send(String text){
@@ -82,6 +83,18 @@ public class SocketListener implements Runnable
         threads.remove(t);
         ad.removeListener(t.getRemoteAnomalyListener());
         System.out.println("Listener removed, nr of connected users: " + SocketListenerClientThread.getNrOfConnectedUsers());
+    }
+
+    public void cancel(){
+        listening = false;
+        while (threads.iterator().hasNext()){
+            removeListenerThread(threads.iterator().next());
+        }
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
