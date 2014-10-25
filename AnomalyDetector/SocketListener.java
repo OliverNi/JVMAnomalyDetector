@@ -78,11 +78,11 @@ public class SocketListener implements Runnable
     }
 
     public void removeListenerThread(SocketListenerClientThread t){
+        t.interrupt();
         threads.remove(t);
         ad.removeListener(t.getRemoteAnomalyListener());
         System.out.println("Listener removed, nr of connected users: " + SocketListenerClientThread.getNrOfConnectedUsers());
     }
-
 
     @Override
     public void run() {
