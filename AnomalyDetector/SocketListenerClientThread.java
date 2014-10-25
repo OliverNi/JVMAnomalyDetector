@@ -63,7 +63,7 @@ public class SocketListenerClientThread extends Thread
             }
 
             //starts Command interface listener
-            while (true)
+            while (!clientSocket.isClosed())
             {
                 String line = is.readLine();
                 if (line.startsWith("quit"))
@@ -115,5 +115,13 @@ public class SocketListenerClientThread extends Thread
 
     public static int getNrOfConnectedUsers(){
         return nrOfConnectedUsers;
+    }
+
+    public void cancel(){
+        try {
+            clientSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

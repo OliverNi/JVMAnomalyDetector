@@ -61,7 +61,6 @@ public class SocketListener extends Thread
             }
 
         }
-        System.out.println("DEBUG");
     }
 
     public void send(String text){
@@ -82,13 +81,15 @@ public class SocketListener extends Thread
         t.interrupt();
         threads.remove(t);
         ad.removeListener(t.getRemoteAnomalyListener());
-        System.out.println("Listener removed, nr of connected users: " + SocketListenerClientThread.getNrOfConnectedUsers());
     }
 
     public void cancel(){
         listening = false;
         while (threads.iterator().hasNext()){
-            removeListenerThread(threads.iterator().next());
+            SocketListenerClientThread listenerClientThread = threads.iterator().next();
+            listenerClientThread.cancel();
+            listenerClientThread.interrupt();
+            removeListenerThread(listenerClientThread);
         }
         try {
             serverSocket.close();
