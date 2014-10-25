@@ -75,7 +75,7 @@ public class SocketListenerClientThread extends Thread
                 //for the current connected user
                 synchronized (this)
                 {
-                    if (!line.startsWith("browse") && !line.startsWith("quit"))
+                    if (!line.startsWith("browse") && !line.startsWith("shutdown"))
                         this.os.println(ad.command(line));
                     else
                         this.os.println("command does not work via socket connection.");

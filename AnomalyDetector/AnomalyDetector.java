@@ -354,7 +354,7 @@ public class AnomalyDetector {
                 output += "Parameters: \n";
                 output += "-HOST:PORT \n\n";
 
-                output += "quit (Shuts down program (EXAMPLE: quit)) \n";
+                output += "shutdown (Shuts down program (EXAMPLE: shutdown)) \n";
                 break;
             }
             case "clear":
@@ -612,7 +612,7 @@ public class AnomalyDetector {
 
             }
             break;
-            case "quit":
+            case "shutdown":
                 output = "Shutting down";
                 break;
             default:
