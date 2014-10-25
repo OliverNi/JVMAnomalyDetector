@@ -287,17 +287,10 @@ public class Analyzer {
 
                         aReport.setTimestamp(Calendar.getInstance().getTimeInMillis());
 
-                        String endMemTemp = Long.toString(tempReport.getEndMemoryUsage());
-                        double endMemUsage = Double.valueOf(endMemTemp);
-                        String origMemUsage = Long.toString(originalMinimumMemValue);
-                        double originalMemUsage = Double.valueOf(origMemUsage);
+                     //calculates memory increase percentage
+                        int calcMemIncpercentage = (int) ((((double)tempReport.getEndMemoryUsage() - originalMinimumMemValue) / originalMinimumMemValue) * 100);
 
-                        //calculates latest number which is bigger, with the original smaller value * 100 and
-                        // then subtracts 100 to get percentage increase.
-                        double calculateMemIncreasePercentage = (((endMemUsage/originalMemUsage)*100)-100);
-
-                        int memIncPercTest = (int) calculateMemIncreasePercentage;
-                        aReport.setMemIncreasePercentage(memIncPercTest);
+                        aReport.setMemIncreasePercentage(calcMemIncpercentage);
                         fireAnomalyEvent(aReport);
                         log.setProcessReportStatus(host, port, ProcessReport.Status.SUSPECTED_MEMORY_LEAK);
 
