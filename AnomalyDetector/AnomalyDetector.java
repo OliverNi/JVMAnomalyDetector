@@ -340,7 +340,7 @@ public class AnomalyDetector {
                 output += "Parameters: \n";
                 output += "-MILLISECONDS \n \n";
 
-                output += "threshold (Sets memory increase warning threshold in percent (EXAMPLE: threshold -10))";
+                output += "memthreshold (Sets memory increase warning threshold in percent (EXAMPLE: threshold -10))";
                 output += "Parameters: \n";
                 output += "-DOUBLE \n \n";
 
@@ -408,7 +408,7 @@ public class AnomalyDetector {
                     }
                 }
                 break;
-            case "threshold":
+            case "memthreshold":
                 if (!cmdParam.equals(""))
                 {
                     try
@@ -416,7 +416,7 @@ public class AnomalyDetector {
                         double t = Double.parseDouble(cmdParam);
                         if (t > 0)
                         {
-                            output = "Threshold set to: " + t + "\n";
+                            output = "Memory leak threshold set to: " + t + "\n";
                             setThreshold(t);
                         }
                         else
