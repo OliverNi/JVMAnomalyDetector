@@ -183,6 +183,11 @@ public class AnomalyDetector {
         listeners.add(listener);
     }
 
+    public void removeListener(AnomalyListener listener){
+        if (listener != null)
+            listeners.remove(listener);
+    }
+
     public void setThreshold(double threshold){
         Analyzer.setPERCENTAGE_INC_IN_MEM_USE_WARNING(threshold);
     }

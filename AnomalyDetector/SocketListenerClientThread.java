@@ -1,5 +1,7 @@
 package AnomalyDetector;
 
+import Listeners.RemoteAnomalyListener;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -8,18 +10,25 @@ import java.net.Socket;
 /**
  * Created by Martin on 2014-10-21.
  */
+
+/**
+ * Handles one connection
+ */
 public class SocketListenerClientThread extends Thread
 {
     private String clientName = null;
     private DataInputStream is = null;
     private PrintStream os = null;
     private Socket clientSocket = null;
+    private SocketListener socketListener = null;
     private static int nrOfConnectedUsers;
+    private RemoteAnomalyListener remoteAnomalyListener = null;
     private AnomalyDetector ad;
-    public SocketListenerClientThread(Socket clientSocket, AnomalyDetector ad)
+    public SocketListenerClientThread(Socket clientSocket, AnomalyDetector ad, SocketListener socketListener)
     {
         this.ad = ad;
         this.clientSocket = clientSocket;
+        this.socketListener = socketListener;
     }
 
     @SuppressWarnings("deprecation")
@@ -73,7 +82,7 @@ public class SocketListenerClientThread extends Thread
                 }
             }
             nrOfConnectedUsers--;
-
+            socketListener.removeListenerThread(this);
             os.println(">>> Good bye " + name + " >>>");
             //sets the current thread to null once the user is disconnected so another user can connect
 
@@ -83,6 +92,8 @@ public class SocketListenerClientThread extends Thread
             clientSocket.close();
         } catch (IOException e)
         {
+            nrOfConnectedUsers--;
+            socketListener.removeListenerThread(this);
         }
     }
 
@@ -94,4 +105,15 @@ public class SocketListenerClientThread extends Thread
         return clientSocket.isConnected();
     }
 
+    public RemoteAnomalyListener getRemoteAnomalyListener() {
+        return remoteAnomalyListener;
+    }
+
+    public void setRemoteAnomalyListener(RemoteAnomalyListener remoteAnomalyListener) {
+        this.remoteAnomalyListener = remoteAnomalyListener;
+    }
+
+    public static int getNrOfConnectedUsers(){
+        return nrOfConnectedUsers;
+    }
 }

@@ -49,9 +49,10 @@ public class SocketListener implements Runnable
             try
             {
                 clientSocket = serverSocket.accept();
-                SocketListenerClientThread listenerThread = new SocketListenerClientThread(clientSocket, ad);
+                SocketListenerClientThread listenerThread = new SocketListenerClientThread(clientSocket, ad, this);
                 threads.add(listenerThread);
-                ad.addListener(new RemoteAnomalyListener(listenerThread));
+                listenerThread.setRemoteAnomalyListener(new RemoteAnomalyListener(listenerThread));
+                ad.addListener(listenerThread.getRemoteAnomalyListener());
                 listenerThread.start();
 
             } catch (IOException e)
@@ -78,6 +79,8 @@ public class SocketListener implements Runnable
 
     public void removeListenerThread(SocketListenerClientThread t){
         threads.remove(t);
+        ad.removeListener(t.getRemoteAnomalyListener());
+        System.out.println("Listener removed, nr of connected users: " + SocketListenerClientThread.getNrOfConnectedUsers());
     }
 
 
