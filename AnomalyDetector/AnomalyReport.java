@@ -144,7 +144,7 @@ public class AnomalyReport
         info += "Type: " + anomaly.toString() + "\n";
         if (anomaly != Anomaly.EXCESSIVE_GC_SCAN) {
             time.setTime(startTimeIncrease);
-            info += "Memory increase started at: " + time.toString() + "\n"; //@TODO Maybe Change to between (time between the Gc pre memleak and GC after memleak)
+            info += "Memory increase first detected at: " + time.toString() + "\n";
         }
         info += "Memory has increased by: " + memIncreasePercentage + "% \n";
         info += "Memory has increased by: " + memIncreaseBytes / 1024 + " kb \n";
