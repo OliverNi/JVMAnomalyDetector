@@ -341,7 +341,7 @@ public class AnomalyDetector {
                 output += "-HOST:PORT \n";
                 output += "-HOST:PORT, ...., HOST:PORT \n \n";
 
-                output += "disconnect (Disconnects from a monitored process (EXAMPLE: disconnect -localhost:1111, localhost:1212, localhost:1313))";
+                output += "disconnect (Disconnects from a monitored process (EXAMPLE: disconnect -localhost:1111, localhost:1212, localhost:1313))\n";
                 output += "Parameters: \n";
                 output += "-HOST:PORT \n";
                 output += "-HOST:PORT, ...., HOST:PORT \n \n";
@@ -352,17 +352,17 @@ public class AnomalyDetector {
                 output += "Parameters: \n";
                 output += "-MILLISECONDS \n \n";
 
-                output += "memthreshold (Sets memory increase warning threshold in percent (EXAMPLE: threshold -10))";
+                output += "memthreshold (Sets memory increase warning threshold in percent (EXAMPLE: threshold -10))\n";
                 output += "Parameters: \n";
                 output += "-DOUBLE \n \n";
 
-                output += "connections (Displays all connections and their status (EXAMPLE: connections))";
+                output += "connections (Displays all connections and their status (EXAMPLE: connections))\n \n";
 
-                output += "setinterval (Set analysis interval in minutes for spec. process (EXAMPLE: setinterval -localhost:3500:5))";
+                output += "setinterval (Set analysis interval in minutes for spec. process (EXAMPLE: setinterval -localhost:3500:5))\n";
                 output += "Parameters: \n";
                 output += "-HOST:PORT:INTEGER \n \n";
 
-                output += "anomaly (Get all anomalies for one process (EXAMPLE: anomaly -localhost:3500))";
+                output += "anomaly (Get all anomalies for one process (EXAMPLE: anomaly -localhost:3500))\n";
                 output += "Parameters: \n";
                 output += "-HOST:PORT \n\n";
 
