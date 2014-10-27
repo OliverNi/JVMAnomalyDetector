@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Created by Oliver on 2014-09-18.
  */
-public interface ILogging {
+public interface MemoryUsageLog {
     /**
      * Sends statistics for a GarbageCollection
      * @param memoryUsedAfter Memory usage after GarbageCollection.

@@ -3,7 +3,6 @@ package AnomalyDetector;
 import Listeners.AnomalyEvent;
 import Listeners.AnomalyListener;
 import Logs.*;
-import com.sun.org.apache.xpath.internal.SourceTree;
 
 import java.util.*;
 
@@ -74,7 +73,7 @@ public class Analyzer {
     public static final long EXCESSIVE_GC_COOLDOWN = 3600000L; //One hour
     private HashMap<String, Boolean> cooldown = new HashMap<>();
     private AnomalyDetector ad;
-    private ILogging log;
+    private MemoryUsageLog log;
     private Timer dailyTimer;
     private Timer weeklyTimer;
     private Timer monthlyTimer;

@@ -1,21 +1,16 @@
 package AnomalyDetector;
 
 import Logs.GcStats;
-import Logs.ILogging;
+import Logs.MemoryUsageLog;
 import Logs.Log;
-import com.sun.jmx.mbeanserver.MXBeanLookup;
-import com.sun.jmx.mbeanserver.MXBeanMappingFactory;
 import com.sun.management.GarbageCollectionNotificationInfo;
 
 import javax.management.*;
 import javax.management.openmbean.CompositeData;
 import javax.management.remote.*;
-import javax.security.auth.Subject;
 import java.io.IOException;
 import java.lang.management.*;
 import java.net.MalformedURLException;
-import java.util.Calendar;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -111,7 +106,7 @@ public class JMXAgent extends Thread{
     private MBeanServerConnection mbsc = null;
     private AgentListener listener;
     private AnomalyDetector ad;
-    private ILogging log;
+    private MemoryUsageLog log;
     private RuntimeMXBean runtimeMXBean;
     private Timer reconnectTimer = new Timer();
 

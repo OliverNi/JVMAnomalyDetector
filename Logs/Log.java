@@ -4,17 +4,13 @@ import AnomalyDetector.AnomalyReport;
 import AnomalyDetector.ProcessConnection;
 import AnomalyDetector.ProcessReport;
 
-import java.lang.reflect.*;
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.Date;
 
 /**
  * Created by Martin on 2014-09-18.
  */
-public class Log implements  ILogging
+public class Log implements MemoryUsageLog
 {
     private static Log instance = new Log();
 
