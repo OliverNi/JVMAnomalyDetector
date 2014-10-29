@@ -45,7 +45,6 @@ public class AnomalyDetector {
         agents = new ArrayList<>();
         connections = new ArrayList<>();
         log = Log.getInstance();
-        log.clearData(); //@TODO remove later (used for presentation)
         analyzer = new Analyzer(this);
         this.listeners.add(listener);
         socketListener = new SocketListener(this);
